@@ -25,6 +25,7 @@ import {
   UserCircle,
   Users,
 } from "lucide-react";
+import { LogoMark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { api } from "@/lib/api";
@@ -146,9 +147,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-border bg-card lg:flex lg:flex-col">
-        <div className="flex h-16 items-center border-b border-border px-5">
+        <div className="flex h-16 items-center gap-3 border-b border-border px-5">
+          <LogoMark size="sm" />
           <div>
-            <p className="text-sm font-semibold text-primary">FidelOS</p>
+            <p className="text-sm font-semibold text-foreground">FidelOS</p>
             <p className="text-xs text-muted-foreground">HRMS administrativo</p>
           </div>
         </div>

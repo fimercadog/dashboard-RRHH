@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { navProduct, navSolutions } from "./marketing-data";
 
@@ -36,12 +37,8 @@ export function MarketingHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-primary text-lg font-bold text-white">F</span>
-          <span>
-            <span className="block text-base font-bold text-navy">FidelOS HRMS</span>
-            <span className="block text-xs text-muted-foreground">People management SaaS</span>
-          </span>
+        <Link href="/">
+          <Logo tagline="People management SaaS" />
         </Link>
         <nav className="hidden items-center gap-6 lg:flex">
           <Dropdown label="Producto" items={navProduct} />
