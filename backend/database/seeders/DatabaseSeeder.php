@@ -116,25 +116,57 @@ class DatabaseSeeder extends Seeder
 
         $departments->each(fn ($department, $index) => $department->update(['manager_id' => $employees[$index]->id]));
 
-        $admin = User::firstOrCreate(['email' => 'admin@andespeople.co'], [
-            'company_id' => $company->id,
-            'employee_id' => $employees[0]->id,
-            'name' => 'Camila Rojas',
-            'password' => Hash::make('password'),
-            'status' => 'active',
-        ]);
-        $admin->assignRole('Administrador de empresa');
+        $demoUsers = [
+            [
+                'name' => 'Sofia Mercado',
+                'email' => 'superadmin@andespeople.co',
+                'role' => 'Super Admin',
+                'employee_index' => null,
+            ],
+            [
+                'name' => 'Camila Rojas',
+                'email' => 'admin@andespeople.co',
+                'role' => 'Administrador de empresa',
+                'employee_index' => 0,
+            ],
+            [
+                'name' => 'Sebastian Moreno',
+                'email' => 'rrhh@andespeople.co',
+                'role' => 'Recursos Humanos',
+                'employee_index' => 1,
+            ],
+            [
+                'name' => 'Valentina Castro',
+                'email' => 'supervisor@andespeople.co',
+                'role' => 'Supervisor',
+                'employee_index' => 2,
+            ],
+            [
+                'name' => 'Laura Medina',
+                'email' => 'empleado@andespeople.co',
+                'role' => 'Empleado',
+                'employee_index' => 4,
+            ],
+        ];
 
-        foreach (['rrhh@andespeople.co' => 'Recursos Humanos', 'supervisor@andespeople.co' => 'Supervisor', 'empleado@andespeople.co' => 'Empleado'] as $email => $role) {
-            $user = User::firstOrCreate(['email' => $email], [
-                'company_id' => $company->id,
-                'employee_id' => $employees->random()->id,
-                'name' => $role.' Demo',
-                'password' => Hash::make('password'),
-                'status' => 'active',
-            ]);
-            $user->assignRole($role);
-        }
+        $seededUsers = collect($demoUsers)->map(function (array $demoUser) use ($company, $employees) {
+            $user = User::updateOrCreate(
+                ['email' => $demoUser['email']],
+                [
+                    'company_id' => $company->id,
+                    'employee_id' => $demoUser['employee_index'] === null ? null : $employees[$demoUser['employee_index']]->id,
+                    'name' => $demoUser['name'],
+                    'password' => Hash::make('password'),
+                    'status' => 'active',
+                ],
+            );
+
+            $user->syncRoles([$demoUser['role']]);
+
+            return $user;
+        });
+
+        $admin = $seededUsers->firstWhere('email', 'admin@andespeople.co');
 
         $statuses = ['present', 'present', 'present', 'late', 'absent'];
         for ($day = 0; $day < 7; $day++) {

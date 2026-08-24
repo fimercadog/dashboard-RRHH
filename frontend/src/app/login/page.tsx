@@ -2,6 +2,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+const demoUsers = [
+  ["Super Admin", "superadmin@andespeople.co"],
+  ["Admin empresa", "admin@andespeople.co"],
+  ["RRHH", "rrhh@andespeople.co"],
+  ["Supervisor", "supervisor@andespeople.co"],
+  ["Empleado", "empleado@andespeople.co"],
+];
+
 export default function LoginPage() {
   return (
     <main className="grid min-h-screen place-items-center bg-muted px-4">
@@ -13,6 +21,18 @@ export default function LoginPage() {
           <Input placeholder="Email" type="email" />
           <Input placeholder="Password" type="password" />
           <Button className="w-full">Entrar al panel</Button>
+        </div>
+        <div className="mt-8 rounded-2xl bg-muted p-4">
+          <p className="text-sm font-semibold text-navy">Usuarios demo</p>
+          <p className="mt-1 text-xs text-muted-foreground">Password para todos: password</p>
+          <div className="mt-4 space-y-2">
+            {demoUsers.map(([role, email]) => (
+              <div key={email} className="rounded-xl bg-white px-3 py-2 text-xs">
+                <p className="font-medium text-navy">{role}</p>
+                <p className="text-muted-foreground">{email}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </main>
