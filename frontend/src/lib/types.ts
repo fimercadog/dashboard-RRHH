@@ -55,5 +55,6 @@ export type AppUser = {
   email: string;
   status: string;
   employee?: Employee;
+  role?: string;
   roles: string[];
 };

@@ -19,7 +19,7 @@ class UserController extends BaseCrudController
     public function store(Request $request, AuditService $audit)
     {
         $temporaryPassword = null;
-        $payload = $request->except('password');
+        $payload = $request->except(['password', 'role']);
 
         if ($request->filled('password')) {
             $payload['password'] = $request->input('password');
@@ -29,7 +29,13 @@ class UserController extends BaseCrudController
         }
 
         $payload['company_id'] ??= $this->companyId($request);
-        $user = User::create($payload)->load($this->with);
+        $user = User::create($payload);
+
+        if ($request->filled('role')) {
+            $user->syncRoles([$request->input('role')]);
+        }
+
+        $user->load($this->with);
         $audit->record('created', $user, $request);
 
         $response = (new UserResource($user))->response()->setStatusCode(201);
@@ -45,12 +51,17 @@ class UserController extends BaseCrudController
         $user = User::query()->where('company_id', $this->companyId($request))->findOrFail($id);
         $oldValues = $user->getOriginal();
 
-        $payload = $request->except('password');
+        $payload = $request->except(['password', 'role']);
         if ($request->filled('password')) {
             $payload['password'] = $request->input('password');
         }
 
         $user->update($payload);
+
+        if ($request->filled('role')) {
+            $user->syncRoles([$request->input('role')]);
+        }
+
         $user->load($this->with);
         $audit->record('updated', $user, $request, $oldValues);
 
