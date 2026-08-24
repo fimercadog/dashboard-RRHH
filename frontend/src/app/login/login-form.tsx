@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,11 @@ export function LoginForm({
       <form className="mt-6 space-y-4" onSubmit={submit}>
         <Input placeholder="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
         <Input placeholder="Password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
+        <div className="text-right">
+          <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
         {error ? (
           <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
             <AlertCircle className="h-4 w-4" /> {error}
