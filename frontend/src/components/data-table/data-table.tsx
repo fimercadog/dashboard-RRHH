@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import {
-  createCoreRowModel,
   flexRender,
-  useTable,
+  getCoreRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
 import { Download, FileText, RefreshCw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,12 +35,12 @@ export function DataTable<TData>({
   onPageChange,
   exportBaseUrl,
 }: DataTableProps<TData>) {
-  const table = useTable({
+  const table = useReactTable({
     data: data?.data ?? [],
-    columns: columns as unknown as Parameters<typeof useTable>[0]["columns"],
-    getCoreRowModel: createCoreRowModel(),
+    columns: columns as unknown as Parameters<typeof useReactTable>[0]["columns"],
+    getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-  } as unknown as Parameters<typeof useTable>[0]);
+  });
 
   const exportQuery = new URLSearchParams({ search }).toString();
 
