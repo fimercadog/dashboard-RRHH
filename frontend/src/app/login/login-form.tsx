@@ -6,6 +6,7 @@ import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
+import { AuthUser, storeAuthSession } from "@/lib/auth";
 
 const demoUsers = [
   ["Super Admin", "superadmin@andespeople.co"],
@@ -17,12 +18,7 @@ const demoUsers = [
 
 type LoginResponse = {
   token: string;
-  user: {
-    name: string;
-    email: string;
-    roles: string[];
-    permissions: string[];
-  };
+  user: AuthUser;
 };
 
 export function LoginForm({
@@ -47,8 +43,7 @@ export function LoginForm({
 
     try {
       const response = await api.post<LoginResponse>("/auth/login", { email: selectedEmail, password: selectedPassword });
-      window.localStorage.setItem("hrms_token", response.data.token);
-      window.localStorage.setItem("hrms_user", JSON.stringify(response.data.user));
+      storeAuthSession(response.data.token, response.data.user);
       setSuccess(`Sesion iniciada como ${response.data.user.roles.join(", ")}`);
       router.push("/app/dashboard");
     } catch {

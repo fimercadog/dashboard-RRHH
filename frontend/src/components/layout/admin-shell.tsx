@@ -1,7 +1,8 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Activity,
   BadgeCheck,
@@ -14,40 +15,54 @@ import {
   Clock3,
   FileText,
   LayoutDashboard,
+  LogOut,
   Menu,
   Moon,
   Settings,
   Shield,
   Stethoscope,
   Sun,
+  UserCircle,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
+import { api } from "@/lib/api";
+import {
+  AUTH_EXPIRED_EVENT,
+  AuthUser,
+  clearAuthSession,
+  getAuthToken,
+  hasAnyPermission,
+  updateStoredUser,
+} from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const mainNav = [
-  { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/app/empleados", label: "Empleados", icon: Users },
-  { href: "/app/asistencia", label: "Asistencia", icon: Clock3 },
-  { href: "/app/vacaciones", label: "Vacaciones", icon: CalendarDays },
-  { href: "/app/permisos", label: "Permisos", icon: BadgeCheck },
-  { href: "/app/incapacidades", label: "Incapacidades", icon: Stethoscope },
-  { href: "/app/documentos", label: "Documentos", icon: FileText },
-  { href: "/app/turnos", label: "Turnos", icon: Activity },
-  { href: "/app/reportes", label: "Reportes", icon: BarChart3 },
+  { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard, permissions: ["dashboard.view"] },
+  { href: "/app/empleados", label: "Empleados", icon: Users, permissions: ["employees.manage"] },
+  { href: "/app/asistencia", label: "Asistencia", icon: Clock3, permissions: ["attendance.manage"] },
+  { href: "/app/vacaciones", label: "Vacaciones", icon: CalendarDays, permissions: ["requests.approve"] },
+  { href: "/app/permisos", label: "Permisos", icon: BadgeCheck, permissions: ["requests.approve"] },
+  { href: "/app/incapacidades", label: "Incapacidades", icon: Stethoscope, permissions: ["requests.approve"] },
+  { href: "/app/documentos", label: "Documentos", icon: FileText, permissions: ["documents.manage"] },
+  { href: "/app/turnos", label: "Turnos", icon: Activity, permissions: ["attendance.manage"] },
+  { href: "/app/reportes", label: "Reportes", icon: BarChart3, permissions: ["reports.view"] },
   { href: "/app/ia", label: "IA para RRHH", icon: Bot },
 ];
 
 const adminNav = [
-  { href: "/app/organizacion", label: "Organizacion", icon: Building2 },
-  { href: "/app/reclutamiento", label: "Reclutamiento", icon: BriefcaseBusiness },
-  { href: "/app/auditoria", label: "Auditoria", icon: ClipboardList },
-  { href: "/app/roles", label: "Roles", icon: Shield },
-  { href: "/app/configuracion", label: "Configuracion", icon: Settings },
+  { href: "/app/organizacion", label: "Organizacion", icon: Building2, permissions: ["settings.manage"] },
+  { href: "/app/reclutamiento", label: "Reclutamiento", icon: BriefcaseBusiness, permissions: ["employees.manage"] },
+  { href: "/app/auditoria", label: "Auditoria", icon: ClipboardList, permissions: ["audit.view"] },
+  { href: "/app/usuarios", label: "Usuarios", icon: UserCircle, permissions: ["users.manage"] },
+  { href: "/app/roles", label: "Roles", icon: Shield, permissions: ["roles.manage"] },
+  { href: "/app/configuracion", label: "Configuracion", icon: Settings, permissions: ["settings.manage"] },
 ];
 
-function NavLink({ item }: { item: (typeof mainNav)[number] }) {
+type NavItem = (typeof mainNav)[number] | (typeof adminNav)[number];
+
+function NavLink({ item }: { item: NavItem }) {
   const pathname = usePathname();
   const active = pathname === item.href;
   const Icon = item.icon;
@@ -68,6 +83,65 @@ function NavLink({ item }: { item: (typeof mainNav)[number] }) {
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
+  const [user, setUser] = React.useState<AuthUser | null>(null);
+  const [checkingSession, setCheckingSession] = React.useState(true);
+
+  const logout = React.useCallback(async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // The local session should still be cleared if the token is already invalid.
+    } finally {
+      clearAuthSession();
+      router.replace("/login");
+    }
+  }, [router]);
+
+  React.useEffect(() => {
+    const storedToken = getAuthToken();
+
+    if (!storedToken) {
+      router.replace("/login");
+      return;
+    }
+
+    api
+      .get<{ user: AuthUser }>("/auth/me")
+      .then((response) => {
+        updateStoredUser(response.data.user);
+        setUser(response.data.user);
+      })
+      .catch(() => {
+        clearAuthSession();
+        router.replace("/login");
+      })
+      .finally(() => setCheckingSession(false));
+  }, [router]);
+
+  React.useEffect(() => {
+    function handleExpiredSession() {
+      clearAuthSession();
+      router.replace("/login");
+    }
+
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleExpiredSession);
+    return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleExpiredSession);
+  }, [router]);
+
+  const visibleMainNav = mainNav.filter((item) => hasAnyPermission(user, item.permissions));
+  const visibleAdminNav = adminNav.filter((item) => hasAnyPermission(user, item.permissions));
+
+  if (checkingSession && !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
+        <div className="text-center">
+          <p className="text-sm font-medium">Validando sesion</p>
+          <p className="mt-1 text-xs text-muted-foreground">Preparando el panel privado...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -79,11 +153,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <nav className="flex-1 space-y-6 overflow-y-auto p-4">
-          <div className="space-y-1">{mainNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
-          <div>
-            <p className="mb-2 px-3 text-xs font-medium uppercase text-muted-foreground">Administracion</p>
-            <div className="space-y-1">{adminNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
-          </div>
+          <div className="space-y-1">{visibleMainNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
+          {visibleAdminNav.length ? (
+            <div>
+              <p className="mb-2 px-3 text-xs font-medium uppercase text-muted-foreground">Administracion</p>
+              <div className="space-y-1">{visibleAdminNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
+            </div>
+          ) : null}
         </nav>
       </aside>
       <div className="lg:pl-72">
@@ -97,15 +173,27 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <p className="text-xs text-muted-foreground">Panel privado de Recursos Humanos</p>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Cambiar tema"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            <Sun className="h-4 w-4 dark:hidden" />
-            <Moon className="hidden h-4 w-4 dark:block" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-2 sm:flex">
+              <UserCircle className="h-4 w-4 text-primary" />
+              <div className="min-w-0">
+                <p className="truncate text-xs font-medium">{user?.name ?? "Usuario"}</p>
+                <p className="truncate text-[11px] text-muted-foreground">{user?.roles?.[0] ?? user?.email}</p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Cambiar tema"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              <Sun className="h-4 w-4 dark:hidden" />
+              <Moon className="hidden h-4 w-4 dark:block" />
+            </Button>
+            <Button variant="outline" size="icon" aria-label="Cerrar sesion" onClick={logout}>
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </header>
         <main className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-6">{children}</main>
       </div>

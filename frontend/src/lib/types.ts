@@ -40,3 +40,20 @@ export type DocumentRow = {
   expiration_date?: string;
   status: string;
 };
+
+export type Role = {
+  id: number;
+  name: string;
+  guard_name: string;
+  status: string;
+  permissions_count?: number;
+};
+
+export type AppUser = {
+  id: number;
+  name: string;
+  email: string;
+  status: string;
+  employee?: Employee;
+  roles: string[];
+};

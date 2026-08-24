@@ -8,7 +8,7 @@ import {
 import { Download, FileText, RefreshCw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PaginatedResponse } from "@/lib/api";
+import { api, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 
 type DataTableProps<TData extends object> = {
@@ -43,6 +43,21 @@ export function DataTable<TData extends object>({
 
   const exportQuery = new URLSearchParams({ search }).toString();
   const rows = table.getRowModel().rows;
+
+  async function downloadExport(format: "csv" | "pdf") {
+    if (!exportBaseUrl) return;
+
+    const response = await api.get(`${exportBaseUrl}.${format}?${exportQuery}`, { responseType: "blob" });
+    const blobUrl = window.URL.createObjectURL(response.data);
+    const link = document.createElement("a");
+
+    link.href = blobUrl;
+    link.download = `${exportBaseUrl.split("/").pop()}.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(blobUrl);
+  }
 
   function columnKey(column: AppColumnDef<TData>, index: number) {
     return String(column.id ?? column.accessorKey ?? index);
@@ -79,10 +94,10 @@ export function DataTable<TData extends object>({
         <div className="flex gap-2">
           {exportBaseUrl ? (
             <>
-              <Button variant="outline" size="sm" onClick={() => window.open(`${exportBaseUrl}.csv?${exportQuery}`, "_blank")}>
+              <Button variant="outline" size="sm" onClick={() => void downloadExport("csv")}>
                 <Download className="h-4 w-4" /> CSV
               </Button>
-              <Button variant="outline" size="sm" onClick={() => window.open(`${exportBaseUrl}.pdf?${exportQuery}`, "_blank")}>
+              <Button variant="outline" size="sm" onClick={() => void downloadExport("pdf")}>
                 <FileText className="h-4 w-4" /> PDF
               </Button>
             </>

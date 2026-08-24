@@ -12,8 +12,10 @@ use App\Http\Controllers\Api\EmployeeDocumentController;
 use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\PermissionRequestController;
 use App\Http\Controllers\Api\PositionController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\ShiftController;
 use App\Http\Controllers\Api\SickLeaveController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VacationRequestController;
 
 Route::get('/user', function (Request $request) {
@@ -24,19 +26,20 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('/dashboard', DashboardController::class);
+    Route::apiResource('employees', EmployeeController::class);
+    Route::apiResource('departments', DepartmentController::class);
+    Route::apiResource('positions', PositionController::class);
+    Route::apiResource('attendances', AttendanceController::class);
+    Route::apiResource('vacation-requests', VacationRequestController::class);
+    Route::apiResource('permission-requests', PermissionRequestController::class);
+    Route::apiResource('sick-leaves', SickLeaveController::class);
+    Route::apiResource('employee-documents', EmployeeDocumentController::class);
+    Route::apiResource('shifts', ShiftController::class);
+    Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'show']);
+    Route::apiResource('roles', RoleController::class)->only(['index', 'store', 'update']);
+    Route::apiResource('users', UserController::class)->only(['index', 'store', 'update']);
+    Route::get('/exports/{resource}.{format}', ExportController::class)
+        ->whereIn('resource', ['employees', 'attendances', 'vacation-requests', 'permission-requests', 'sick-leaves', 'employee-documents', 'audit-logs'])
+        ->whereIn('format', ['csv', 'pdf']);
 });
-
-Route::get('/dashboard', DashboardController::class);
-Route::apiResource('employees', EmployeeController::class);
-Route::apiResource('departments', DepartmentController::class);
-Route::apiResource('positions', PositionController::class);
-Route::apiResource('attendances', AttendanceController::class);
-Route::apiResource('vacation-requests', VacationRequestController::class);
-Route::apiResource('permission-requests', PermissionRequestController::class);
-Route::apiResource('sick-leaves', SickLeaveController::class);
-Route::apiResource('employee-documents', EmployeeDocumentController::class);
-Route::apiResource('shifts', ShiftController::class);
-Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'show']);
-Route::get('/exports/{resource}.{format}', ExportController::class)
-    ->whereIn('resource', ['employees', 'attendances', 'vacation-requests', 'permission-requests', 'sick-leaves', 'employee-documents', 'audit-logs'])
-    ->whereIn('format', ['csv', 'pdf']);

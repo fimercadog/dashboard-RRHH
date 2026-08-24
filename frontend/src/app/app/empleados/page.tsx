@@ -1,12 +1,12 @@
 "use client";
 
-import { Eye, UserPlus } from "lucide-react";
+import { Eye } from "lucide-react";
 import Link from "next/link";
-import { DataTable } from "@/components/data-table/data-table";
+import { CrudField } from "@/components/crud/crud-modal";
+import { ToggleStatusAction } from "@/components/crud/toggle-status-action";
+import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { AppColumnDef } from "@/lib/table-types";
-import { useApiTable } from "@/lib/use-api-table";
 import { Employee } from "@/lib/types";
 
 const columns: AppColumnDef<Employee>[] = [
@@ -16,40 +16,58 @@ const columns: AppColumnDef<Employee>[] = [
   { header: "Area", cell: ({ row }) => row.original.department?.name ?? "Sin area" },
   { header: "Cargo", cell: ({ row }) => row.original.position?.name ?? "Sin cargo" },
   { header: "Estado", cell: ({ row }) => <Badge>{row.original.employment_status}</Badge> },
+];
+
+const fields: CrudField[] = [
+  { name: "employee_code", label: "Codigo", required: true },
+  { name: "first_name", label: "Nombres", required: true },
+  { name: "last_name", label: "Apellidos", required: true },
+  { name: "identification_type", label: "Tipo de documento", required: true, placeholder: "CC" },
+  { name: "identification_number", label: "Numero de documento", required: true },
+  { name: "email", label: "Correo", type: "email" },
+  { name: "hire_date", label: "Fecha de ingreso", type: "date", required: true },
   {
-    id: "actions",
-    header: "",
-    cell: ({ row }) => (
-      <Link href={`/app/empleados/${row.original.id}`} className="inline-flex h-8 items-center gap-2 rounded-md px-2 hover:bg-muted">
-        <Eye className="h-4 w-4" /> Ver
-      </Link>
-    ),
+    name: "employment_status",
+    label: "Estado",
+    type: "select",
+    required: true,
+    options: [
+      { label: "Activo", value: "active" },
+      { label: "Inactivo", value: "inactive" },
+      { label: "Terminado", value: "terminated" },
+      { label: "En licencia", value: "on_leave" },
+    ],
   },
+  { name: "department_id", label: "ID area", type: "number" },
+  { name: "position_id", label: "ID cargo", type: "number" },
+  { name: "salary", label: "Salario", type: "number" },
 ];
 
 export default function EmployeesPage() {
-  const table = useApiTable<Employee>("/employees");
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Empleados</h1>
-          <p className="text-sm text-muted-foreground">Listado central con busqueda, paginacion backend y exportaciones.</p>
-        </div>
-        <Button><UserPlus className="h-4 w-4" /> Nuevo empleado</Button>
-      </div>
-      <DataTable
-        columns={columns}
-        exportBaseUrl={`${process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8001/api"}/exports/employees`}
-        data={table.data}
-        search={table.search}
-        onSearchChange={table.setSearch}
-        page={table.page}
-        onPageChange={table.setPage}
-        loading={table.loading}
-        error={table.error}
-      />
-    </div>
+    <ModuleTablePage
+      title="Empleados"
+      description="Listado central con busqueda, paginacion backend y exportaciones."
+      resource="/employees"
+      exportResource="employees"
+      columns={columns}
+      fields={fields}
+      actionLabel="Nuevo empleado"
+      modalDescription="Captura la informacion basica del colaborador. Los catalogos por ID se refinan luego con selects conectados."
+      extraRowActions={(row, refresh) => (
+        <>
+          <Link href={`/app/empleados/${row.id}`} className="inline-flex h-8 items-center gap-2 rounded-md px-2 text-sm hover:bg-muted">
+            <Eye className="h-4 w-4" /> Ver
+          </Link>
+          <ToggleStatusAction
+            resource="/employees"
+            id={row.id}
+            active={row.employment_status === "active"}
+            refresh={refresh}
+            field="employment_status"
+          />
+        </>
+      )}
+    />
   );
 }

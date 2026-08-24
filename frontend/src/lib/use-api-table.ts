@@ -7,6 +7,7 @@ export function useApiTable<T>(resource: string) {
   const [data, setData] = React.useState<PaginatedResponse<T>>();
   const [search, setSearch] = React.useState("");
   const [page, setPage] = React.useState(1);
+  const [refreshKey, setRefreshKey] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -27,7 +28,7 @@ export function useApiTable<T>(resource: string) {
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-  }, [resource, page, search]);
+  }, [resource, page, search, refreshKey]);
 
-  return { data, search, setSearch, page, setPage, loading, error };
+  return { data, search, setSearch, page, setPage, loading, error, refresh: () => setRefreshKey((key) => key + 1) };
 }
