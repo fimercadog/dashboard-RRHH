@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -12,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { PaginatedResponse } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 
-type DataTableProps<TData> = {
+type DataTableProps<TData extends object> = {
   columns: AppColumnDef<TData>[];
   data?: PaginatedResponse<TData>;
   loading?: boolean;
@@ -24,7 +23,7 @@ type DataTableProps<TData> = {
   exportBaseUrl?: string;
 };
 
-export function DataTable<TData>({
+export function DataTable<TData extends object>({
   columns,
   data,
   loading,
@@ -35,14 +34,40 @@ export function DataTable<TData>({
   onPageChange,
   exportBaseUrl,
 }: DataTableProps<TData>) {
-  const table = useReactTable({
+  const table = useReactTable<TData>({
     data: data?.data ?? [],
-    columns: columns as unknown as Parameters<typeof useReactTable>[0]["columns"],
+    columns: columns as Parameters<typeof useReactTable<TData>>[0]["columns"],
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
   });
 
   const exportQuery = new URLSearchParams({ search }).toString();
+  const rows = table.getRowModel().rows;
+
+  function columnKey(column: AppColumnDef<TData>, index: number) {
+    return String(column.id ?? column.accessorKey ?? index);
+  }
+
+  function renderHeader(column: AppColumnDef<TData>): React.ReactNode {
+    if (typeof column.header === "function") {
+      return column.header({});
+    }
+
+    return column.header ?? (column.accessorKey ? String(column.accessorKey) : "");
+  }
+
+  function renderCell(column: AppColumnDef<TData>, row: TData): React.ReactNode {
+    if (column.cell) {
+      return column.cell({ row: { original: row } });
+    }
+
+    if (!column.accessorKey) {
+      return null;
+    }
+
+    const value = row[column.accessorKey as keyof TData];
+    return value == null ? "" : String(value);
+  }
 
   return (
     <div className="space-y-4">
@@ -69,15 +94,13 @@ export function DataTable<TData>({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-sm">
             <thead className="bg-muted text-left text-muted-foreground">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th key={header.id} className="px-4 py-3 font-medium">
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
+              <tr>
+                {columns.map((column, index) => (
+                  <th key={columnKey(column, index)} className="px-4 py-3 font-medium">
+                    {renderHeader(column)}
+                  </th>
+                ))}
+              </tr>
             </thead>
             <tbody>
               {loading ? (
@@ -90,12 +113,12 @@ export function DataTable<TData>({
                 <tr>
                   <td className="px-4 py-10 text-center text-destructive" colSpan={columns.length}>{error}</td>
                 </tr>
-              ) : table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
+              ) : rows.length ? (
+                rows.map((row) => (
                   <tr key={row.id} className="border-t border-border">
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-4 py-3 align-middle">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {columns.map((column, index) => (
+                      <td key={`${row.id}-${columnKey(column, index)}`} className="px-4 py-3 align-middle">
+                        {renderCell(column, row.original)}
                       </td>
                     ))}
                   </tr>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AppColumnDef } from "@/lib/table-types";
 import { useApiTable } from "@/lib/use-api-table";
 
-type ModuleTablePageProps<T> = {
+type ModuleTablePageProps<T extends object> = {
   title: string;
   description: string;
   resource: string;
@@ -14,7 +14,7 @@ type ModuleTablePageProps<T> = {
   actionLabel?: string;
 };
 
-export function ModuleTablePage<T>({ title, description, resource, exportResource, columns, actionLabel }: ModuleTablePageProps<T>) {
+export function ModuleTablePage<T extends object>({ title, description, resource, exportResource, columns, actionLabel }: ModuleTablePageProps<T>) {
   const table = useApiTable<T>(resource);
 
   return (
