@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,22 +25,28 @@ type LoginResponse = {
   };
 };
 
-export function LoginForm() {
+export function LoginForm({
+  initialEmail = "admin@andespeople.co",
+  autoLogin = false,
+}: {
+  initialEmail?: string;
+  autoLogin?: boolean;
+}) {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@andespeople.co");
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("password");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const autoLoginStarted = useRef(false);
 
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const login = useCallback(async (selectedEmail = email, selectedPassword = password) => {
     setLoading(true);
     setError("");
     setSuccess("");
 
     try {
-      const response = await api.post<LoginResponse>("/auth/login", { email, password });
+      const response = await api.post<LoginResponse>("/auth/login", { email: selectedEmail, password: selectedPassword });
       window.localStorage.setItem("hrms_token", response.data.token);
       window.localStorage.setItem("hrms_user", JSON.stringify(response.data.user));
       setSuccess(`Sesion iniciada como ${response.data.user.roles.join(", ")}`);
@@ -50,6 +56,17 @@ export function LoginForm() {
     } finally {
       setLoading(false);
     }
+  }, [email, password, router]);
+
+  useEffect(() => {
+    if (!autoLogin || autoLoginStarted.current) return;
+    autoLoginStarted.current = true;
+    void login(initialEmail, "password");
+  }, [autoLogin, initialEmail, login]);
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await login();
   }
 
   return (
