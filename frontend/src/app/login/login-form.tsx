@@ -84,20 +84,20 @@ export function LoginForm({
         </Button>
       </form>
       <div className="mt-8 rounded-2xl bg-muted p-4">
-        <p className="text-sm font-semibold text-navy">Usuarios demo</p>
+        <p className="text-sm font-semibold text-foreground">Usuarios demo</p>
         <p className="mt-1 text-xs text-muted-foreground">Password para todos: password</p>
         <div className="mt-4 space-y-2">
           {demoUsers.map(([role, userEmail]) => (
             <button
               key={userEmail}
               type="button"
-              className="w-full rounded-xl bg-white px-3 py-2 text-left text-xs transition hover:bg-accent"
+              className="w-full rounded-xl bg-card px-3 py-2 text-left text-xs transition hover:bg-accent"
               onClick={() => {
                 setEmail(userEmail);
                 setPassword("password");
               }}
             >
-              <p className="font-medium text-navy">{role}</p>
+              <p className="font-medium text-foreground">{role}</p>
               <p className="text-muted-foreground">{userEmail}</p>
             </button>
           ))}
