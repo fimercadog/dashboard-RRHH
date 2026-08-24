@@ -7,6 +7,17 @@ export const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = window.localStorage.getItem("hrms_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
+  return config;
+});
+
 export type PaginatedResponse<T> = {
   data: T[];
   links: Record<string, string | null>;
