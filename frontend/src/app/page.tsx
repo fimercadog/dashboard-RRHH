@@ -1,20 +1,79 @@
 import Link from "next/link";
+import { ArrowRight, CheckCircle2, PlayCircle } from "lucide-react";
+import { AIChatPreview } from "@/components/marketing/ai-chat-preview";
+import { CTASection } from "@/components/marketing/cta-section";
+import { DashboardPreview } from "@/components/marketing/dashboard-preview";
+import { FeatureGrid } from "@/components/marketing/feature-grid";
+import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { ProblemSolution } from "@/components/marketing/problem-solution";
+import { Reveal } from "@/components/marketing/reveal";
+import { SectionHeading } from "@/components/marketing/section-heading";
+import { trustItems } from "@/components/marketing/marketing-data";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
-      <section className="mx-auto flex min-h-[80vh] max-w-4xl flex-col justify-center gap-6">
-        <p className="text-sm font-medium text-primary">FidelOS HRMS</p>
-        <h1 className="max-w-2xl text-4xl font-semibold leading-tight">
-          Plataforma privada de Recursos Humanos para operar talento, asistencia y solicitudes.
-        </h1>
-        <p className="max-w-2xl text-muted-foreground">
-          La web publica se mantiene separada de la experiencia administrativa. El sistema privado vive en /app.
-        </p>
-        <Link className="inline-flex h-11 w-fit items-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground" href="/app/dashboard">
-          Entrar al panel
-        </Link>
-      </section>
-    </main>
+    <MarketingLayout>
+      <main>
+        <section className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#eef4ff_100%)] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <div className="absolute left-1/2 top-16 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+          <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_0.95fr] lg:items-center">
+            <Reveal>
+              <div>
+                <div className="mb-6 flex flex-wrap gap-2">
+                  {["Facil de usar", "Seguro", "Para PYMES"].map((item) => (
+                    <span key={item} className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1 text-xs font-medium text-navy">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-success" /> {item}
+                    </span>
+                  ))}
+                </div>
+                <h1 className="max-w-3xl text-5xl font-semibold leading-[1.04] tracking-tight text-navy sm:text-6xl">
+                  Gestiona tu equipo desde un solo lugar
+                </h1>
+                <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+                  Empleados, asistencia, documentos, vacaciones, permisos y reclutamiento en una sola plataforma.
+                </p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <Link className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-lg shadow-primary/20" href="/demo">
+                    Solicitar demo <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white px-6 text-sm font-semibold text-navy" href="/producto">
+                    <PlayCircle className="h-4 w-4" /> Ver como funciona
+                  </Link>
+                </div>
+                <div className="mt-10 grid max-w-lg grid-cols-3 gap-3">
+                  {trustItems.map((item) => {
+                    const Icon = item.icon;
+                    return <div key={item.label} className="rounded-2xl bg-white p-4 text-sm font-medium text-navy shadow-sm"><Icon className="mb-2 h-5 w-5 text-primary" />{item.label}</div>;
+                  })}
+                </div>
+              </div>
+            </Reveal>
+            <Reveal>
+              <DashboardPreview />
+            </Reveal>
+          </div>
+        </section>
+        <FeatureGrid />
+        <ProblemSolution />
+        <section className="bg-white px-4 py-24 sm:px-6 lg:px-8">
+          <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
+            <Reveal>
+              <div>
+                <SectionHeading align="left" eyebrow="IA premium" title="Tu asistente de Recursos Humanos disponible 24/7" description="Una experiencia conversacional para consultas frecuentes, solicitudes, politicas internas, certificados y vacaciones." />
+                <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                  {["pedir certificado laboral", "consultar turnos", "consultar politicas", "generar solicitudes"].map((item) => (
+                    <div key={item} className="rounded-2xl border border-border bg-white p-4 text-sm font-medium text-navy">{item}</div>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+            <Reveal>
+              <AIChatPreview />
+            </Reveal>
+          </div>
+        </section>
+        <CTASection />
+      </main>
+    </MarketingLayout>
   );
 }

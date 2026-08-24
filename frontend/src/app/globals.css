@@ -1,17 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f8fb;
-  --foreground: #172026;
+  --background: #f6f8fc;
+  --foreground: #0b1633;
   --card: #ffffff;
-  --card-foreground: #172026;
-  --primary: #0f766e;
+  --card-foreground: #0b1633;
+  --primary: #2563ff;
   --primary-foreground: #ffffff;
-  --muted: #eef2f4;
-  --muted-foreground: #667985;
-  --border: #dbe4e8;
-  --accent: #e8f6f3;
+  --muted: #eef3fb;
+  --muted-foreground: #5f6f89;
+  --border: #d9e2ef;
+  --accent: #eaf1ff;
   --destructive: #b42318;
+  --navy: #071632;
+  --success: #11a36a;
+  --warning: #f59e0b;
+  --marketing-shadow: 0 24px 70px rgb(16 35 80 / 13%);
 }
 
 @theme inline {
@@ -26,6 +30,9 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-destructive: var(--destructive);
+  --color-navy: var(--navy);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -50,6 +57,10 @@ body {
 }
 
 button, input, select { font: inherit; }
+
+html {
+  scroll-behavior: smooth;
+}
 
 *:focus-visible {
   outline: 2px solid var(--primary);

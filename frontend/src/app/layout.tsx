@@ -13,8 +13,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FidelOS HRMS",
-  description: "Plataforma administrativa de recursos humanos",
+  metadataBase: new URL("https://fidelos-hrms.local"),
+  title: {
+    default: "FidelOS HRMS | Software de Recursos Humanos para empresas",
+    template: "%s | FidelOS HRMS",
+  },
+  description: "Centraliza empleados, asistencia, vacaciones, documentos, turnos, reclutamiento, reportes e IA para Recursos Humanos.",
+  openGraph: {
+    title: "FidelOS HRMS",
+    description: "Software moderno de Recursos Humanos para empresas.",
+    type: "website",
+    locale: "es_CO",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
