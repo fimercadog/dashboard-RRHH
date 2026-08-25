@@ -48,8 +48,8 @@ export function MarketingHeader() {
           ))}
         </nav>
         <div className="hidden items-center gap-3 lg:flex">
-          <Link className="inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium text-navy hover:bg-muted" href="/login">Iniciar sesion</Link>
-          <Link className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-white hover:opacity-90" href="/demo">Solicitar demo</Link>
+          <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm font-medium text-navy hover:bg-muted" href="/login">Iniciar sesion</Link>
+          <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-white hover:opacity-90" href="/demo">Solicitar demo</Link>
         </div>
         <Button className="lg:hidden" variant="outline" size="icon" onClick={() => setOpen(!open)} aria-label="Abrir menu">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -64,7 +64,7 @@ export function MarketingHeader() {
           ))}
           <div className="mt-3 grid gap-2">
             <Link className="rounded-xl border border-border px-3 py-3 text-center text-sm font-medium" href="/login">Iniciar sesion</Link>
-            <Link className="rounded-xl bg-primary px-3 py-3 text-center text-sm font-medium text-white" href="/demo">Solicitar demo</Link>
+            <Link className="whitespace-nowrap rounded-xl bg-primary px-3 py-3 text-center text-sm font-medium text-white" href="/demo">Solicitar demo</Link>
           </div>
         </div>
       ) : null}

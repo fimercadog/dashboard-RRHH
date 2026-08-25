@@ -33,7 +33,7 @@ export default function Home() {
                   Empleados, asistencia, documentos, vacaciones, permisos y reclutamiento en una sola plataforma.
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Link className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-lg shadow-primary/20" href="/demo">
+                  <Link className="inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-lg shadow-primary/20" href="/demo">
                     Solicitar demo <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white px-6 text-sm font-semibold text-navy" href="/producto">

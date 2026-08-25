@@ -25,7 +25,7 @@ export default function PricingPage() {
                 <div className="mt-8 space-y-3">
                   {plan.features.map((feature) => <p key={feature} className="flex items-center gap-3 text-sm text-navy"><CheckCircle2 className="h-5 w-5 text-success" /> {feature}</p>)}
                 </div>
-                <Link href="/demo" className="mt-8 inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary text-sm font-semibold text-white">Solicitar demo</Link>
+                <Link href="/demo" className="mt-8 inline-flex h-11 w-full items-center justify-center whitespace-nowrap rounded-xl bg-primary text-sm font-semibold text-white">Solicitar demo</Link>
               </div>
             </Reveal>
           ))}
