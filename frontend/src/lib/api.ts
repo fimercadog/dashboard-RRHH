@@ -2,7 +2,7 @@ import axios from "axios";
 import { AUTH_EXPIRED_EVENT, getAuthToken } from "@/lib/auth";
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8001/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "/api",
   headers: {
     Accept: "application/json",
   },
