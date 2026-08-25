@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 export function CTASection() {
   return (
     <section className="px-4 py-20 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-navy px-6 py-14 text-white shadow-[var(--marketing-shadow)] sm:px-10 lg:px-14">
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-4xl bg-navy px-6 py-14 text-white shadow-(--marketing-shadow) sm:px-10 lg:px-14">
         <div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr] lg:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Gestion completa de personas</p>

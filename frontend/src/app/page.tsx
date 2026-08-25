@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <MarketingLayout>
       <main>
-        <section className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#eef4ff_100%)] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <section className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#fbe9f0_100%)] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="absolute left-1/2 top-16 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
           <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_0.95fr] lg:items-center">
             <Reveal>

@@ -18,7 +18,7 @@ export default function BlogPage() {
         <div className="mx-auto mt-12 grid max-w-7xl gap-6 md:grid-cols-2 lg:grid-cols-3">
           {blogPosts.map((post) => (
             <Reveal key={post.slug}>
-              <Link href={`/blog/${post.slug}`} className="block h-full rounded-[2rem] border border-border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-[var(--marketing-shadow)]">
+              <Link href={`/blog/${post.slug}`} className="block h-full rounded-4xl border border-border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-(--marketing-shadow)">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{post.category}</p>
                 <h2 className="mt-4 text-xl font-semibold text-navy">{post.title}</h2>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">{post.excerpt}</p>

@@ -6,7 +6,7 @@ export function MarketingFooter() {
     <footer className="bg-navy text-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4 lg:px-8">
         <div>
-          <p className="text-lg font-bold">FidelOS HRMS</p>
+          <p className="text-lg font-bold">DAG Talento Humano</p>
           <p className="mt-3 text-sm leading-6 text-white/70">More than recruitment. Complete people management para empresas que quieren ordenar RRHH sin hacerlo pesado.</p>
         </div>
         <div>
@@ -26,7 +26,7 @@ export function MarketingFooter() {
           </div>
         </div>
       </div>
-      <div className="border-t border-white/10 py-5 text-center text-xs text-white/60">© 2026 FidelOS HRMS. Sitio publico y plataforma privada separados.</div>
+      <div className="border-t border-white/10 py-5 text-center text-xs text-white/60">© 2026 DAG Talento Humano. Sitio publico y plataforma privada separados.</div>
     </footer>
   );
 }

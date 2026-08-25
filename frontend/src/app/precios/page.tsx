@@ -18,7 +18,7 @@ export default function PricingPage() {
         <div className="mx-auto mt-12 grid max-w-7xl gap-6 lg:grid-cols-3">
           {plans.map((plan) => (
             <Reveal key={plan.name}>
-              <div className="relative h-full rounded-[2rem] border border-border bg-white p-8 shadow-sm">
+              <div className="relative h-full rounded-4xl border border-border bg-white p-8 shadow-sm">
                 {plan.badge ? <span className="absolute right-6 top-6 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">{plan.badge}</span> : null}
                 <h2 className="text-2xl font-semibold text-navy">{plan.name}</h2>
                 <p className="mt-3 text-sm text-muted-foreground">Precio a definir segun numero de empleados y alcance.</p>

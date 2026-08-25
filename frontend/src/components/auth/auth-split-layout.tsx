@@ -7,7 +7,7 @@ export function AuthSplitLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
       <main className="grid min-h-screen lg:grid-cols-2">
-        <section className="relative hidden overflow-hidden bg-[linear-gradient(160deg,#eef4ff_0%,#dbe7ff_100%)] px-12 py-16 lg:flex lg:flex-col lg:justify-center">
+        <section className="relative hidden overflow-hidden bg-[linear-gradient(160deg,#fbe9f0_0%,#f0c9da_100%)] px-12 py-16 lg:flex lg:flex-col lg:justify-center">
           <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
           <div className="absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
           <div className="relative max-w-lg">

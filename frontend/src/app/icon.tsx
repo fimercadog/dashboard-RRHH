@@ -13,7 +13,7 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#2563ff",
+          background: "#a3175a",
           borderRadius: 8,
           color: "#ffffff",
           fontSize: 22,
@@ -21,7 +21,7 @@ export default function Icon() {
           fontFamily: "sans-serif",
         }}
       >
-        F
+        D
       </div>
     ),
     size,

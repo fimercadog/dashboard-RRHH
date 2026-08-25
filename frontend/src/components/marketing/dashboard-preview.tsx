@@ -9,8 +9,8 @@ const metrics: Array<[string, string, LucideIcon]> = [
 
 export function DashboardPreview() {
   return (
-    <div className="relative rounded-[2rem] border border-white/70 bg-white p-4 shadow-[var(--marketing-shadow)]">
-      <div className="rounded-[1.5rem] bg-[#f7faff] p-4">
+    <div className="relative rounded-4xl border border-white/70 bg-white p-4 shadow-(--marketing-shadow)">
+      <div className="rounded-3xl bg-[#fdf6f8] p-4">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase text-primary">Dashboard RRHH</p>

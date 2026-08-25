@@ -9,7 +9,7 @@ const messages = [
 
 export function AIChatPreview() {
   return (
-    <div className="rounded-[2rem] border border-border bg-white p-5 shadow-[var(--marketing-shadow)]">
+    <div className="rounded-4xl border border-border bg-white p-5 shadow-(--marketing-shadow)">
       <div className="mb-5 flex items-center gap-3 border-b border-border pb-4">
         <div className="grid h-11 w-11 place-items-center rounded-full bg-success/10 text-success"><MessageCircle className="h-5 w-5" /></div>
         <div>

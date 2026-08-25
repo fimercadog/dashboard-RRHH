@@ -9,7 +9,7 @@ const markSizes = {
 export function LogoMark({ size = "md", className }: { size?: keyof typeof markSizes; className?: string }) {
   return (
     <span className={cn("grid place-items-center bg-primary font-bold text-primary-foreground", markSizes[size], className)}>
-      F
+      D
     </span>
   );
 }
@@ -27,7 +27,7 @@ export function Logo({
     <span className={cn("flex items-center gap-3", className)}>
       <LogoMark size={size} />
       <span>
-        <span className="block text-base font-bold text-foreground">FidelOS HRMS</span>
+        <span className="block text-base font-bold text-foreground">DAG Talento Humano</span>
         {tagline ? <span className="block text-xs text-muted-foreground">{tagline}</span> : null}
       </span>
     </span>

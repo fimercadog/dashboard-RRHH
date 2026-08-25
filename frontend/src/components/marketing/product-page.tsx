@@ -17,7 +17,7 @@ export function ProductPage({ eyebrow, title, description, bullets, children }: 
   return (
     <MarketingLayout>
       <main>
-        <section className="bg-[linear-gradient(180deg,#ffffff_0%,#eef4ff_100%)] px-4 py-20 sm:px-6 lg:px-8">
+        <section className="bg-[linear-gradient(180deg,#ffffff_0%,#fbe9f0_100%)] px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <Reveal>
               <div>

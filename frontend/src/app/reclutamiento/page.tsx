@@ -10,9 +10,9 @@ export default function RecruitingPage() {
   return (
     <MarketingLayout>
       <main>
-        <section className="bg-[linear-gradient(180deg,#ffffff_0%,#eef4ff_100%)] px-4 py-20 sm:px-6 lg:px-8">
+        <section className="bg-[linear-gradient(180deg,#ffffff_0%,#fbe9f0_100%)] px-4 py-20 sm:px-6 lg:px-8">
           <Reveal><SectionHeading eyebrow="Reclutamiento" title="Pipeline visual para contratar sin perder candidatos" description="Reclutamiento es un modulo del sistema completo, no el producto entero. Organiza vacantes, candidatos, entrevistas y decisiones." /></Reveal>
-          <div className="mx-auto mt-12 max-w-7xl rounded-[2rem] border border-border bg-white p-6 shadow-[var(--marketing-shadow)]">
+          <div className="mx-auto mt-12 max-w-7xl rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
             <div className="grid gap-4 lg:grid-cols-5">
               {stages.map((stage, index) => (
                 <div key={stage} className="rounded-3xl bg-muted p-4">

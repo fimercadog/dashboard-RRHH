@@ -24,7 +24,7 @@ export default function SolutionsPage() {
               const Icon = solution.icon;
               return (
                 <Reveal key={solution.id}>
-                  <article id={solution.id} className="rounded-[2rem] border border-border bg-white p-8 shadow-sm">
+                  <article id={solution.id} className="rounded-4xl border border-border bg-white p-8 shadow-sm">
                     <Icon className="mb-6 h-10 w-10 text-primary" />
                     <h2 className="text-2xl font-semibold text-navy">{solution.title}</h2>
                     <p className="mt-4 text-muted-foreground">{solution.description}</p>

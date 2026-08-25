@@ -13,7 +13,7 @@ function Dropdown({ label, items }: { label: string; items: string[][] }) {
       <button className="flex h-10 items-center gap-1 text-sm font-medium text-navy">
         {label} <ChevronDown className="h-4 w-4" />
       </button>
-      <div className="invisible absolute left-0 top-10 z-40 w-72 translate-y-2 rounded-2xl border border-border bg-white p-3 opacity-0 shadow-[var(--marketing-shadow)] transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+      <div className="invisible absolute left-0 top-10 z-40 w-72 translate-y-2 rounded-2xl border border-border bg-white p-3 opacity-0 shadow-(--marketing-shadow) transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
         {items.map(([itemLabel, href]) => (
           <Link key={href} href={href} className="block rounded-xl px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-navy">
             {itemLabel}
@@ -38,7 +38,7 @@ export function MarketingHeader() {
     <header className="sticky top-0 z-50 border-b border-border/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/">
-          <Logo tagline="People management SaaS" />
+          <Logo tagline="Conectamos personas, potenciamos talentos" />
         </Link>
         <nav className="hidden items-center gap-6 lg:flex">
           <Dropdown label="Producto" items={navProduct} />

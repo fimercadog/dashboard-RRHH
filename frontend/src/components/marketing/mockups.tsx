@@ -3,7 +3,7 @@ import { AIChatPreview } from "./ai-chat-preview";
 
 export function EmployeeProfileMockup() {
   return (
-    <div className="rounded-[2rem] border border-border bg-white p-6 shadow-[var(--marketing-shadow)]">
+    <div className="rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
       <div className="flex items-center gap-4">
         <div className="grid h-16 w-16 place-items-center rounded-2xl bg-accent text-xl font-bold text-primary">LG</div>
         <div>
@@ -24,7 +24,7 @@ export function EmployeeProfileMockup() {
 
 export function AttendanceMockup() {
   return (
-    <div className="rounded-[2rem] border border-border bg-white p-6 shadow-[var(--marketing-shadow)]">
+    <div className="rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
       <div className="grid grid-cols-4 gap-3">
         {["38 presentes", "2 ausentes", "3 tarde", "1 incapacidad"].map((item) => <div key={item} className="rounded-2xl bg-muted p-3 text-center text-xs font-semibold text-navy">{item}</div>)}
       </div>
@@ -37,7 +37,7 @@ export function AttendanceMockup() {
 
 export function VacationFlowMockup() {
   return (
-    <div className="rounded-[2rem] border border-border bg-white p-6 shadow-[var(--marketing-shadow)]">
+    <div className="rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
       {["Empleado solicita", "Jefe revisa", "Aprueba o rechaza", "RRHH queda informado", "Sistema actualiza saldo"].map((step, index) => (
         <div key={step} className="flex items-center gap-4 pb-4 last:pb-0">
           <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-sm font-bold text-white">{index + 1}</span>
@@ -50,7 +50,7 @@ export function VacationFlowMockup() {
 
 export function DocumentsMockup() {
   return (
-    <div className="rounded-[2rem] border border-border bg-white p-6 shadow-[var(--marketing-shadow)]">
+    <div className="rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
       {["Contratos", "Certificados", "Anexos", "Documentos personales", "Politicas"].map((item) => <div key={item} className="mb-3 rounded-2xl bg-muted px-4 py-3 text-sm text-navy">{item}</div>)}
       <div className="rounded-2xl bg-warning/10 px-4 py-3 text-sm font-medium text-navy">El contrato de Juan Perez vence en 17 dias.</div>
     </div>
@@ -59,7 +59,7 @@ export function DocumentsMockup() {
 
 export function ShiftsMockup() {
   return (
-    <div className="rounded-[2rem] border border-border bg-white p-6 shadow-[var(--marketing-shadow)]">
+    <div className="rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
       {["Laura | 8-5 | 8-5 | 8-5 | Libre | 8-5", "Carlos | 6-2 | 6-2 | Libre | 6-2 | 6-2", "Diana | 2-10 | Libre | 2-10 | 2-10 | 2-10"].map((row) => <div key={row} className="mb-3 rounded-2xl border border-border px-4 py-3 text-sm text-muted-foreground">{row}</div>)}
     </div>
   );
@@ -67,7 +67,7 @@ export function ShiftsMockup() {
 
 export function ReportsMockup() {
   return (
-    <div className="rounded-[2rem] border border-border bg-white p-6 shadow-[var(--marketing-shadow)]">
+    <div className="rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
       <div className="flex h-52 items-end gap-3">
         {[40, 70, 55, 85, 63, 90].map((height, index) => <div key={index} className="flex-1 rounded-t-2xl bg-primary" style={{ height: `${height}%` }} />)}
       </div>

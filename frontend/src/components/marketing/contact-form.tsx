@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 
 export function ContactForm({ demo = false }: { demo?: boolean }) {
   return (
-    <form className="rounded-[2rem] border border-border bg-white p-6 shadow-[var(--marketing-shadow)]">
+    <form className="rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
       <div className="grid gap-4 sm:grid-cols-2">
         <Input placeholder="Nombre" aria-label="Nombre" />
         <Input placeholder="Empresa" aria-label="Empresa" />

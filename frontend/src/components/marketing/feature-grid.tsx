@@ -19,7 +19,7 @@ export function FeatureGrid() {
           const Icon = feature.icon;
           return (
             <Reveal key={feature.title}>
-              <Link href={feature.href} className="group block h-full rounded-3xl border border-border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-[var(--marketing-shadow)]">
+              <Link href={feature.href} className="group block h-full rounded-3xl border border-border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-(--marketing-shadow)">
                 <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-accent text-primary">
                   <Icon className="h-6 w-6" />
                 </div>

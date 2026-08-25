@@ -107,7 +107,7 @@ export function DataTable<TData extends object>({
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-sm">
+          <table className="w-full min-w-190 text-sm">
             <thead className="bg-muted text-left text-muted-foreground">
               <tr>
                 {columns.map((column, index) => (
