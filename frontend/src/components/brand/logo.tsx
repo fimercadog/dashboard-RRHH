@@ -27,7 +27,7 @@ export function Logo({
     <span className={cn("flex items-center gap-3", className)}>
       <LogoMark size={size} />
       <span>
-        <span className="block text-base font-bold text-foreground">DAG Talento Humano</span>
+        <span className="block text-base font-bold text-foreground">DFC Talento Humano</span>
         {tagline ? <span className="block text-xs text-muted-foreground">{tagline}</span> : null}
       </span>
     </span>

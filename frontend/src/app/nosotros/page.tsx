@@ -8,7 +8,7 @@ export default function AboutPage() {
     <MarketingLayout>
       <main>
         <section className="bg-white px-4 py-20 sm:px-6 lg:px-8">
-          <Reveal><SectionHeading eyebrow="Nosotros" title="Creamos tecnologia accesible para simplificar Recursos Humanos" description="DAG Talento Humano nace para que pequenas y medianas empresas puedan digitalizar RRHH sin depender de procesos pesados, consultorias interminables o herramientas desconectadas." /></Reveal>
+          <Reveal><SectionHeading eyebrow="Nosotros" title="Creamos tecnologia accesible para simplificar Recursos Humanos" description="DFC Talento Humano nace para que pequenas y medianas empresas puedan digitalizar RRHH sin depender de procesos pesados, consultorias interminables o herramientas desconectadas." /></Reveal>
         </section>
         <section className="bg-muted px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">

@@ -1,4 +1,4 @@
-# Paleta De Colores — DAG Talento Humano
+# Paleta De Colores — DFC Talento Humano
 
 Extraida del logo de marca (grafito + magenta) y aplicada como tokens CSS en
 `frontend/src/app/globals.css`, consumidos por Tailwind via `@theme inline`.

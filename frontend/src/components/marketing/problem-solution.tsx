@@ -28,7 +28,7 @@ export function ProblemSolution() {
           </Reveal>
           <Reveal>
             <div className="rounded-3xl bg-navy p-6 text-white">
-              <p className="mb-5 text-lg font-semibold">Con DAG Talento Humano</p>
+              <p className="mb-5 text-lg font-semibold">Con DFC Talento Humano</p>
               <div className="space-y-3">
                 {after.map((item) => (
                   <div key={item} className="flex items-center gap-3 text-sm text-white/80"><CheckCircle2 className="h-5 w-5 text-success" /> {item}</div>

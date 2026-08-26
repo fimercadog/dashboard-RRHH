@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://fidelos-hrms.local"),
   title: {
-    default: "DAG Talento Humano | Software de Recursos Humanos para empresas",
-    template: "%s | DAG Talento Humano",
+    default: "DFC Talento Humano | Software de Recursos Humanos para empresas",
+    template: "%s | DFC Talento Humano",
   },
   description: "Centraliza empleados, asistencia, vacaciones, documentos, turnos, reclutamiento, reportes e IA para Recursos Humanos.",
   openGraph: {
-    title: "DAG Talento Humano",
+    title: "DFC Talento Humano",
     description: "Software moderno de Recursos Humanos para empresas.",
     type: "website",
     locale: "es_CO",

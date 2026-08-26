@@ -150,7 +150,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <div className="flex h-16 items-center gap-3 border-b border-border px-5">
           <LogoMark size="sm" />
           <div>
-            <p className="text-sm font-semibold text-foreground">DAG</p>
+            <p className="text-sm font-semibold text-foreground">DFC</p>
             <p className="text-xs text-muted-foreground">Talento Humano</p>
           </div>
         </div>
