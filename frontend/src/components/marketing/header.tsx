@@ -38,7 +38,7 @@ export function MarketingHeader() {
     <header className="sticky top-0 z-50 border-b border-border/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link className="shrink-0" href="/">
-          <Logo tagline="Conectamos personas, potenciamos talentos" />
+          <Logo />
         </Link>
         <nav className="hidden items-center gap-6 xl:flex">
           <Dropdown label="Producto" items={navProduct} />

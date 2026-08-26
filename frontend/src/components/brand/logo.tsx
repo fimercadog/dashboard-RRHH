@@ -1,35 +1,29 @@
 import { cn } from "@/lib/utils";
 
-const markSizes = {
-  sm: "h-8 w-8 rounded-xl text-sm",
-  md: "h-10 w-10 rounded-2xl text-lg",
-  lg: "h-14 w-14 rounded-2xl text-2xl",
+const heights = {
+  sm: "h-8",
+  md: "h-10",
+  lg: "h-14",
 };
 
-export function LogoMark({ size = "md", className }: { size?: keyof typeof markSizes; className?: string }) {
+export function LogoMark({ size = "md", className }: { size?: keyof typeof heights; className?: string }) {
   return (
-    <span className={cn("grid place-items-center bg-primary font-bold text-primary-foreground", markSizes[size], className)}>
-      D
+    <span className={cn("inline-flex shrink-0 items-center justify-center rounded-xl bg-white p-1", heights[size], "aspect-square", className)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/logo-mark.png" alt="DFC Talento Humano" className="h-full w-full object-contain" />
     </span>
   );
 }
 
-export function Logo({
-  size = "md",
-  tagline,
-  className,
-}: {
-  size?: keyof typeof markSizes;
-  tagline?: string;
-  className?: string;
-}) {
+export function Logo({ size = "md", className }: { size?: keyof typeof heights; className?: string }) {
   return (
-    <span className={cn("flex items-center gap-3", className)}>
-      <LogoMark size={size} className="shrink-0" />
-      <span className="min-w-0">
-        <span className="block whitespace-nowrap text-base font-bold text-foreground">DFC Talento Humano</span>
-        {tagline ? <span className="block whitespace-nowrap text-xs text-muted-foreground">{tagline}</span> : null}
-      </span>
+    <span className={cn("inline-flex items-center rounded-2xl bg-white px-3 py-2", className)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/logo-full.png"
+        alt="DFC Talento Humano — Conectamos personas, potenciamos talentos"
+        className={cn(heights[size], "w-auto object-contain")}
+      />
     </span>
   );
 }
