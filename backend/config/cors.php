@@ -8,6 +8,7 @@ return [
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:3000'),
         'http://localhost:3000',
+        'https://dfctalentohumano.fidelmercadotech.com',
         'https://solucionesrrhh.fidelmercadotech.com',
     ],
 
