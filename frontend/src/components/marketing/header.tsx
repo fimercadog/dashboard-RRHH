@@ -37,26 +37,26 @@ export function MarketingHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/">
+        <Link className="shrink-0" href="/">
           <Logo tagline="Conectamos personas, potenciamos talentos" />
         </Link>
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden items-center gap-6 xl:flex">
           <Dropdown label="Producto" items={navProduct} />
           <Dropdown label="Soluciones" items={navSolutions} />
           {links.map(([label, href]) => (
-            <Link className="text-sm font-medium text-navy" key={href} href={href}>{label}</Link>
+            <Link className="whitespace-nowrap text-sm font-medium text-navy" key={href} href={href}>{label}</Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-3 xl:flex">
           <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm font-medium text-navy hover:bg-muted" href="/login" target="_blank" rel="noopener noreferrer">Iniciar sesion</Link>
           <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-white hover:opacity-90" href="/demo">Solicitar demo</Link>
         </div>
-        <Button className="lg:hidden" variant="outline" size="icon" onClick={() => setOpen(!open)} aria-label="Abrir menu">
+        <Button className="xl:hidden" variant="outline" size="icon" onClick={() => setOpen(!open)} aria-label="Abrir menu">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
       {open ? (
-        <div className="border-t border-border bg-white px-4 py-4 lg:hidden">
+        <div className="border-t border-border bg-white px-4 py-4 xl:hidden">
           {[...navProduct, ...navSolutions, ...links].map(([label, href]) => (
             <Link key={href} href={href} className="block rounded-xl px-3 py-3 text-sm font-medium text-navy hover:bg-accent" onClick={() => setOpen(false)}>
               {label}

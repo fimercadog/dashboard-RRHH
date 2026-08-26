@@ -25,10 +25,10 @@ export function Logo({
 }) {
   return (
     <span className={cn("flex items-center gap-3", className)}>
-      <LogoMark size={size} />
-      <span>
-        <span className="block text-base font-bold text-foreground">DFC Talento Humano</span>
-        {tagline ? <span className="block text-xs text-muted-foreground">{tagline}</span> : null}
+      <LogoMark size={size} className="shrink-0" />
+      <span className="min-w-0">
+        <span className="block whitespace-nowrap text-base font-bold text-foreground">DFC Talento Humano</span>
+        {tagline ? <span className="block whitespace-nowrap text-xs text-muted-foreground">{tagline}</span> : null}
       </span>
     </span>
   );
