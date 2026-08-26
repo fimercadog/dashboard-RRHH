@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://fidelos-hrms.local"),
+  metadataBase: new URL("https://dfctalentohumano.fidelmercadotech.com"),
   title: {
     default: "DFC Talento Humano | Software de Recursos Humanos para empresas",
     template: "%s | DFC Talento Humano",
@@ -24,6 +24,12 @@ export const metadata: Metadata = {
     description: "Software moderno de Recursos Humanos para empresas.",
     type: "website",
     locale: "es_CO",
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DFC Talento Humano",
+    description: "Software moderno de Recursos Humanos para empresas.",
   },
 };
 
