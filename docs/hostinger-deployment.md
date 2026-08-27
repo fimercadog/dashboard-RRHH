@@ -154,6 +154,83 @@ codigo en el momento del build — no se leen en tiempo de ejecucion.
 Guardar la variable no alcanza: hay que darle **"Guardar y reimplementar"**
 para que tome efecto.
 
+---
+
+## Paso posterior al despliegue — Migrar de SQLite a MySQL
+
+Esto **no fue parte del despliegue inicial**. El backend arranco en SQLite
+(pasos 1-6, arriba) y funciono bien porque en ese momento solo habia datos
+demo del seeder, nada real que perder. Cuando se decidio pasar a MySQL, se
+hizo como una migracion aparte, semanas o dias despues, sin tocar el resto
+de la configuracion ya funcionando.
+
+Si en el futuro ya hay datos reales de produccion en SQLite, **este mismo
+procedimiento no sirve tal cual** — hay que exportar/copiar filas antes de
+cambiar `DB_CONNECTION`, no solo correr `migrate:fresh` (eso borra todo).
+
+### 1. Crear la base MySQL
+
+hPanel > Sitios web > `fidelmercadotech.com` > Bases de datos > "Crear
+nueva base de datos MySQL y usuario". Guarda el nombre de base, usuario y
+contraseña que te asigne (en Hostinger suelen quedar iguales, con el
+prefijo `u<numero_de_cuenta>_`).
+
+### 2. Cambiar el `.env` del servidor
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=u910322706_rrhh
+DB_USERNAME=u910322706_rrhh
+DB_PASSWORD='la-contraseña-que-genero-hostinger'
+```
+
+(Nota la contraseña entre comillas simples en el `.env` — Laravel/phpdotenv
+las interpreta bien, pero evita problemas si la contraseña trae caracteres
+especiales como `&`.)
+
+### 3. Bug real que aparecio al migrar (y que no era de esta base en particular)
+
+`php artisan migrate` fallo con:
+
+```text
+SQLSTATE[HY000]: General error: 1005 Can't create table `employees`
+(errno: 150 "Foreign key constraint is incorrectly formed")
+```
+
+Dos migraciones del proyecto declaraban una llave foranea hacia una tabla
+que la migracion *siguiente* iba a crear (`employees.position_id ->
+positions`, `shift_assignments.shift_id -> shifts`) — mismo timestamp de
+archivo, y por orden alfabetico la tabla que referencia corria antes que la
+tabla referenciada. **SQLite nunca lo valido** (no exige que la tabla
+referenciada exista al crear la llave), por eso nadie lo noto hasta MySQL,
+que si lo exige.
+
+Se arreglo quitando esas dos lineas `->constrained()` de sus migraciones
+originales y agregando una migracion nueva
+(`2026_08_26_060000_add_deferred_foreign_keys.php`) que agrega esas dos
+llaves foraneas al final, cuando ya existen todas las tablas. Esto ya esta
+corregido en el repo — si vuelves a migrar desde cero, no deberia repetirse.
+
+### 4. Migrar y sembrar en la base nueva
+
+```bash
+cd /home/u910322706/domains/fidelmercadotech.com/dashboard-RRHH/backend
+php artisan config:clear
+php artisan migrate:fresh --force
+php artisan db:seed --force
+```
+
+`migrate:fresh` borra todo lo que hubiera en esa base antes de recrear —
+seguro aqui porque era una base nueva y vacia. **No usar `migrate:fresh`
+si ya hay datos reales que proteger.**
+
+El `database/database.sqlite` viejo se deja intacto en el servidor, sin
+usarse, como respaldo.
+
+---
+
 ## Como actualizar el backend despues de un cambio de codigo
 
 ```bash
@@ -178,3 +255,6 @@ php artisan config:clear
 3. Si da **401**: credenciales invalidas, no es un problema de conexion.
 4. Si da **419**: no aplica a este proyecto (login usa tokens Bearer, no
    CSRF de sesion).
+5. Si `php artisan migrate` falla con **errno 150** (MySQL): alguna
+   migracion nueva probablemente declara una llave foranea antes de que
+   exista la tabla referenciada — ver la seccion de MySQL arriba.
