@@ -32,7 +32,7 @@ return new class extends Migration
             $table->date('hire_date');
             $table->date('termination_date')->nullable();
             $table->string('employment_status')->default('active');
-            $table->foreignId('position_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('position_id')->nullable();
             $table->foreignId('department_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('manager_id')->nullable()->constrained('employees')->nullOnDelete();
             $table->string('contract_type')->nullable();
