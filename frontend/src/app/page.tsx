@@ -15,7 +15,10 @@ export default function Home() {
     <MarketingLayout>
       <main>
         <section className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#fbe9f0_100%)] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <div className="animate-marketing-float absolute left-1/2 top-16 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+          <div className="animate-marketing-grid pointer-events-none absolute inset-0" />
+          <div className="animate-marketing-float pointer-events-none absolute left-1/2 top-16 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
+          <div className="animate-marketing-drift pointer-events-none absolute -left-16 bottom-0 h-80 w-80 rounded-full bg-navy/10 blur-3xl" />
+          <div className="animate-marketing-pulse-glow pointer-events-none absolute right-0 top-0 h-56 w-56 rounded-full bg-success/25 blur-3xl" />
           <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_0.95fr] lg:items-center">
             <Reveal>
               <div>
@@ -29,7 +32,7 @@ export default function Home() {
                   ))}
                 </div>
                 <h1 className="max-w-3xl text-5xl font-semibold leading-[1.04] tracking-tight text-navy sm:text-6xl">
-                  Gestiona tu equipo desde un solo lugar
+                  Gestiona tu equipo desde <span className="animate-marketing-gradient-text">un solo lugar</span>
                 </h1>
                 <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
                   Empleados, asistencia, documentos, vacaciones, permisos y reclutamiento en una sola plataforma.
