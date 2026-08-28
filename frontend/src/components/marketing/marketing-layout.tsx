@@ -1,5 +1,6 @@
 import { MarketingFooter } from "./footer";
 import { MarketingHeader } from "./header";
+import { WhatsAppButton } from "./whatsapp-button";
 
 export function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export function MarketingLayout({ children }: { children: React.ReactNode }) {
       <MarketingHeader />
       {children}
       <MarketingFooter />
+      <WhatsAppButton />
     </div>
   );
 }
