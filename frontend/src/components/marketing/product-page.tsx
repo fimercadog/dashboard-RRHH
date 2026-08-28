@@ -29,7 +29,7 @@ export function ProductPage({ eyebrow, title, description, bullets, children }: 
                     <div key={bullet} className="flex items-center gap-3 text-sm font-medium text-navy"><CheckCircle2 className="h-5 w-5 text-success" /> {bullet}</div>
                   ))}
                 </div>
-                <Link href="/demo" className="mt-8 inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-xl bg-primary px-6 text-sm font-semibold text-white">
+                <Link href="/demo" className="mt-8 inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-xl bg-primary px-6 text-sm font-semibold text-white transition-transform duration-200 hover:scale-105 active:scale-95">
                   Solicitar demo <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -42,11 +42,13 @@ export function ProductPage({ eyebrow, title, description, bullets, children }: 
             <SectionHeading eyebrow="Beneficios" title="Preparado para operar hoy y escalar mañana" description="La arquitectura visual y funcional se piensa para API Laravel, multiempresa, roles, reportes e integraciones futuras." />
           </Reveal>
           <div className="mx-auto mt-12 grid max-w-7xl gap-5 md:grid-cols-3">
-            {["Reduce trabajo manual", "Mejora trazabilidad", "Da visibilidad al negocio"].map((item) => (
-              <div key={item} className="rounded-3xl border border-border bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-navy">{item}</h3>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">Una interfaz enfocada en decisiones concretas, estados claros y procesos que RRHH puede seguir sin perseguir informacion.</p>
-              </div>
+            {["Reduce trabajo manual", "Mejora trazabilidad", "Da visibilidad al negocio"].map((item, index) => (
+              <Reveal key={item} delay={index * 0.1}>
+                <div className="rounded-3xl border border-border bg-white p-6 shadow-sm transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-(--marketing-shadow)">
+                  <h3 className="text-lg font-semibold text-navy">{item}</h3>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">Una interfaz enfocada en decisiones concretas, estados claros y procesos que RRHH puede seguir sin perseguir informacion.</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </section>

@@ -11,7 +11,7 @@ function Dropdown({ label, items }: { label: string; items: string[][] }) {
   return (
     <div className="group relative">
       <button className="flex h-10 items-center gap-1 text-sm font-medium text-navy">
-        {label} <ChevronDown className="h-4 w-4" />
+        {label} <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
       </button>
       <div className="invisible absolute left-0 top-10 z-40 w-72 translate-y-2 rounded-2xl border border-border bg-white p-3 opacity-0 shadow-(--marketing-shadow) transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
         {items.map(([itemLabel, href]) => (
@@ -44,12 +44,15 @@ export function MarketingHeader() {
           <Dropdown label="Producto" items={navProduct} />
           <Dropdown label="Soluciones" items={navSolutions} />
           {links.map(([label, href]) => (
-            <Link className="whitespace-nowrap text-sm font-medium text-navy" key={href} href={href}>{label}</Link>
+            <Link className="group relative whitespace-nowrap text-sm font-medium text-navy" key={href} href={href}>
+              {label}
+              <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all duration-200 group-hover:w-full" />
+            </Link>
           ))}
         </nav>
         <div className="hidden items-center gap-3 xl:flex">
-          <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm font-medium text-navy hover:bg-muted" href="/login" target="_blank" rel="noopener noreferrer">Iniciar sesion</Link>
-          <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-white hover:opacity-90" href="/demo">Solicitar demo</Link>
+          <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm font-medium text-navy transition-colors hover:bg-muted" href="/login" target="_blank" rel="noopener noreferrer">Iniciar sesion</Link>
+          <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-white transition-transform duration-200 hover:scale-105 hover:opacity-90 active:scale-95" href="/demo">Solicitar demo</Link>
         </div>
         <Button className="xl:hidden" variant="outline" size="icon" onClick={() => setOpen(!open)} aria-label="Abrir menu">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

@@ -16,7 +16,7 @@ export function ProblemSolution() {
           </div>
         </Reveal>
         <div className="grid gap-5 md:grid-cols-2">
-          <Reveal>
+          <Reveal delay={0.1}>
             <div className="rounded-3xl border border-border bg-white p-6">
               <p className="mb-5 text-lg font-semibold text-navy">Antes</p>
               <div className="space-y-3">
@@ -26,7 +26,7 @@ export function ProblemSolution() {
               </div>
             </div>
           </Reveal>
-          <Reveal>
+          <Reveal delay={0.2}>
             <div className="rounded-3xl bg-navy p-6 text-white">
               <p className="mb-5 text-lg font-semibold">Con DFC Talento Humano</p>
               <div className="space-y-3">

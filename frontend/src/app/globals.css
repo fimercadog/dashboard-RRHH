@@ -37,6 +37,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@keyframes marketing-float {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -18px); }
+}
+
+.animate-marketing-float {
+  animation: marketing-float 6s ease-in-out infinite;
+}
+
 .dark {
   --background: #17151a;
   --foreground: #edeaec;

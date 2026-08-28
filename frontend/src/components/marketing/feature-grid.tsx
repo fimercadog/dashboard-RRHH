@@ -15,12 +15,12 @@ export function FeatureGrid() {
         />
       </Reveal>
       <div className="mx-auto mt-12 grid max-w-7xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {features.map((feature) => {
+        {features.map((feature, index) => {
           const Icon = feature.icon;
           return (
-            <Reveal key={feature.title}>
-              <Link href={feature.href} className="group block h-full rounded-3xl border border-border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-(--marketing-shadow)">
-                <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-accent text-primary">
+            <Reveal key={feature.title} delay={index * 0.08}>
+              <Link href={feature.href} className="group block h-full rounded-3xl border border-border bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1.5 hover:shadow-(--marketing-shadow)">
+                <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-accent text-primary transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
                   <Icon className="h-6 w-6" />
                 </div>
                 <h3 className="text-lg font-semibold text-navy">{feature.title}</h3>

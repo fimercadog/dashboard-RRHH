@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { Bot, MessageCircle } from "lucide-react";
 
 const messages = [
@@ -19,12 +22,19 @@ export function AIChatPreview() {
       </div>
       <div className="space-y-3">
         {messages.map(([sender, text], index) => (
-          <div key={`${sender}-${index}`} className={sender === "IA" ? "flex justify-start" : "flex justify-end"}>
+          <motion.div
+            key={`${sender}-${index}`}
+            className={sender === "IA" ? "flex justify-start" : "flex justify-end"}
+            initial={{ opacity: 0, y: 14, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.4, delay: index * 0.35, ease: "easeOut" }}
+          >
             <div className={sender === "IA" ? "max-w-[82%] rounded-2xl bg-muted px-4 py-3 text-sm text-navy" : "max-w-[82%] rounded-2xl bg-primary px-4 py-3 text-sm text-white"}>
               <p className="mb-1 flex items-center gap-1 text-[11px] font-semibold opacity-70">{sender === "IA" ? <Bot className="h-3 w-3" /> : null}{sender}</p>
               {text}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
