@@ -52,9 +52,9 @@ export function DashboardPreview() {
             <p className="text-sm font-semibold text-navy">Asistencia semanal</p>
             <p className="text-xs text-muted-foreground">Live</p>
           </div>
-          <div className="flex h-28 items-end gap-2">
+          <div className="flex h-28 gap-2">
             {[58, 72, 64, 88, 76, 66, 91].map((height, index) => (
-              <div key={index} className="flex-1 rounded-t-xl bg-primary/15">
+              <div key={index} className="flex flex-1 flex-col justify-end overflow-hidden rounded-t-xl bg-primary/15">
                 <motion.div
                   className="rounded-t-xl bg-primary"
                   initial={{ height: 0 }}
