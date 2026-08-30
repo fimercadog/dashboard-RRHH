@@ -19,17 +19,13 @@ const nextConfig: NextConfig = {
   // redeployar. Resultado: tras cada deploy sigue sirviendo HTML viejo que
   // apunta a chunks `_next/static/*` ya borrados -> 404 en JS/CSS -> pantalla
   // "This page couldn't load". Forzamos que el documento se revalide en cada
-  // carga; los assets de `_next/static` llevan hash en el nombre y se
-  // re-marcan como immutable (la ultima regla que coincide gana).
+  // carga. Se excluye `_next/` (assets con hash en el nombre, ya immutable) y
+  // `api/` para no tocar sus cabeceras propias.
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: "/:path((?!_next/|api/).*)",
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
-      },
-      {
-        source: "/_next/static/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
     ];
   },

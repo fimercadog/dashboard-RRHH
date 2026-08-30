@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "@/components/marketing/marketing-data";
 
-const baseUrl = "https://fidelos-hrms.local";
+const baseUrl = "https://dfctalentohumano.fidelmercadotech.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
@@ -22,6 +22,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/contacto",
     "/demo",
     "/login",
+    "/privacidad",
+    "/terminos",
   ];
 
   return [

@@ -18,11 +18,11 @@ export function MarketingFooter() {
           <div className="mt-3 space-y-2">{navSolutions.map(([label, href]) => <Link className="block text-sm text-white/70" key={href} href={href}>{label}</Link>)}</div>
         </div>
         <div>
-          <p className="font-semibold">Contacto</p>
-          <div className="mt-3 space-y-2 text-sm text-white/70">
-            <p>Demo comercial</p>
-            <p>Implementacion para PYMES</p>
-            <p>Integraciones futuras con WhatsApp</p>
+          <p className="font-semibold">Legal</p>
+          <div className="mt-3 space-y-2">
+            <Link className="block text-sm text-white/70" href="/privacidad">Politica de datos</Link>
+            <Link className="block text-sm text-white/70" href="/terminos">Terminos y condiciones</Link>
+            <Link className="block text-sm text-white/70" href="/contacto">Contacto</Link>
           </div>
         </div>
       </div>
