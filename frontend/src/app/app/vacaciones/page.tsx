@@ -3,13 +3,13 @@
 import { Badge } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
-import { AppColumnDef } from "@/lib/table-types";
+import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { RequestRow } from "@/lib/types";
 
 const columns: AppColumnDef<RequestRow>[] = [
   { header: "Empleado", cell: ({ row }) => row.original.employee?.full_name ?? row.original.employee?.first_name ?? "Empleado" },
-  { accessorKey: "start_date", header: "Inicio" },
-  { accessorKey: "end_date", header: "Fin" },
+  dateColumn<RequestRow>("start_date", "Inicio"),
+  dateColumn<RequestRow>("end_date", "Fin"),
   { accessorKey: "requested_days", header: "Dias" },
   { header: "Estado", cell: ({ row }) => <Badge>{row.original.status}</Badge> },
 ];
