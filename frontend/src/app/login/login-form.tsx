@@ -23,15 +23,17 @@ type LoginResponse = {
 };
 
 export function LoginForm({
-  initialEmail = "admin@andespeople.co",
+  initialEmail = "",
   autoLogin = false,
+  demoMode = false,
 }: {
   initialEmail?: string;
   autoLogin?: boolean;
+  demoMode?: boolean;
 }) {
   const router = useRouter();
   const [email, setEmail] = useState(initialEmail);
-  const [password, setPassword] = useState("password");
+  const [password, setPassword] = useState(demoMode ? "password" : "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -89,26 +91,28 @@ export function LoginForm({
           {loading ? "Entrando..." : "Entrar al panel"}
         </Button>
       </form>
-      <div className="mt-8 rounded-2xl bg-muted p-4">
-        <p className="text-sm font-semibold text-foreground">Usuarios demo</p>
-        <p className="mt-1 text-xs text-muted-foreground">Password para todos: password</p>
-        <div className="mt-4 space-y-2">
-          {demoUsers.map(([role, userEmail]) => (
-            <button
-              key={userEmail}
-              type="button"
-              className="w-full rounded-xl bg-card px-3 py-2 text-left text-xs transition hover:bg-accent"
-              onClick={() => {
-                setEmail(userEmail);
-                setPassword("password");
-              }}
-            >
-              <p className="font-medium text-foreground">{role}</p>
-              <p className="text-muted-foreground">{userEmail}</p>
-            </button>
-          ))}
+      {demoMode ? (
+        <div className="mt-8 rounded-2xl bg-muted p-4">
+          <p className="text-sm font-semibold text-foreground">Usuarios demo</p>
+          <p className="mt-1 text-xs text-muted-foreground">Password para todos: password</p>
+          <div className="mt-4 space-y-2">
+            {demoUsers.map(([role, userEmail]) => (
+              <button
+                key={userEmail}
+                type="button"
+                className="w-full rounded-xl bg-card px-3 py-2 text-left text-xs transition hover:bg-accent"
+                onClick={() => {
+                  setEmail(userEmail);
+                  setPassword("password");
+                }}
+              >
+                <p className="font-medium text-foreground">{role}</p>
+                <p className="text-muted-foreground">{userEmail}</p>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 }

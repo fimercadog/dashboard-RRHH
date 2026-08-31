@@ -15,6 +15,7 @@ import {
   Clock3,
   FileText,
   LayoutDashboard,
+  Lock,
   LogOut,
   Menu,
   Moon,
@@ -25,6 +26,7 @@ import {
   UserCircle,
   Users,
   X,
+  type LucideIcon,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
@@ -40,7 +42,15 @@ import {
 } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
-const mainNav = [
+type NavItem = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  permissions?: string[];
+  premium?: boolean;
+};
+
+const mainNav: NavItem[] = [
   { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard, permissions: ["dashboard.view"] },
   { href: "/app/empleados", label: "Empleados", icon: Users, permissions: ["employees.manage"] },
   { href: "/app/asistencia", label: "Asistencia", icon: Clock3, permissions: ["attendance.manage"] },
@@ -50,10 +60,10 @@ const mainNav = [
   { href: "/app/documentos", label: "Documentos", icon: FileText, permissions: ["documents.manage"] },
   { href: "/app/turnos", label: "Turnos", icon: Activity, permissions: ["attendance.manage"] },
   { href: "/app/reportes", label: "Reportes", icon: BarChart3, permissions: ["reports.view"] },
-  { href: "/app/ia", label: "IA para RRHH", icon: Bot },
+  { href: "/app/ia", label: "IA para RRHH", icon: Bot, premium: true },
 ];
 
-const adminNav = [
+const adminNav: NavItem[] = [
   { href: "/app/organizacion", label: "Organizacion", icon: Building2, permissions: ["settings.manage"] },
   { href: "/app/reclutamiento", label: "Reclutamiento", icon: BriefcaseBusiness, permissions: ["employees.manage"] },
   { href: "/app/auditoria", label: "Auditoria", icon: ClipboardList, permissions: ["audit.view"] },
@@ -62,12 +72,33 @@ const adminNav = [
   { href: "/app/configuracion", label: "Configuracion", icon: Settings, permissions: ["settings.manage"] },
 ];
 
-type NavItem = (typeof mainNav)[number] | (typeof adminNav)[number];
+function PremiumBadge() {
+  return (
+    <span className="ml-auto flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+      <Lock className="h-3 w-3" /> Premium
+    </span>
+  );
+}
 
 function NavLink({ item }: { item: NavItem }) {
   const pathname = usePathname();
-  const active = pathname === item.href;
   const Icon = item.icon;
+
+  if (item.premium) {
+    return (
+      <div
+        aria-disabled
+        title="Disponible en el plan Premium"
+        className="flex h-9 cursor-not-allowed items-center gap-3 rounded-md px-3 text-sm text-muted-foreground/60"
+      >
+        <Icon className="h-4 w-4" />
+        <span>{item.label}</span>
+        <PremiumBadge />
+      </div>
+    );
+  }
+
+  const active = pathname === item.href;
 
   return (
     <Link
@@ -220,7 +251,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <Menu className="h-4 w-4" />
             </Button>
             <div>
-              <p className="text-sm font-medium">Andes People Solutions</p>
+              <p className="text-sm font-medium">{user?.company?.name ?? "DFC Talento Humano"}</p>
               <p className="text-xs text-muted-foreground">Panel privado de Recursos Humanos</p>
             </div>
           </div>
