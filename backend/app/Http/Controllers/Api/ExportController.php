@@ -29,8 +29,20 @@ class ExportController extends Controller
         'audit-logs' => [AuditLog::class, ['user_id', 'action', 'module', 'entity', 'entity_id', 'created_at']],
     ];
 
+    private array $permissionByResource = [
+        'employees' => 'employees.manage',
+        'attendances' => 'attendance.manage',
+        'vacation-requests' => 'requests.approve',
+        'permission-requests' => 'requests.approve',
+        'sick-leaves' => 'requests.approve',
+        'employee-documents' => 'documents.manage',
+        'audit-logs' => 'audit.view',
+    ];
+
     public function __invoke(Request $request, string $resource, string $format, TableQueryService $tables)
     {
+        abort_unless($request->user()->can($this->permissionByResource[$resource]), 403);
+
         [$model, $columns] = $this->map[$resource];
         $query = $model::query()->where('company_id', $this->companyId($request));
         $tables->apply($request, $query, $columns, ['status' => 'status']);

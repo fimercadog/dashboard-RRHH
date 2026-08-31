@@ -1,9 +1,10 @@
 import { AuthSplitLayout } from "@/components/auth/auth-split-layout";
 import { LoginForm } from "./login-form";
 
-// Los atajos de usuarios demo solo se muestran cuando se activa explicitamente
-// (repo demo / staging). En produccion queda apagado -> no se expone Super Admin.
-const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+// Los atajos de usuarios demo se muestran por defecto (este dominio es showcase).
+// Para un despliegue con datos reales de un cliente: NEXT_PUBLIC_DEMO_MODE=false
+// y rotar las cuentas @andespeople.co en el backend.
+const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 const demoEmails: Record<string, string> = {
   superadmin: "superadmin@andespeople.co",

@@ -21,6 +21,7 @@ import {
   Moon,
   Settings,
   Shield,
+  ShieldAlert,
   Stethoscope,
   Sun,
   UserCircle,
@@ -172,6 +173,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const visibleMainNav = mainNav.filter((item) => hasAnyPermission(user, item.permissions));
   const visibleAdminNav = adminNav.filter((item) => hasAnyPermission(user, item.permissions));
 
+  // Guard por ruta: si la ruta actual corresponde a un modulo del menu y el
+  // usuario no tiene su permiso, se muestra una pantalla de acceso denegado.
+  // El backend igual responde 403; esto es UX (evita tabla rota + 403 en rojo).
+  const activeNav = [...mainNav, ...adminNav]
+    .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+    .sort((a, b) => b.href.length - a.href.length)[0];
+  const authorized = !user || !activeNav || hasAnyPermission(user, activeNav.permissions);
+
   if (checkingSession && !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
@@ -277,7 +286,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </Button>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-6">{children}</main>
+        <main className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-6">
+          {authorized ? (
+            children
+          ) : (
+            <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+              <ShieldAlert className="h-10 w-10 text-muted-foreground" />
+              <h1 className="mt-4 text-lg font-semibold">No tienes acceso a esta seccion</h1>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Tu rol no incluye los permisos necesarios. Si crees que es un error, contacta a un administrador.
+              </p>
+              <Link href="/app/dashboard" className="mt-6 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-white">
+                Ir al dashboard
+              </Link>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );

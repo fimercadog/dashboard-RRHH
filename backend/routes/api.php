@@ -27,25 +27,34 @@ Route::get('/user', function (Request $request) {
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
+
 Route::middleware('auth:sanctum')->group(function (): void {
+    // Sin permiso: cualquier usuario autenticado.
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::get('/dashboard', DashboardController::class);
-    Route::get('/reports', ReportController::class);
-    Route::get('/company', [CompanyController::class, 'show']);
-    Route::put('/company', [CompanyController::class, 'update']);
-    Route::apiResource('employees', EmployeeController::class);
-    Route::apiResource('departments', DepartmentController::class);
-    Route::apiResource('positions', PositionController::class);
-    Route::apiResource('attendances', AttendanceController::class);
-    Route::apiResource('vacation-requests', VacationRequestController::class);
-    Route::apiResource('permission-requests', PermissionRequestController::class);
-    Route::apiResource('sick-leaves', SickLeaveController::class);
-    Route::apiResource('employee-documents', EmployeeDocumentController::class);
-    Route::apiResource('shifts', ShiftController::class);
-    Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'show']);
-    Route::apiResource('roles', RoleController::class)->only(['index', 'store', 'update']);
-    Route::apiResource('users', UserController::class)->only(['index', 'store', 'update']);
+
+    // Cada recurso exige el permiso Spatie correspondiente (mismo mapa que el
+    // menu del frontend). `can:` responde 403 si el usuario no lo tiene.
+    Route::get('/dashboard', DashboardController::class)->middleware('can:dashboard.view');
+    Route::get('/reports', ReportController::class)->middleware('can:reports.view');
+
+    Route::get('/company', [CompanyController::class, 'show'])->middleware('can:settings.manage');
+    Route::put('/company', [CompanyController::class, 'update'])->middleware('can:settings.manage');
+
+    Route::apiResource('employees', EmployeeController::class)->middleware('can:employees.manage');
+    Route::apiResource('departments', DepartmentController::class)->middleware('can:settings.manage');
+    Route::apiResource('positions', PositionController::class)->middleware('can:settings.manage');
+    Route::apiResource('attendances', AttendanceController::class)->middleware('can:attendance.manage');
+    Route::apiResource('vacation-requests', VacationRequestController::class)->middleware('can:requests.approve');
+    Route::apiResource('permission-requests', PermissionRequestController::class)->middleware('can:requests.approve');
+    Route::apiResource('sick-leaves', SickLeaveController::class)->middleware('can:requests.approve');
+    Route::apiResource('employee-documents', EmployeeDocumentController::class)->middleware('can:documents.manage');
+    Route::apiResource('shifts', ShiftController::class)->middleware('can:attendance.manage');
+    Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'show'])->middleware('can:audit.view');
+    Route::apiResource('roles', RoleController::class)->only(['index', 'store', 'update'])->middleware('can:roles.manage');
+    Route::apiResource('users', UserController::class)->only(['index', 'store', 'update'])->middleware('can:users.manage');
+
+    // El permiso por recurso se valida dentro del controlador.
     Route::get('/exports/{resource}.{format}', ExportController::class)
         ->whereIn('resource', ['employees', 'attendances', 'vacation-requests', 'permission-requests', 'sick-leaves', 'employee-documents', 'audit-logs'])
         ->whereIn('format', ['csv', 'pdf']);

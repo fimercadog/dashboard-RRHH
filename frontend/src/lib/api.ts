@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AUTH_EXPIRED_EVENT, getAuthToken } from "@/lib/auth";
+import { AUTH_EXPIRED_EVENT, clearAuthSession, getAuthToken } from "@/lib/auth";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "/api",
@@ -22,6 +22,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (typeof window !== "undefined" && error.response?.status === 401) {
+      // Token invalido/expirado: se limpia ya para no repetir 401 en cada carga.
+      clearAuthSession();
       window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
     }
 

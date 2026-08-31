@@ -37,7 +37,7 @@ export default function AppSettingsPage() {
   const [saving, setSaving] = React.useState(false);
 
   React.useEffect(() => {
-    api.get<{ data: Company }>("/company").then((res) => setCompany(res.data.data));
+    api.get<{ data: Company }>("/company").then((res) => setCompany(res.data.data)).catch(() => {});
   }, []);
 
   function setField(name: keyof Company, value: string) {

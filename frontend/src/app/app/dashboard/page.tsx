@@ -30,7 +30,7 @@ export default function DashboardPage() {
   const [dashboard, setDashboard] = React.useState<DashboardData>();
 
   React.useEffect(() => {
-    api.get<DashboardData>("/dashboard").then((response) => setDashboard(response.data));
+    api.get<DashboardData>("/dashboard").then((response) => setDashboard(response.data)).catch(() => {});
   }, []);
 
   const chartData = React.useMemo(() => {

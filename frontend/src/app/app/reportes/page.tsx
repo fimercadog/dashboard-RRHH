@@ -82,7 +82,7 @@ export default function ReportsPage() {
   const [report, setReport] = React.useState<ReportData | null>(null);
 
   React.useEffect(() => {
-    api.get<ReportData>("/reports").then((res) => setReport(res.data));
+    api.get<ReportData>("/reports").then((res) => setReport(res.data)).catch(() => {});
   }, []);
 
   if (!report) {
