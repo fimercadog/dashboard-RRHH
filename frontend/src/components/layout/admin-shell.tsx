@@ -24,6 +24,7 @@ import {
   Sun,
   UserCircle,
   Users,
+  X,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
@@ -85,8 +86,15 @@ function NavLink({ item }: { item: NavItem }) {
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = React.useState<AuthUser | null>(null);
   const [checkingSession, setCheckingSession] = React.useState(true);
+  const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
+
+  // Cierra el menu movil al navegar a otra ruta.
+  React.useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
 
   const logout = React.useCallback(async () => {
     try {
@@ -144,30 +152,71 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const sidebarHeader = (
+    <div className="flex h-16 items-center gap-3 border-b border-border px-5">
+      <LogoMark size="sm" />
+      <div>
+        <p className="text-sm font-semibold text-foreground">DFC</p>
+        <p className="text-xs text-muted-foreground">Talento Humano</p>
+      </div>
+    </div>
+  );
+
+  const navBody = (
+    <nav className="flex-1 space-y-6 overflow-y-auto p-4">
+      <div className="space-y-1">{visibleMainNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
+      {visibleAdminNav.length ? (
+        <div>
+          <p className="mb-2 px-3 text-xs font-medium uppercase text-muted-foreground">Administracion</p>
+          <div className="space-y-1">{visibleAdminNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
+        </div>
+      ) : null}
+    </nav>
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-border bg-card lg:flex lg:flex-col">
-        <div className="flex h-16 items-center gap-3 border-b border-border px-5">
-          <LogoMark size="sm" />
-          <div>
-            <p className="text-sm font-semibold text-foreground">DFC</p>
-            <p className="text-xs text-muted-foreground">Talento Humano</p>
+        {sidebarHeader}
+        {navBody}
+      </aside>
+
+      {mobileNavOpen ? (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setMobileNavOpen(false)}
+            aria-hidden
+          />
+          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[82%] flex-col border-r border-border bg-card">
+            <div className="relative">
+              {sidebarHeader}
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Cerrar menu"
+                onClick={() => setMobileNavOpen(false)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            {navBody}
           </div>
         </div>
-        <nav className="flex-1 space-y-6 overflow-y-auto p-4">
-          <div className="space-y-1">{visibleMainNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
-          {visibleAdminNav.length ? (
-            <div>
-              <p className="mb-2 px-3 text-xs font-medium uppercase text-muted-foreground">Administracion</p>
-              <div className="space-y-1">{visibleAdminNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
-            </div>
-          ) : null}
-        </nav>
-      </aside>
+      ) : null}
+
       <div className="lg:pl-72">
         <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur lg:px-6">
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon" className="lg:hidden" aria-label="Abrir menu">
+            <Button
+              variant="outline"
+              size="icon"
+              className="lg:hidden"
+              aria-label="Abrir menu"
+              aria-expanded={mobileNavOpen}
+              onClick={() => setMobileNavOpen(true)}
+            >
               <Menu className="h-4 w-4" />
             </Button>
             <div>
