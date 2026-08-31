@@ -30,7 +30,7 @@ export function AuthSplitLayout({ children }: { children: React.ReactNode }) {
         <section className="flex items-center justify-center bg-background px-4 py-12 sm:px-6">
           <div className="w-full max-w-md">
             <Link href="/" className="mb-8 flex justify-center">
-              <Logo />
+              <Logo size="xl" />
             </Link>
             {children}
           </div>

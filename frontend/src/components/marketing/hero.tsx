@@ -20,7 +20,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <motion.div
-        className="absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#fbe9f0_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#fbe9f0_100%)]"
         initial={{ scale: 1.15 }}
         animate={{ scale: 1 }}
         transition={{ duration: 2, ease: "easeOut" }}

@@ -4,6 +4,7 @@ const heights = {
   sm: "h-8",
   md: "h-10",
   lg: "h-14",
+  xl: "h-16 sm:h-20",
 };
 
 export function LogoMark({ size = "md", className }: { size?: keyof typeof heights; className?: string }) {

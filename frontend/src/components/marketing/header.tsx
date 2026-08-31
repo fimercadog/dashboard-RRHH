@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { navProduct, navSolutions } from "./marketing-data";
@@ -26,6 +27,7 @@ function Dropdown({ label, items }: { label: string; items: string[][] }) {
 
 export function MarketingHeader() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const links = [
     ["Reclutamiento", "/reclutamiento"],
     ["Precios", "/precios"],
@@ -34,9 +36,14 @@ export function MarketingHeader() {
     ["Contacto", "/contacto"],
   ];
 
+  // Cierra el menu movil al cambiar de ruta.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="relative z-50 mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link className="shrink-0" href="/">
           <Logo />
         </Link>
@@ -54,12 +61,20 @@ export function MarketingHeader() {
           <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm font-medium text-navy transition-colors hover:bg-muted" href="/login" target="_blank" rel="noopener noreferrer">Iniciar sesion</Link>
           <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-white transition-transform duration-200 hover:scale-105 hover:opacity-90 active:scale-95" href="/demo">Solicitar demo</Link>
         </div>
-        <Button className="xl:hidden" variant="outline" size="icon" onClick={() => setOpen(!open)} aria-label="Abrir menu">
+        <Button
+          type="button"
+          className="xl:hidden"
+          variant="outline"
+          size="icon"
+          onClick={() => setOpen((value) => !value)}
+          aria-label={open ? "Cerrar menu" : "Abrir menu"}
+          aria-expanded={open}
+        >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
       {open ? (
-        <div className="border-t border-border bg-white px-4 py-4 xl:hidden">
+        <div className="relative z-50 border-t border-border bg-white px-4 py-4 shadow-lg xl:hidden">
           {[...navProduct, ...navSolutions, ...links].map(([label, href]) => (
             <Link key={href} href={href} className="block rounded-xl px-3 py-3 text-sm font-medium text-navy hover:bg-accent" onClick={() => setOpen(false)}>
               {label}
