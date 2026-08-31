@@ -132,7 +132,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = React.useState<AuthUser | null>(() => getStoredUser());
+  // Arranca en null: el server no tiene localStorage, sembrar el estado desde
+  // getStoredUser() en el render inicial rompe la hidratacion (React #418).
+  // El usuario cacheado se carga en el efecto, ya en cliente.
+  const [user, setUser] = React.useState<AuthUser | null>(null);
   const [checkingSession, setCheckingSession] = React.useState(true);
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
 
@@ -158,6 +161,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     if (!storedToken) {
       router.replace("/login");
       return;
+    }
+
+    // Pinta ya desde la cache (cliente), sin esperar a /auth/me.
+    const cached = getStoredUser();
+    if (cached) {
+      setUser(cached);
+      setCheckingSession(false);
     }
 
     fetchMe()
