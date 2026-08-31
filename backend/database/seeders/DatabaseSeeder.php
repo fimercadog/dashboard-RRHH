@@ -171,9 +171,12 @@ class DatabaseSeeder extends Seeder
         $statuses = ['present', 'present', 'present', 'late', 'absent'];
         for ($day = 0; $day < 7; $day++) {
             foreach ($employees as $index => $employee) {
+                // Carbon (no ->toDateString()): el cast `date` guarda "Y-m-d H:i:s";
+                // pasar el string desnudo hacia que updateOrCreate no re-encontrara
+                // la fila y reventara el unique al re-seedear.
                 Attendance::updateOrCreate([
                     'employee_id' => $employee->id,
-                    'date' => Carbon::today()->subDays($day)->toDateString(),
+                    'date' => Carbon::today()->subDays($day),
                 ], [
                     'company_id' => $company->id,
                     'status' => $statuses[($index + $day) % count($statuses)],
@@ -185,29 +188,78 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        VacationRequest::firstOrCreate(['company_id' => $company->id, 'employee_id' => $employees[4]->id, 'start_date' => Carbon::today()->addDays(12)], [
-            'end_date' => Carbon::today()->addDays(18),
-            'requested_days' => 5,
-            'reason' => 'Vacaciones familiares programadas',
-            'status' => 'pending',
-        ]);
+        // Solicitudes de vacaciones: mezcla de pendientes, aprobadas y rechazada.
+        $vacations = [
+            [4, 12, 18, 5, 'pending', 'Vacaciones familiares programadas', null],
+            [2, 5, 9, 3, 'pending', 'Dias pendientes del periodo anterior', null],
+            [11, 25, 32, 6, 'pending', 'Vacaciones de fin de ano', null],
+            [7, -30, -24, 5, 'approved', 'Descanso anual', 'Aprobada por Talento Humano'],
+            [9, -62, -58, 4, 'approved', 'Viaje personal', 'Aprobada, cubre el cargo un backup'],
+            [15, 40, 45, 4, 'approved', 'Licencia de matrimonio', 'Aprobada segun politica interna'],
+            [13, -12, -10, 2, 'rejected', 'Solicitud con menos de 15 dias de anticipacion', null],
+        ];
 
-        PermissionRequest::firstOrCreate(['company_id' => $company->id, 'employee_id' => $employees[6]->id, 'start_date' => Carbon::today()->addDays(3)], [
-            'type' => 'medical',
-            'end_date' => Carbon::today()->addDays(3),
-            'requested_days' => 1,
-            'reason' => 'Cita medica especializada',
-            'status' => 'pending',
-        ]);
+        foreach ($vacations as [$emp, $from, $to, $days, $status, $reason, $note]) {
+            VacationRequest::firstOrCreate(
+                ['company_id' => $company->id, 'employee_id' => $employees[$emp]->id, 'start_date' => Carbon::today()->addDays($from)],
+                [
+                    'end_date' => Carbon::today()->addDays($to),
+                    'requested_days' => $days,
+                    'reason' => $reason,
+                    'status' => $status,
+                    'approved_by' => $status === 'pending' ? null : $admin->id,
+                    'approved_at' => $status === 'approved' ? Carbon::today()->addDays($from)->subDays(3) : null,
+                    'rejection_reason' => $status === 'rejected' ? 'No cumple la anticipacion minima requerida.' : null,
+                ],
+            );
+        }
 
-        SickLeave::firstOrCreate(['company_id' => $company->id, 'employee_id' => $employees[18]->id], [
-            'start_date' => Carbon::today()->subDays(2),
-            'end_date' => Carbon::today()->addDays(3),
-            'days' => 6,
-            'type' => 'Enfermedad general',
-            'description' => 'Incapacidad certificada por EPS',
-            'status' => 'active',
-        ]);
+        // Permisos: distintos tipos y estados.
+        $permissions = [
+            [6, 3, 3, 1, 'medical', 'Cita medica especializada', 'pending'],
+            [3, 1, 1, 1, 'personal', 'Tramite bancario personal', 'pending'],
+            [10, -5, -5, 1, 'family', 'Diligencia escolar de un hijo', 'approved'],
+            [14, -20, -19, 2, 'study', 'Presentacion de examen universitario', 'approved'],
+            [17, 7, 7, 1, 'personal', 'Cita notarial', 'pending'],
+            [8, -35, -34, 2, 'bereavement', 'Luto por familiar de segundo grado', 'approved'],
+        ];
+
+        foreach ($permissions as [$emp, $from, $to, $days, $type, $reason, $status]) {
+            PermissionRequest::firstOrCreate(
+                ['company_id' => $company->id, 'employee_id' => $employees[$emp]->id, 'start_date' => Carbon::today()->addDays($from)],
+                [
+                    'type' => $type,
+                    'end_date' => Carbon::today()->addDays($to),
+                    'requested_days' => $days,
+                    'reason' => $reason,
+                    'status' => $status,
+                    'approved_by' => $status === 'approved' ? $admin->id : null,
+                    'approved_at' => $status === 'approved' ? Carbon::today()->addDays($from)->subDays(2) : null,
+                ],
+            );
+        }
+
+        // Incapacidades: activas y cerradas, varios origenes.
+        $sickLeaves = [
+            [18, -2, 3, 6, 'Enfermedad general', 'Incapacidad certificada por EPS', 'active'],
+            [5, -1, 1, 2, 'Enfermedad general', 'Cuadro viral, reposo domiciliario', 'active'],
+            [12, -25, -20, 6, 'Accidente laboral', 'Esguince atendido por ARL', 'closed'],
+            [3, -70, -40, 30, 'Licencia de maternidad', 'Licencia legal de maternidad', 'closed'],
+            [9, -14, -12, 3, 'Enfermedad general', 'Procedimiento ambulatorio', 'closed'],
+        ];
+
+        foreach ($sickLeaves as [$emp, $from, $to, $days, $type, $description, $status]) {
+            SickLeave::firstOrCreate(
+                ['company_id' => $company->id, 'employee_id' => $employees[$emp]->id, 'start_date' => Carbon::today()->addDays($from)],
+                [
+                    'end_date' => Carbon::today()->addDays($to),
+                    'days' => $days,
+                    'type' => $type,
+                    'description' => $description,
+                    'status' => $status,
+                ],
+            );
+        }
 
         foreach ($employees->take(8) as $index => $employee) {
             EmployeeDocument::firstOrCreate(['company_id' => $company->id, 'employee_id' => $employee->id, 'name' => 'Contrato laboral'], [
@@ -219,29 +271,55 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        $shift = Shift::firstOrCreate(['company_id' => $company->id, 'name' => 'Administrativo'], [
-            'start_time' => '08:00',
-            'end_time' => '17:00',
-            'break_minutes' => 60,
-            'status' => 'active',
-        ]);
+        $shifts = collect([
+            ['name' => 'Administrativo', 'start_time' => '08:00', 'end_time' => '17:00', 'break_minutes' => 60],
+            ['name' => 'Turno Manana', 'start_time' => '06:00', 'end_time' => '14:00', 'break_minutes' => 30],
+            ['name' => 'Turno Tarde', 'start_time' => '14:00', 'end_time' => '22:00', 'break_minutes' => 30],
+            ['name' => 'Turno Noche', 'start_time' => '22:00', 'end_time' => '06:00', 'break_minutes' => 45],
+            ['name' => 'Fin de semana', 'start_time' => '08:00', 'end_time' => '16:00', 'break_minutes' => 30],
+        ])->map(fn ($data) => Shift::firstOrCreate(
+            ['company_id' => $company->id, 'name' => $data['name']],
+            $data + ['status' => $data['name'] === 'Fin de semana' ? 'inactive' : 'active'],
+        ));
 
-        foreach ($employees->take(10) as $employee) {
+        foreach ($employees->take(12) as $index => $employee) {
             ShiftAssignment::firstOrCreate(['employee_id' => $employee->id, 'date' => Carbon::today()->toDateString()], [
                 'company_id' => $company->id,
-                'shift_id' => $shift->id,
+                'shift_id' => $shifts[$index % 4]->id,
             ]);
         }
 
-        AuditLog::firstOrCreate([
-            'company_id' => $company->id,
-            'action' => 'seeded',
-            'entity' => Company::class,
-            'entity_id' => $company->id,
-        ], [
-            'user_id' => $admin->id,
-            'module' => 'system',
-            'new_values' => ['message' => 'Datos demo HRMS creados'],
-        ]);
+        // Bitacora de auditoria: acciones tipicas del panel.
+        $auditLogs = [
+            ['login', 'auth', User::class, $admin->id, 0],
+            ['employee.created', 'empleados', Employee::class, $employees[19]->id, 3],
+            ['employee.updated', 'empleados', Employee::class, $employees[5]->id, 5],
+            ['vacation.approved', 'vacaciones', VacationRequest::class, $employees[7]->id, 6],
+            ['vacation.rejected', 'vacaciones', VacationRequest::class, $employees[13]->id, 8],
+            ['permission.approved', 'permisos', PermissionRequest::class, $employees[10]->id, 9],
+            ['sick_leave.created', 'incapacidades', SickLeave::class, $employees[18]->id, 2],
+            ['document.uploaded', 'documentos', EmployeeDocument::class, $employees[2]->id, 4],
+            ['attendance.exported', 'reportes', Attendance::class, null, 1],
+            ['role.updated', 'roles', Role::class, 3, 12],
+            ['user.created', 'usuarios', User::class, $seededUsers->last()->id, 15],
+            ['settings.updated', 'configuracion', Company::class, $company->id, 20],
+        ];
+
+        foreach ($auditLogs as [$action, $module, $entity, $entityId, $daysAgo]) {
+            $log = AuditLog::firstOrCreate(
+                ['company_id' => $company->id, 'action' => $action, 'entity' => $entity, 'entity_id' => $entityId],
+                [
+                    'user_id' => $admin->id,
+                    'module' => $module,
+                    'ip_address' => '190.85.'.rand(1, 254).'.'.rand(1, 254),
+                    'new_values' => ['message' => 'Accion registrada por el sistema de demostracion'],
+                ],
+            );
+
+            if ($log->wasRecentlyCreated) {
+                $at = Carbon::now()->subDays($daysAgo)->subHours(rand(0, 8));
+                $log->forceFill(['created_at' => $at, 'updated_at' => $at])->saveQuietly();
+            }
+        }
     }
 }
