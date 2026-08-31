@@ -38,10 +38,23 @@ import {
   AuthUser,
   clearAuthSession,
   getAuthToken,
+  getStoredUser,
   hasAnyPermission,
   updateStoredUser,
 } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+
+// Una sola peticion /auth/me compartida: si el efecto se monta dos veces
+// (StrictMode en dev, o doble render) no se dispara el request dos veces.
+let meRequest: Promise<{ data: { user: AuthUser } }> | null = null;
+function fetchMe() {
+  meRequest ??= api
+    .get<{ user: AuthUser }>("/auth/me")
+    .finally(() => {
+      meRequest = null;
+    });
+  return meRequest;
+}
 
 type NavItem = {
   href: string;
@@ -119,7 +132,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = React.useState<AuthUser | null>(null);
+  const [user, setUser] = React.useState<AuthUser | null>(() => getStoredUser());
   const [checkingSession, setCheckingSession] = React.useState(true);
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
 
@@ -147,13 +160,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    api
-      .get<{ user: AuthUser }>("/auth/me")
+    fetchMe()
       .then((response) => {
         updateStoredUser(response.data.user);
         setUser(response.data.user);
       })
       .catch(() => {
+        // El interceptor 401 ya limpio la sesion; aqui solo redirigimos.
         clearAuthSession();
         router.replace("/login");
       })

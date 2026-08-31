@@ -38,9 +38,10 @@ export default function AppUsersPage() {
   const [roles, setRoles] = React.useState<Role[]>([]);
 
   React.useEffect(() => {
-    api.get<PaginatedResponse<Role>>("/roles", { params: { per_page: 100 } }).then((response) => {
-      setRoles(response.data.data);
-    });
+    api
+      .get<PaginatedResponse<Role>>("/roles", { params: { per_page: 100 } })
+      .then((response) => setRoles(response.data.data))
+      .catch(() => {});
   }, []);
 
   const fields = React.useMemo<CrudField[]>(() => {
