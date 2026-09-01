@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Pencil, Plus } from "lucide-react";
+import { Pencil, Plus, WifiOff } from "lucide-react";
 import { CrudField, CrudModal } from "@/components/crud/crud-modal";
 import { DataTable } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
 import { AppColumnDef } from "@/lib/table-types";
 import { useApiTable } from "@/lib/use-api-table";
+import { useContingency } from "@/lib/contingency/context";
 
 type RowWithId = { id?: number | string };
 
@@ -34,6 +35,12 @@ export function ModuleTablePage<T extends object & RowWithId>({
   extraRowActions,
 }: ModuleTablePageProps<T>) {
   const table = useApiTable<T>(resource);
+  const { isActive: contingencyActive, moduleEnabled, enqueue } = useContingency();
+  const moduleKey = resource.replace(/^\//, "");
+  // Modulo habilitado en contingencia: los altas se encolan en local.
+  const queueCreates = contingencyActive && moduleEnabled(resource);
+  // Contingencia activa pero este modulo NO habilitado: solo lectura.
+  const readOnly = contingencyActive && !moduleEnabled(resource);
   const [modalMode, setModalMode] = React.useState<"create" | "edit">("create");
   const [selectedRow, setSelectedRow] = React.useState<T | null>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -51,7 +58,8 @@ export function ModuleTablePage<T extends object & RowWithId>({
   }, []);
 
   const tableColumns = React.useMemo(() => {
-    if (!fields?.length && !extraRowActions) return columns;
+    // En solo-lectura no se muestran acciones de escritura (editar / extras).
+    if (readOnly || (!fields?.length && !extraRowActions)) return columns;
 
     return [
       ...columns,
@@ -70,7 +78,7 @@ export function ModuleTablePage<T extends object & RowWithId>({
         ),
       } satisfies AppColumnDef<T>,
     ];
-  }, [columns, extraRowActions, fields, openEditModal, table.refresh]);
+  }, [columns, extraRowActions, fields, openEditModal, readOnly, table.refresh]);
 
   return (
     <div className="space-y-6">
@@ -79,7 +87,7 @@ export function ModuleTablePage<T extends object & RowWithId>({
           <h1 className="text-2xl font-semibold">{title}</h1>
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
-        {actionLabel && fields?.length ? (
+        {readOnly ? null : actionLabel && fields?.length ? (
           <Button onClick={openCreateModal}>
             <Plus className="h-4 w-4" /> {actionLabel}
           </Button>
@@ -87,6 +95,20 @@ export function ModuleTablePage<T extends object & RowWithId>({
           <Button>{actionLabel}</Button>
         ) : null}
       </div>
+
+      {readOnly ? (
+        <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">
+          <WifiOff className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>Modo contingencia activo. Este modulo esta en solo lectura hasta que se restablezca la operacion normal.</span>
+        </div>
+      ) : null}
+      {queueCreates ? (
+        <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">
+          <WifiOff className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>Modo contingencia activo. Los nuevos registros se guardan localmente y se sincronizan desde &ldquo;Modo contingencia&rdquo;.</span>
+        </div>
+      ) : null}
+
       <DataTable
         columns={tableColumns}
         exportBaseUrl={exportResource ? `${process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8001/api"}/exports/${exportResource}` : undefined}
@@ -109,6 +131,7 @@ export function ModuleTablePage<T extends object & RowWithId>({
           fields={fields}
           row={selectedRow}
           onSaved={table.refresh}
+          queueSubmit={queueCreates ? (payload) => enqueue(moduleKey, payload) : undefined}
         />
       ) : null}
     </div>

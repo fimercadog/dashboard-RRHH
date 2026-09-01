@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\ContingencyController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EmployeeController;
@@ -37,6 +38,12 @@ Route::middleware('auth:sanctum')->group(function (): void {
     // menu del frontend). `can:` responde 403 si el usuario no lo tiene.
     Route::get('/dashboard', DashboardController::class)->middleware('can:dashboard.view');
     Route::get('/reports', ReportController::class)->middleware('can:reports.view');
+
+    // Modo contingencia: el estado lo lee cualquier usuario (para renderizar el
+    // banner y el modo solo-lectura); activar/desactivar exige settings.manage.
+    Route::get('/contingency/status', [ContingencyController::class, 'status']);
+    Route::post('/contingency/activate', [ContingencyController::class, 'activate'])->middleware('can:settings.manage');
+    Route::post('/contingency/deactivate', [ContingencyController::class, 'deactivate'])->middleware('can:settings.manage');
 
     Route::get('/company', [CompanyController::class, 'show'])->middleware('can:settings.manage');
     Route::put('/company', [CompanyController::class, 'update'])->middleware('can:settings.manage');

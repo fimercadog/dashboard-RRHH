@@ -27,11 +27,14 @@ import {
   Sun,
   UserCircle,
   Users,
+  WifiOff,
   X,
   type LucideIcon,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { BetaNotice } from "@/components/layout/beta-notice";
+import { ContingencyBanner } from "@/components/layout/contingency-banner";
+import { useContingency } from "@/lib/contingency/context";
 import { openFeedbackForm } from "@/lib/feedback";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
@@ -65,6 +68,8 @@ type NavItem = {
   icon: LucideIcon;
   permissions?: string[];
   premium?: boolean;
+  /** Control critico: color de alerta fijo aunque este inactivo. */
+  alert?: boolean;
 };
 
 const mainNav: NavItem[] = [
@@ -77,6 +82,7 @@ const mainNav: NavItem[] = [
   { href: "/app/documentos", label: "Documentos", icon: FileText, permissions: ["documents.manage"] },
   { href: "/app/turnos", label: "Turnos", icon: Activity, permissions: ["attendance.manage"] },
   { href: "/app/reportes", label: "Reportes", icon: BarChart3, permissions: ["reports.view"] },
+  { href: "/app/contingencia", label: "Modo contingencia", icon: WifiOff, alert: true },
   { href: "/app/ia", label: "IA para RRHH", icon: Bot, premium: true },
 ];
 
@@ -100,6 +106,28 @@ function PremiumBadge() {
 function NavLink({ item }: { item: NavItem }) {
   const pathname = usePathname();
   const Icon = item.icon;
+  const { isActive: contingencyActive, pendingCount } = useContingency();
+
+  if (item.alert) {
+    const active = pathname === item.href;
+    return (
+      <Link
+        href={item.href}
+        className={cn(
+          "flex h-9 items-center gap-3 rounded-md px-3 text-sm font-medium text-warning transition-colors hover:bg-warning/10",
+          active && "bg-warning/10",
+        )}
+      >
+        <Icon className="h-4 w-4" />
+        <span>{item.label}</span>
+        {contingencyActive ? (
+          <span className="ml-auto rounded bg-warning/20 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+            Activo{pendingCount ? ` · ${pendingCount}` : ""}
+          </span>
+        ) : null}
+      </Link>
+    );
+  }
 
   if (item.premium) {
     return (
@@ -328,6 +356,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </Button>
           </div>
         </header>
+        <ContingencyBanner />
         <main className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-6">
           {authorized ? (
             children

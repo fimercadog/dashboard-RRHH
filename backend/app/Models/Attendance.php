@@ -11,7 +11,7 @@ class Attendance extends Model
     /** @use HasFactory<\Database\Factories\AttendanceFactory> */
     use HasFactory;
 
-    protected $fillable = ['company_id', 'employee_id', 'date', 'check_in', 'check_out', 'status', 'late_minutes', 'notes', 'source'];
+    protected $fillable = ['company_id', 'employee_id', 'date', 'check_in', 'check_out', 'status', 'late_minutes', 'notes', 'source', 'client_uuid'];
 
     protected $casts = ['date' => 'date'];
 

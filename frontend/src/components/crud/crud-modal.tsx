@@ -44,6 +44,11 @@ type CrudModalProps = {
   fields: CrudField[];
   row?: CrudRow | null;
   onSaved: () => void;
+  /**
+   * Modo contingencia: si viene definido y es un alta, el registro se encola
+   * localmente en vez de llamar al API. Solo aplica a mode === "create".
+   */
+  queueSubmit?: (payload: Record<string, unknown>) => Promise<void>;
 };
 
 function normalizeValue(value: FormDataEntryValue | null, field: CrudField) {
@@ -57,7 +62,7 @@ function fieldDefault(row: CrudRow | null | undefined, field: CrudField) {
   return value == null ? "" : String(value);
 }
 
-export function CrudModal({ open, onOpenChange, mode, title, description, resource, fields, row, onSaved }: CrudModalProps) {
+export function CrudModal({ open, onOpenChange, mode, title, description, resource, fields, row, onSaved, queueSubmit }: CrudModalProps) {
   const [saving, setSaving] = React.useState(false);
   const formId = React.useId();
 
@@ -72,6 +77,14 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
 
     setSaving(true);
     try {
+      if (mode === "create" && queueSubmit) {
+        await queueSubmit(payload);
+        toast.success("Registro encolado en modo contingencia. Se sincronizara al restablecer la conexion.");
+        onSaved();
+        onOpenChange(false);
+        return;
+      }
+
       if (mode === "edit" && row?.id) {
         await api.put(`${resource}/${row.id}`, payload);
       } else {
