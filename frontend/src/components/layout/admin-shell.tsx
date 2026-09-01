@@ -18,6 +18,7 @@ import {
   Lock,
   LogOut,
   Menu,
+  MessageSquarePlus,
   Moon,
   Settings,
   Shield,
@@ -31,6 +32,7 @@ import {
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { BetaNotice } from "@/components/layout/beta-notice";
+import { openFeedbackForm } from "@/lib/feedback";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { api } from "@/lib/api";
@@ -302,6 +304,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
             <BetaNotice />
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Enviar un comentario"
+              title="Enviar un comentario"
+              onClick={openFeedbackForm}
+            >
+              <MessageSquarePlus className="h-4 w-4" />
+            </Button>
             <Button
               variant="outline"
               size="icon"
