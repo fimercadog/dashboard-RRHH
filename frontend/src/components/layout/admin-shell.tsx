@@ -310,6 +310,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               aria-label="Enviar un comentario"
               title="Enviar un comentario"
               onClick={openFeedbackForm}
+              className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
             >
               <MessageSquarePlus className="h-4 w-4" />
             </Button>
