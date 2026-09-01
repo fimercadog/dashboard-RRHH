@@ -30,6 +30,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
+import { BetaNotice } from "@/components/layout/beta-notice";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { api } from "@/lib/api";
@@ -219,7 +220,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="flex h-16 items-center gap-3 border-b border-border px-5">
       <LogoMark size="sm" />
       <div>
-        <p className="text-sm font-semibold text-foreground">DFC</p>
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+          DFC
+          <span className="rounded bg-warning/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning">
+            Beta
+          </span>
+        </p>
         <p className="text-xs text-muted-foreground">Talento Humano</p>
       </div>
     </div>
@@ -295,6 +301,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <p className="truncate text-[11px] text-muted-foreground">{user?.roles?.[0] ?? user?.email}</p>
               </div>
             </div>
+            <BetaNotice />
             <Button
               variant="outline"
               size="icon"
