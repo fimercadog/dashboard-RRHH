@@ -168,24 +168,108 @@ class DatabaseSeeder extends Seeder
 
         $admin = $seededUsers->firstWhere('email', 'admin@andespeople.co');
 
-        $statuses = ['present', 'present', 'present', 'late', 'absent'];
-        for ($day = 0; $day < 7; $day++) {
-            foreach ($employees as $index => $employee) {
-                // Carbon (no ->toDateString()): el cast `date` guarda "Y-m-d H:i:s";
-                // pasar el string desnudo hacia que updateOrCreate no re-encontrara
-                // la fila y reventara el unique al re-seedear.
-                Attendance::updateOrCreate([
-                    'employee_id' => $employee->id,
-                    'date' => Carbon::today()->subDays($day),
-                ], [
-                    'company_id' => $company->id,
-                    'status' => $statuses[($index + $day) % count($statuses)],
-                    'check_in' => ($index + $day) % 5 === 4 ? null : sprintf('08:%02d', (($index + $day) % 4) * 8),
-                    'check_out' => ($index + $day) % 5 === 4 ? null : '17:00',
-                    'late_minutes' => ($index + $day) % 5 === 3 ? 18 : 0,
-                    'source' => 'seed',
-                ]);
+        // Asistencia: ~1 ano de dias habiles hacia atras para alimentar las
+        // tendencias mensuales del dashboard (selector 3/6/12 meses). Se reemplaza
+        // en bloque (delete + insert) para que el re-seed no deje formatos de
+        // fecha mezclados ni duplicados.
+        Attendance::where('company_id', $company->id)->delete();
+        $now = Carbon::now();
+        $attendanceRows = [];
+        for ($day = 0; $day < 365; $day++) {
+            $date = Carbon::today()->subDays($day);
+            if ($date->isWeekend()) {
+                continue;
             }
+            // Corte "presente" con leve variacion por mes -> la tendencia mensual
+            // no queda como una linea plana.
+            $presentCut = 13 + ($date->month + $date->weekOfYear) % 5;
+            foreach ($employees as $index => $employee) {
+                $seed = ($index * 7 + $day * 3) % 20;
+                $status = $seed < $presentCut ? 'present' : ($seed < $presentCut + 3 ? 'late' : 'absent');
+                $late = $status === 'late' ? 10 + ($seed % 4) * 6 : 0;
+                $attendanceRows[] = [
+                    'company_id' => $company->id,
+                    'employee_id' => $employee->id,
+                    'date' => $date->toDateString(),
+                    'status' => $status,
+                    'check_in' => $status === 'absent' ? null : sprintf('08:%02d', $late ? ($late % 60) : (($index + $day) % 5) * 3),
+                    'check_out' => $status === 'absent' ? null : '17:00',
+                    'late_minutes' => $late,
+                    'source' => 'seed',
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+        }
+        foreach (array_chunk($attendanceRows, 500) as $chunk) {
+            Attendance::insert($chunk);
+        }
+
+        // Retiros recientes: 3 bajas repartidas en los ultimos 6 meses para la
+        // grafica de contrataciones vs retiros. Empleados sin usuario asociado.
+        foreach ([[16, 25], [17, 80], [19, 150]] as [$empIndex, $daysAgo]) {
+            $employees[$empIndex]->update([
+                'employment_status' => 'terminated',
+                'termination_date' => Carbon::today()->subDays($daysAgo),
+            ]);
+        }
+
+        // Solicitudes historicas repartidas en 6 meses (además de las de arriba),
+        // para las tendencias de novedades por mes.
+        foreach (range(1, 6) as $monthsAgo) {
+            $base = Carbon::today()->subMonths($monthsAgo)->startOfMonth();
+            VacationRequest::firstOrCreate(
+                ['company_id' => $company->id, 'employee_id' => $employees[$monthsAgo]->id, 'start_date' => $base->copy()->addDays(6)],
+                ['end_date' => $base->copy()->addDays(12), 'requested_days' => 6, 'reason' => 'Descanso programado', 'status' => 'approved', 'approved_by' => $admin->id, 'approved_at' => $base->copy()->addDays(2)],
+            );
+            PermissionRequest::firstOrCreate(
+                ['company_id' => $company->id, 'employee_id' => $employees[$monthsAgo + 6]->id, 'start_date' => $base->copy()->addDays(15)],
+                ['type' => 'personal', 'end_date' => $base->copy()->addDays(15), 'requested_days' => 1, 'reason' => 'Diligencia personal', 'status' => 'approved', 'approved_by' => $admin->id, 'approved_at' => $base->copy()->addDays(10)],
+            );
+            if ($monthsAgo % 2 === 0) {
+                SickLeave::firstOrCreate(
+                    ['company_id' => $company->id, 'employee_id' => $employees[$monthsAgo + 10]->id, 'start_date' => $base->copy()->addDays(20)],
+                    ['end_date' => $base->copy()->addDays(23), 'days' => 3, 'type' => 'Enfermedad general', 'description' => 'Reposo domiciliario', 'status' => 'closed'],
+                );
+            }
+        }
+
+        // Contrataciones recientes: alimentan el delta "vs periodo anterior" y la
+        // grafica de contrataciones vs retiros de los ultimos meses.
+        $recentHires = [
+            ['Luisa', 'Fernandez', 8, 0],
+            ['Camilo', 'Bernal', 22, 1],
+            ['Sara', 'Quintero', 45, 2],
+        ];
+        foreach ($recentHires as $i => [$first, $last, $daysAgo, $posIndex]) {
+            $position = $positions[$posIndex];
+            Employee::firstOrCreate(
+                ['company_id' => $company->id, 'employee_code' => 'EMP-'.str_pad((string) (21 + $i), 4, '0', STR_PAD_LEFT)],
+                [
+                    'first_name' => $first,
+                    'last_name' => $last,
+                    'identification_type' => 'CC',
+                    'identification_number' => '1030'.str_pad((string) (500000 + $i * 411), 7, '0', STR_PAD_LEFT),
+                    'email' => strtolower($first.'.'.$last).'@andespeople.co',
+                    'birth_date' => Carbon::today()->subYears(rand(25, 40)),
+                    'city' => 'Bogota',
+                    'hire_date' => Carbon::today()->subDays($daysAgo),
+                    'employment_status' => 'active',
+                    'department_id' => $position->department_id,
+                    'position_id' => $position->id,
+                    'contract_type' => 'Indefinido',
+                    'salary' => 2600000 + $i * 150000,
+                    'work_schedule' => 'Lunes a viernes 08:00-17:00',
+                ],
+            );
+        }
+
+        // Solicitudes recientes (ultimos 30 dias) para que el delta no sea degenerado.
+        foreach ([[1, -6, 'pending'], [3, -14, 'approved'], [8, -22, 'approved']] as [$emp, $from, $status]) {
+            PermissionRequest::firstOrCreate(
+                ['company_id' => $company->id, 'employee_id' => $employees[$emp]->id, 'start_date' => Carbon::today()->addDays($from)],
+                ['type' => 'personal', 'end_date' => Carbon::today()->addDays($from), 'requested_days' => 1, 'reason' => 'Gestion personal', 'status' => $status, 'approved_by' => $status === 'approved' ? $admin->id : null, 'approved_at' => $status === 'approved' ? Carbon::today()->addDays($from - 1) : null],
+            );
         }
 
         // Solicitudes de vacaciones: mezcla de pendientes, aprobadas y rechazada.
@@ -283,7 +367,7 @@ class DatabaseSeeder extends Seeder
         ));
 
         foreach ($employees->take(12) as $index => $employee) {
-            ShiftAssignment::firstOrCreate(['employee_id' => $employee->id, 'date' => Carbon::today()->toDateString()], [
+            ShiftAssignment::firstOrCreate(['employee_id' => $employee->id, 'date' => Carbon::today()], [
                 'company_id' => $company->id,
                 'shift_id' => $shifts[$index % 4]->id,
             ]);
