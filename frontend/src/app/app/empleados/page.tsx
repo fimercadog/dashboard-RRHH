@@ -54,9 +54,9 @@ const fields: CrudField[] = [
       { label: "En licencia", value: "on_leave" },
     ],
   },
-  { name: "department_id", label: "ID area", type: "number", min: 1, step: 1, hint: "ID de un area existente" },
-  { name: "position_id", label: "ID cargo", type: "number", min: 1, step: 1, hint: "ID de un cargo existente" },
-  { name: "salary", label: "Salario", type: "number", min: 0, step: 1000 },
+  { name: "department_id", label: "ID area", type: "number", min: 1, hint: "ID de un area existente" },
+  { name: "position_id", label: "ID cargo", type: "number", min: 1, hint: "ID de un cargo existente" },
+  { name: "salary", label: "Salario", type: "number", min: 0, hint: "Solo numeros, sin negativos" },
 ];
 
 export default function EmployeesPage() {
