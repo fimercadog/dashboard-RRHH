@@ -61,17 +61,26 @@ export function MarketingHeader() {
           <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm font-medium text-navy transition-colors hover:bg-muted" href="/login" target="_blank" rel="noopener noreferrer">Iniciar sesion</Link>
           <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-white transition-transform duration-200 hover:scale-105 hover:opacity-90 active:scale-95" href="/demo">Solicitar demo</Link>
         </div>
-        <Button
-          type="button"
-          className="xl:hidden"
-          variant="outline"
-          size="icon"
-          onClick={() => setOpen((value) => !value)}
-          aria-label={open ? "Cerrar menu" : "Abrir menu"}
-          aria-expanded={open}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+        <div className="flex items-center gap-2 xl:hidden">
+          <Link
+            className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-3 text-sm font-medium text-navy transition-colors hover:bg-muted"
+            href="/login"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Iniciar sesion
+          </Link>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => setOpen((value) => !value)}
+            aria-label={open ? "Cerrar menu" : "Abrir menu"}
+            aria-expanded={open}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
       {open ? (
         <div className="relative z-50 border-t border-border bg-white px-4 py-4 shadow-lg xl:hidden">
@@ -80,9 +89,8 @@ export function MarketingHeader() {
               {label}
             </Link>
           ))}
-          <div className="mt-3 grid gap-2">
-            <Link className="rounded-xl border border-border px-3 py-3 text-center text-sm font-medium" href="/login" target="_blank" rel="noopener noreferrer">Iniciar sesion</Link>
-            <Link className="whitespace-nowrap rounded-xl bg-primary px-3 py-3 text-center text-sm font-medium text-white" href="/demo">Solicitar demo</Link>
+          <div className="mt-3">
+            <Link className="block whitespace-nowrap rounded-xl bg-primary px-3 py-3 text-center text-sm font-medium text-white" href="/demo">Solicitar demo</Link>
           </div>
         </div>
       ) : null}
