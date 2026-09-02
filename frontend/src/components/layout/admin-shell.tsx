@@ -294,6 +294,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 variant="outline"
                 size="icon"
                 aria-label="Cerrar menu"
+                title="Cerrar menu"
                 onClick={() => setMobileNavOpen(false)}
                 className="absolute right-3 top-1/2 -translate-y-1/2"
               >
@@ -313,6 +314,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               size="icon"
               className="lg:hidden"
               aria-label="Abrir menu"
+              title="Abrir menu"
               aria-expanded={mobileNavOpen}
               onClick={() => setMobileNavOpen(true)}
             >
@@ -346,12 +348,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               variant="outline"
               size="icon"
               aria-label="Cambiar tema"
+              title={theme === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
               <Sun className="h-4 w-4 dark:hidden" />
               <Moon className="hidden h-4 w-4 dark:block" />
             </Button>
-            <Button variant="outline" size="icon" aria-label="Cerrar sesion" onClick={logout}>
+            <Button variant="outline" size="icon" aria-label="Cerrar sesion" title="Cerrar sesion" onClick={logout}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
