@@ -14,6 +14,7 @@ use App\Models\VacationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -156,11 +157,24 @@ class DashboardController extends Controller
         return collect(range(11, 0))->map(fn ($i) => Carbon::today()->subMonths($i)->format('Y-m'))->all();
     }
 
+    /**
+     * SQL para truncar una fecha a "Y-m" segun el motor. `$column` siempre es un
+     * literal del propio codigo (nunca entrada de usuario).
+     */
+    private function monthExpr(string $column): string
+    {
+        return match (DB::connection()->getDriverName()) {
+            'mysql', 'mariadb' => "DATE_FORMAT($column, '%Y-%m')",
+            'pgsql' => "to_char($column, 'YYYY-MM')",
+            default => "strftime('%Y-%m', $column)",
+        };
+    }
+
     private function attendanceMonthly(int $companyId, Carbon $from): Collection
     {
         $rows = Attendance::where('company_id', $companyId)
             ->where('date', '>=', $from->toDateString())
-            ->selectRaw("strftime('%Y-%m', date) as month, status, count(*) as total")
+            ->selectRaw($this->monthExpr('date')." as month, status, count(*) as total")
             ->groupBy('month', 'status')
             ->get();
 
@@ -187,10 +201,10 @@ class DashboardController extends Controller
     private function headcountFlow(int $companyId, Carbon $from): Collection
     {
         $hires = Employee::where('company_id', $companyId)->where('hire_date', '>=', $from)
-            ->selectRaw("strftime('%Y-%m', hire_date) as month, count(*) as total")
+            ->selectRaw($this->monthExpr('hire_date')." as month, count(*) as total")
             ->groupBy('month')->pluck('total', 'month');
         $terms = Employee::where('company_id', $companyId)->whereNotNull('termination_date')->where('termination_date', '>=', $from)
-            ->selectRaw("strftime('%Y-%m', termination_date) as month, count(*) as total")
+            ->selectRaw($this->monthExpr('termination_date')." as month, count(*) as total")
             ->groupBy('month')->pluck('total', 'month');
 
         return collect($this->monthKeys())->map(fn (string $month) => [
@@ -203,7 +217,7 @@ class DashboardController extends Controller
     private function requestsMonthly(int $companyId, Carbon $from): Collection
     {
         $count = fn (string $model) => $model::where('company_id', $companyId)->where('start_date', '>=', $from)
-            ->selectRaw("strftime('%Y-%m', start_date) as month, count(*) as total")
+            ->selectRaw($this->monthExpr('start_date')." as month, count(*) as total")
             ->groupBy('month')->pluck('total', 'month');
 
         $vacations = $count(VacationRequest::class);
