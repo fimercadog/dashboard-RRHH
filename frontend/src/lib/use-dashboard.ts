@@ -38,6 +38,11 @@ export function useDashboard() {
     api
       .get<DashboardData>("/dashboard", { signal: controller.signal })
       .then((response) => {
+        // Un backend desactualizado responde 200 sin `trends`: no rompas toda la
+        // pagina, cae en el estado de error con reintentar.
+        if (!response.data?.trends?.attendance_monthly) {
+          throw new Error("shape");
+        }
         setData(response.data);
         setError(null);
         setFetchedAt(new Date());

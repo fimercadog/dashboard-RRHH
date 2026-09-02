@@ -241,7 +241,13 @@ cd backend
 composer install --no-dev --optimize-autoloader --no-interaction   # solo si cambio composer.json
 php artisan migrate --force                                        # solo si hay migraciones nuevas
 php artisan config:clear
+php artisan route:clear                                            # rutas nuevas (ej. /contingency/*) no aparecen sin esto
 ```
+
+Sintoma de que falto este paso: el frontend nuevo llama a un endpoint que
+existe en el repo pero el servidor responde **404 Not Found** (ej.
+`GET /api/contingency/status`). Casi siempre es que no se hizo `git pull`
+en el servidor, o quedo cache de rutas vieja.
 
 ## Checklist rapido si el login vuelve a fallar
 
