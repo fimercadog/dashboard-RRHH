@@ -10,8 +10,11 @@ use Illuminate\Http\Request;
 class AttendanceController extends BaseCrudController
 {
     protected string $model = Attendance::class;
+
     protected string $resource = AttendanceResource::class;
+
     protected array $with = ['employee.department', 'employee.position'];
+
     protected array $filterable = ['status' => 'status', 'employee_id' => 'employee_id'];
 
     /**
@@ -21,14 +24,13 @@ class AttendanceController extends BaseCrudController
      */
     public function store(Request $request, AuditService $audit)
     {
-        $uuid = $request->input('client_uuid');
-
-        if (! $uuid) {
+        if (! $request->filled('client_uuid')) {
             return parent::store($request, $audit);
         }
 
-        $payload = $request->all();
+        $payload = $this->validatedInput($request);
         $payload['company_id'] ??= $this->companyId($request);
+        $uuid = $payload['client_uuid'];
 
         $model = Attendance::firstOrCreate(['client_uuid' => $uuid], $payload);
 

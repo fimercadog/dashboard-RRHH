@@ -30,6 +30,12 @@ export type CrudField = {
   colSpan?: "full";
   /** Skip sending this field when left blank, instead of overwriting the stored value with null. */
   omitWhenEmpty?: boolean;
+  /** Validacion nativa del navegador (primer filtro; el backend es el que manda). */
+  pattern?: string;
+  hint?: string;
+  min?: number;
+  max?: number;
+  step?: number;
 };
 
 type CrudRow = Record<string, unknown> & { id?: number | string };
@@ -62,9 +68,21 @@ function fieldDefault(row: CrudRow | null | undefined, field: CrudField) {
   return value == null ? "" : String(value);
 }
 
+type ApiErrors = Record<string, string[]>;
+
 export function CrudModal({ open, onOpenChange, mode, title, description, resource, fields, row, onSaved, queueSubmit }: CrudModalProps) {
   const [saving, setSaving] = React.useState(false);
+  const [errors, setErrors] = React.useState<ApiErrors>({});
   const formId = React.useId();
+
+  // Cierra limpiando errores (sin efecto: el cierre siempre pasa por aqui).
+  const handleOpenChange = React.useCallback(
+    (next: boolean) => {
+      if (!next) setErrors({});
+      onOpenChange(next);
+    },
+    [onOpenChange],
+  );
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -76,12 +94,13 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
     const payload = Object.fromEntries(entries);
 
     setSaving(true);
+    setErrors({});
     try {
       if (mode === "create" && queueSubmit) {
         await queueSubmit(payload);
         toast.success("Registro encolado en modo contingencia. Se sincronizara al restablecer la conexion.");
         onSaved();
-        onOpenChange(false);
+        handleOpenChange(false);
         return;
       }
 
@@ -96,63 +115,100 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
 
       toast.success(mode === "edit" ? "Registro actualizado" : "Registro creado");
       onSaved();
-      onOpenChange(false);
-    } catch {
-      toast.error("No se pudo guardar. Revisa los campos e intenta de nuevo.");
+      handleOpenChange(false);
+    } catch (error) {
+      const response = (error as { response?: { status?: number; data?: { errors?: ApiErrors; message?: string } } }).response;
+      if (response?.status === 422 && response.data?.errors) {
+        setErrors(response.data.errors);
+        toast.error("Hay campos por corregir. Revisa lo marcado en rojo.");
+      } else {
+        toast.error(response?.data?.message ?? "No se pudo guardar. Revisa los campos e intenta de nuevo.");
+      }
     } finally {
       setSaving(false);
     }
   }
 
+  function clearError(name: string) {
+    setErrors((prev) => (prev[name] ? { ...prev, [name]: [] } : prev));
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
 
-        <form id={formId} className="grid gap-4 sm:grid-cols-2" onSubmit={submit}>
-          {fields.map((field) => (
-            <label key={field.name} className={cn("space-y-2 text-sm", field.colSpan === "full" && "sm:col-span-2")}>
-              <span className="font-medium">{field.label}</span>
-              {field.type === "select" ? (
-                <select
-                  name={field.name}
-                  required={field.required}
-                  defaultValue={fieldDefault(row, field)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition focus-visible:border-primary"
-                >
-                  <option value="">Seleccionar</option>
-                  {field.options?.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              ) : field.type === "textarea" ? (
-                <textarea
-                  name={field.name}
-                  required={field.required}
-                  placeholder={field.placeholder}
-                  defaultValue={fieldDefault(row, field)}
-                  className="min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition placeholder:text-muted-foreground focus-visible:border-primary"
-                />
-              ) : (
-                <Input
-                  name={field.name}
-                  type={field.type ?? "text"}
-                  required={field.required}
-                  placeholder={field.placeholder}
-                  defaultValue={fieldDefault(row, field)}
-                />
-              )}
-            </label>
-          ))}
+        <form id={formId} className="grid gap-4 sm:grid-cols-2" onSubmit={submit} noValidate={false}>
+          {fields.map((field) => {
+            const err = errors[field.name]?.[0];
+            const invalid = cn(err && "border-destructive focus-visible:border-destructive");
+            return (
+              <label key={field.name} className={cn("space-y-1.5 text-sm", field.colSpan === "full" && "sm:col-span-2")}>
+                <span className="font-medium">
+                  {field.label}
+                  {field.required ? <span className="text-destructive"> *</span> : null}
+                </span>
+                {field.type === "select" ? (
+                  <select
+                    name={field.name}
+                    required={field.required}
+                    defaultValue={fieldDefault(row, field)}
+                    onChange={() => clearError(field.name)}
+                    className={cn(
+                      "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition focus-visible:border-primary",
+                      invalid,
+                    )}
+                  >
+                    <option value="">Seleccionar</option>
+                    {field.options?.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : field.type === "textarea" ? (
+                  <textarea
+                    name={field.name}
+                    required={field.required}
+                    placeholder={field.placeholder}
+                    defaultValue={fieldDefault(row, field)}
+                    onInput={() => clearError(field.name)}
+                    className={cn(
+                      "min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition placeholder:text-muted-foreground focus-visible:border-primary",
+                      invalid,
+                    )}
+                  />
+                ) : (
+                  <Input
+                    name={field.name}
+                    type={field.type ?? "text"}
+                    required={field.required}
+                    placeholder={field.placeholder}
+                    defaultValue={fieldDefault(row, field)}
+                    pattern={field.pattern}
+                    title={field.hint}
+                    min={field.min}
+                    max={field.max}
+                    step={field.step}
+                    onInput={() => clearError(field.name)}
+                    className={invalid || undefined}
+                  />
+                )}
+                {err ? (
+                  <span className="block text-xs text-destructive">{err}</span>
+                ) : field.hint ? (
+                  <span className="block text-xs text-muted-foreground">{field.hint}</span>
+                ) : null}
+              </label>
+            );
+          })}
         </form>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={saving}>
             Cancelar
           </Button>
           <Button type="submit" form={formId} disabled={saving}>

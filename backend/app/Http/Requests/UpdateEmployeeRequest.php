@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateEmployeeRequest extends FormRequest
+class UpdateEmployeeRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,6 +21,6 @@ class UpdateEmployeeRequest extends FormRequest
      */
     public function rules(): array
     {
-        return (new StoreEmployeeRequest())->rules();
+        return (new StoreEmployeeRequest)->rules();
     }
 }

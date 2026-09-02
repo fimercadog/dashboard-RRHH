@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAttendanceRequest extends FormRequest
+class StoreAttendanceRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,6 +22,7 @@ class StoreAttendanceRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'employee_id' => ['required', 'exists:employees,id'],
             'date' => ['required', 'date'],
             'check_in' => ['nullable', 'date_format:H:i'],

@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
-class StoreVacationRequestRequest extends FormRequest
+class StoreVacationRequestRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

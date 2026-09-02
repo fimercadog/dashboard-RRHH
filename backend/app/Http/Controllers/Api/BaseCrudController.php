@@ -13,10 +13,40 @@ abstract class BaseCrudController extends Controller
     use ResolvesCompany;
 
     protected string $model;
+
     protected string $resource;
+
     protected array $with = [];
+
     protected array $searchable = [];
+
     protected array $filterable = [];
+
+    /**
+     * Payload validado. Si existe App\Http\Requests\Store{Modelo}Request se
+     * aplican sus reglas (mismo FormRequest para crear y actualizar; en update
+     * las reglas pasan a "sometimes" porque el toggle de estado manda payload
+     * parcial). Sin FormRequest, se conserva el comportamiento previo.
+     */
+    protected function validatedInput(Request $request, bool $isUpdate = false): array
+    {
+        $class = 'App\\Http\\Requests\\Store'.class_basename($this->model).'Request';
+
+        if (! class_exists($class)) {
+            return $request->all();
+        }
+
+        if (! $isUpdate) {
+            return app($class)->validated();
+        }
+
+        $form = new $class;
+        $rules = collect($form->rules())
+            ->map(fn ($rule) => array_values(array_unique(['sometimes', ...(array) $rule])))
+            ->all();
+
+        return validator($request->all(), $rules, $form->messages(), $form->attributes())->validate();
+    }
 
     public function index(Request $request, TableQueryService $tables)
     {
@@ -31,7 +61,7 @@ abstract class BaseCrudController extends Controller
 
     public function store(Request $request, AuditService $audit)
     {
-        $payload = $request->all();
+        $payload = $this->validatedInput($request);
         $payload['company_id'] ??= $this->companyId($request);
         $model = ($this->model)::create($payload)->load($this->with);
         $audit->record('created', $model, $request);
@@ -53,7 +83,7 @@ abstract class BaseCrudController extends Controller
     {
         $model = ($this->model)::query()->where('company_id', $this->companyId($request))->findOrFail($id);
         $oldValues = $model->getOriginal();
-        $model->update($request->all());
+        $model->update($this->validatedInput($request, isUpdate: true));
         $model->load($this->with);
         $audit->record('updated', $model, $request, $oldValues);
 
