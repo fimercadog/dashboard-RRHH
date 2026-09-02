@@ -475,7 +475,7 @@ function humanize(action: string) {
 function ActivityTimeline({ items }: { items: DashboardData["recent_activity"] }) {
   if (!items.length) return <p className="text-sm text-muted-foreground">Sin actividad registrada.</p>;
   return (
-    <ol className="relative space-y-4 before:absolute before:left-[15px] before:top-2 before:h-[calc(100%-1rem)] before:w-px before:bg-border">
+    <ol className="relative space-y-4 before:absolute before:left-3.75 before:top-2 before:h-[calc(100%-1rem)] before:w-px before:bg-border">
       {items.map((it) => {
         const meta = activityMeta(it.action);
         const Icon = meta.icon;
