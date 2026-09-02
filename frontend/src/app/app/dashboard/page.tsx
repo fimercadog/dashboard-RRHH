@@ -338,7 +338,7 @@ function DonutStatus({ rows }: { rows: DashboardData["headcount_by_status"] }) {
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Total</span>
         </div>
       </div>
-      <ul className="w-full space-y-2.5 text-sm">
+      <ul className="w-full space-y-2.5 text-sm sm:min-w-0 sm:flex-1">
         {data.map((d) => (
           <li key={d.name} className="flex items-center gap-2">
             <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: d.color }} />
