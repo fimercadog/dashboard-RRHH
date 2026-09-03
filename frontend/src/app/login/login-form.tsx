@@ -25,7 +25,7 @@ type LoginResponse = {
 export function LoginForm({
   initialEmail = "",
   autoLogin = false,
-  demoMode = true,
+  demoMode = false,
 }: {
   initialEmail?: string;
   autoLogin?: boolean;
