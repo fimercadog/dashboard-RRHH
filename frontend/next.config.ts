@@ -22,7 +22,26 @@ const nextConfig: NextConfig = {
   // carga. Se excluye `_next/` (assets con hash en el nombre, ya immutable) y
   // `api/` para no tocar sus cabeceras propias.
   async headers() {
+    // CSP parcial: bloquea clickjacking, plugins e inyeccion de <base>/formularios
+    // sin tocar la carga de scripts (eso necesita nonces por request; pendiente).
+    const csp = [
+      "frame-ancestors 'none'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
+    const securityHeaders = [
+      { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+      { key: "X-Frame-Options", value: "DENY" },
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+      { key: "Content-Security-Policy", value: csp },
+    ];
+
     return [
+      { source: "/:path*", headers: securityHeaders },
       {
         source: "/:path((?!_next/|api/).*)",
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
