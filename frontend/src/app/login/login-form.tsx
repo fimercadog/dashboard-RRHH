@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { isAxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
@@ -49,8 +50,13 @@ export function LoginForm({
       storeAuthSession(response.data.token, response.data.user);
       setSuccess(`Sesion iniciada como ${response.data.user.roles.join(", ")}`);
       router.push("/app/dashboard");
-    } catch {
-      setError("No se pudo iniciar sesion. Revisa el usuario y la contraseña.");
+    } catch (err) {
+      if (isAxiosError(err) && err.response?.status === 429) {
+        const retryAfter = Number(err.response.headers["retry-after"]) || 60;
+        setError(`Demasiados intentos fallidos. Espera ${retryAfter} segundos e intenta de nuevo.`);
+      } else {
+        setError("No se pudo iniciar sesion. Revisa el usuario y la contraseña.");
+      }
     } finally {
       setLoading(false);
     }
