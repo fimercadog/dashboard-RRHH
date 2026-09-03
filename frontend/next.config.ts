@@ -22,8 +22,13 @@ const nextConfig: NextConfig = {
   // carga. Se excluye `_next/` (assets con hash en el nombre, ya immutable) y
   // `api/` para no tocar sus cabeceras propias.
   async headers() {
-    // CSP parcial: bloquea clickjacking, plugins e inyeccion de <base>/formularios
+    // CSP parcial: bloquea clickjacking, plugins e inyeccion de <base>
     // sin tocar la carga de scripts (eso necesita nonces por request; pendiente).
+    // OJO: el LiteSpeed de Hostinger FUERZA `Content-Security-Policy:
+    // upgrade-insecure-requests` y pisa este header en prod (solo sobrevive
+    // en local / otro hosting). El clickjacking igual queda cubierto por
+    // X-Frame-Options: DENY de abajo. Una CSP real aqui necesita config a
+    // nivel de hPanel.
     const csp = [
       "frame-ancestors 'none'",
       "object-src 'none'",
