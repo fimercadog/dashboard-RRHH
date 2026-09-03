@@ -49,9 +49,12 @@ class LeadTest extends TestCase
         $user->givePermissionTo('leads.view');
         Sanctum::actingAs($user, ['*']);
 
-        $lead = Lead::create(['name' => 'X', 'email' => 'x@y.co', 'source' => 'contact', 'status' => 'new']);
+        $lead = Lead::create(['name' => 'X', 'email' => 'x@y.co', 'source' => 'contact', 'status' => 'new', 'ip_address' => '203.0.113.5']);
 
-        $this->getJson('/api/leads')->assertOk()->assertJsonPath('data.0.id', $lead->id);
+        $this->getJson('/api/leads')->assertOk()
+            ->assertJsonPath('data.0.id', $lead->id)
+            ->assertJsonPath('meta.total', 1)          // envelope que espera la tabla del panel
+            ->assertJsonMissingPath('data.0.ip_address'); // PII Ley 1581: no se expone al panel
         $this->putJson("/api/leads/{$lead->id}", ['status' => 'contacted'])->assertOk();
         $this->assertSame('contacted', $lead->refresh()->status);
     }

@@ -149,11 +149,11 @@ export function DataTable<TData extends object>({
       </div>
 
       <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>{data?.meta.total ?? 0} registros</span>
+        <span>{data?.meta?.total ?? 0} registros</span>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>Anterior</Button>
-          <span>Pagina {data?.meta.current_page ?? page} de {data?.meta.last_page ?? 1}</span>
-          <Button variant="outline" size="sm" disabled={!data || page >= data.meta.last_page} onClick={() => onPageChange(page + 1)}>Siguiente</Button>
+          <span>Pagina {data?.meta?.current_page ?? page} de {data?.meta?.last_page ?? 1}</span>
+          <Button variant="outline" size="sm" disabled={!data?.meta || page >= data.meta.last_page} onClick={() => onPageChange(page + 1)}>Siguiente</Button>
         </div>
       </div>
     </div>
