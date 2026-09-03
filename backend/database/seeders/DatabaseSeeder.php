@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
         $permissionNames = [
             'dashboard.view', 'employees.manage', 'attendance.manage', 'requests.approve',
             'documents.manage', 'reports.view', 'users.manage', 'roles.manage', 'audit.view', 'settings.manage',
+            'leads.view',
         ];
 
         foreach ($permissionNames as $name) {
@@ -54,7 +55,7 @@ class DatabaseSeeder extends Seeder
         $roles = [
             'Super Admin' => $permissionNames,
             'Administrador de empresa' => $permissionNames,
-            'Recursos Humanos' => ['dashboard.view', 'employees.manage', 'attendance.manage', 'requests.approve', 'documents.manage', 'reports.view'],
+            'Recursos Humanos' => ['dashboard.view', 'employees.manage', 'attendance.manage', 'requests.approve', 'documents.manage', 'reports.view', 'leads.view'],
             'Supervisor' => ['dashboard.view', 'attendance.manage', 'requests.approve', 'reports.view'],
             'Empleado' => ['dashboard.view'],
         ];

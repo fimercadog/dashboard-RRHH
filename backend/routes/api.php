@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\EmployeeDocumentController;
 use App\Http\Controllers\Api\ExportController;
+use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\PermissionRequestController;
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\ReportController;
@@ -30,6 +31,9 @@ Route::post('/auth/login', [AuthController::class, 'login'])->middleware('thrott
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:3,1');
 Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:6,1');
 
+// Formularios publicos del sitio de marketing (demo / contacto).
+Route::post('/leads', [LeadController::class, 'store'])->middleware('throttle:5,1');
+
 Route::middleware('auth:sanctum')->group(function (): void {
     // Sin permiso: cualquier usuario autenticado.
     Route::get('/auth/me', [AuthController::class, 'me']);
@@ -45,6 +49,9 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/contingency/status', [ContingencyController::class, 'status']);
     Route::post('/contingency/activate', [ContingencyController::class, 'activate'])->middleware('can:settings.manage');
     Route::post('/contingency/deactivate', [ContingencyController::class, 'deactivate'])->middleware('can:settings.manage');
+
+    Route::get('/leads', [LeadController::class, 'index'])->middleware('can:leads.view');
+    Route::match(['put', 'patch'], '/leads/{lead}', [LeadController::class, 'update'])->middleware('can:leads.view');
 
     Route::get('/company', [CompanyController::class, 'show'])->middleware('can:settings.manage');
     Route::put('/company', [CompanyController::class, 'update'])->middleware('can:settings.manage');

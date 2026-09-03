@@ -14,6 +14,7 @@ import {
   ClipboardList,
   Clock3,
   FileText,
+  Inbox,
   LayoutDashboard,
   Lock,
   LogOut,
@@ -89,6 +90,7 @@ const mainNav: NavItem[] = [
 const adminNav: NavItem[] = [
   { href: "/app/organizacion", label: "Organizacion", icon: Building2, permissions: ["settings.manage"] },
   { href: "/app/reclutamiento", label: "Reclutamiento", icon: BriefcaseBusiness, permissions: ["employees.manage"] },
+  { href: "/app/leads", label: "Leads", icon: Inbox, permissions: ["leads.view"] },
   { href: "/app/auditoria", label: "Auditoria", icon: ClipboardList, permissions: ["audit.view"] },
   { href: "/app/usuarios", label: "Usuarios", icon: UserCircle, permissions: ["users.manage"] },
   { href: "/app/roles", label: "Roles", icon: Shield, permissions: ["roles.manage"] },
