@@ -1,13 +1,10 @@
 import { AuthSplitLayout } from "@/components/auth/auth-split-layout";
 import { LoginForm } from "./login-form";
 
-// Atajos de usuarios demo en el login. Seguro por defecto: ocultos en produccion.
-// La variable, si esta definida, manda en cualquier direccion; sin ella se
-// muestran solo en desarrollo. Para el dominio showcase: NEXT_PUBLIC_DEMO_MODE=true.
-const demoMode =
-  process.env.NEXT_PUBLIC_DEMO_MODE !== undefined && process.env.NEXT_PUBLIC_DEMO_MODE !== ""
-    ? process.env.NEXT_PUBLIC_DEMO_MODE !== "false"
-    : process.env.NODE_ENV !== "production";
+// Este dominio es un showcase: los atajos de usuarios demo se muestran por
+// defecto para que cualquiera entre y pruebe roles. Para un despliegue con
+// datos reales de cliente: NEXT_PUBLIC_DEMO_MODE=false y rotar las cuentas.
+const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 const demoEmails: Record<string, string> = {
   superadmin: "superadmin@andespeople.co",
