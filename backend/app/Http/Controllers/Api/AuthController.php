@@ -42,13 +42,13 @@ class AuthController extends Controller
     {
         $request->validate(['email' => ['required', 'email']]);
 
-        $status = Password::sendResetLink($request->only('email'));
+        // Respuesta identica exista o no la cuenta: no filtrar que correos son
+        // reales (enumeracion de usuarios). El rate limit vive en la ruta.
+        Password::sendResetLink($request->only('email'));
 
-        if ($status !== Password::RESET_LINK_SENT) {
-            throw ValidationException::withMessages(['email' => [__($status)]]);
-        }
-
-        return response()->json(['message' => __($status)]);
+        return response()->json([
+            'message' => 'Si el correo esta registrado, enviamos un enlace para restablecer la contrasena.',
+        ]);
     }
 
     public function resetPassword(Request $request)

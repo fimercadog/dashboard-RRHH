@@ -25,9 +25,10 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
-Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
+// Rutas sin sesion: throttle por IP para frenar fuerza bruta / enumeracion.
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:3,1');
+Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:6,1');
 
 Route::middleware('auth:sanctum')->group(function (): void {
     // Sin permiso: cualquier usuario autenticado.
