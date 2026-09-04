@@ -9,14 +9,8 @@ export type AuthUser = {
   permissions: string[];
 };
 
-export const AUTH_TOKEN_KEY = "hrms_token";
 export const AUTH_USER_KEY = "hrms_user";
 export const AUTH_EXPIRED_EVENT = "hrms:auth-expired";
-
-export function getAuthToken() {
-  if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(AUTH_TOKEN_KEY);
-}
 
 export function getStoredUser(): AuthUser | null {
   if (typeof window === "undefined") return null;
@@ -32,8 +26,7 @@ export function getStoredUser(): AuthUser | null {
   }
 }
 
-export function storeAuthSession(token: string, user: AuthUser) {
-  window.localStorage.setItem(AUTH_TOKEN_KEY, token);
+export function storeAuthSession(user: AuthUser) {
   window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
 }
 
@@ -43,7 +36,6 @@ export function updateStoredUser(user: AuthUser) {
 
 export function clearAuthSession() {
   if (typeof window === "undefined") return;
-  window.localStorage.removeItem(AUTH_TOKEN_KEY);
   window.localStorage.removeItem(AUTH_USER_KEY);
 }
 

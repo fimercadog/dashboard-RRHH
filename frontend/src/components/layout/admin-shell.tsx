@@ -38,13 +38,13 @@ import { ContingencyBanner } from "@/components/layout/contingency-banner";
 import { useContingency } from "@/lib/contingency/context";
 import { openFeedbackForm } from "@/lib/feedback";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useTheme } from "@/components/theme-provider";
 import { api } from "@/lib/api";
 import {
   AUTH_EXPIRED_EVENT,
   AuthUser,
   clearAuthSession,
-  getAuthToken,
   getStoredUser,
   hasAnyPermission,
   updateStoredUser,
@@ -133,15 +133,49 @@ function NavLink({ item }: { item: NavItem }) {
 
   if (item.premium) {
     return (
-      <div
-        aria-disabled
-        title="Disponible en el plan Premium"
-        className="flex h-9 cursor-not-allowed items-center gap-3 rounded-md px-3 text-sm text-muted-foreground/60"
-      >
-        <Icon className="h-4 w-4" />
-        <span>{item.label}</span>
-        <PremiumBadge />
-      </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <button
+            type="button"
+            className="flex h-9 w-full items-center gap-3 rounded-md px-3 text-sm text-muted-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <Icon className="h-4 w-4" />
+            <span>{item.label}</span>
+            <PremiumBadge />
+          </button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Inteligencia Artificial para Recursos Humanos</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <p>
+              Potenciá la gestión de Recursos Humanos con una herramienta de inteligencia artificial diseñada
+              para{" "}
+              <strong className="font-semibold text-foreground">
+                apoyar tus procesos, facilitar el análisis de información y ayudarte en la toma de decisiones
+              </strong>
+              .
+            </p>
+            <p>
+              Podés utilizarla para analizar información del área, identificar tendencias, resumir datos
+              relevantes, generar documentos y comunicados, consultar información relacionada con los procesos
+              de RR. HH. y obtener apoyo para interpretar indicadores como ausentismo, rotación y novedades del
+              personal.
+            </p>
+            <p>
+              La inteligencia artificial funciona como un{" "}
+              <strong className="font-semibold text-foreground">asistente para el equipo de Recursos Humanos</strong>,
+              permitiendo trabajar de forma más ágil y obtener información útil a partir de los datos disponibles
+              en el sistema.
+            </p>
+            <p className="font-medium text-foreground">
+              Esta funcionalidad está disponible en el plan Premium. Para activarla o conocer las opciones
+              disponibles, comunicate con el administrador de tu sistema.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
@@ -189,14 +223,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   React.useEffect(() => {
-    const storedToken = getAuthToken();
-
-    if (!storedToken) {
-      router.replace("/login");
-      return;
-    }
-
-    // Pinta ya desde la cache (cliente), sin esperar a /auth/me.
+    // La sesion vive en una cookie httpOnly (invisible a JS): no hay forma de
+    // saber local si existe sin preguntarle a /auth/me. Pinta ya desde la
+    // cache (cliente) mientras se resuelve, y redirige si /auth/me falla.
     const cached = getStoredUser();
     if (cached) {
       setUser(cached);
@@ -309,7 +338,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       ) : null}
 
       <div className="lg:pl-72">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur lg:px-6">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-2 border-b border-border bg-background/95 px-4 backdrop-blur lg:px-6">
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
@@ -322,12 +351,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             >
               <Menu className="h-4 w-4" />
             </Button>
-            <div>
-              <p className="text-sm font-medium">{user?.company?.name ?? "DFC Talento Humano"}</p>
-              <p className="text-xs text-muted-foreground">Panel privado de Recursos Humanos</p>
+            <div className="min-w-0 max-w-24 sm:max-w-none">
+              <p className="truncate text-sm font-medium">{user?.company?.name ?? "DFC Talento Humano"}</p>
+              <p className="hidden truncate text-xs text-muted-foreground sm:block">
+                Panel privado de Recursos Humanos
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <div className="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-2 sm:flex">
               <UserCircle className="h-4 w-4 text-primary" />
               <div className="min-w-0">

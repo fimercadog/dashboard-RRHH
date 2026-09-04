@@ -145,6 +145,7 @@ function KpiCard({
         emphasis ? "ring-1 ring-primary/25 shadow-[0_0_0_1px_rgba(99,102,241,0.06),0_8px_30px_-12px_rgba(99,102,241,0.25)]" : ""
       }`}
     >
+      <span aria-hidden className="absolute inset-x-0 top-0 h-0.75 rounded-t-lg" style={{ backgroundColor: tone }} />
       {emphasis ? (
         <span
           aria-hidden
@@ -154,7 +155,7 @@ function KpiCard({
       ) : null}
       <CardContent className="flex items-start justify-between gap-3 p-4">
         <div className="min-w-0">
-          <p className="text-xs leading-tight text-muted-foreground">{label}</p>
+          <p className="text-[11px] font-medium uppercase leading-tight tracking-wide text-muted-foreground">{label}</p>
           <p className={`mt-1.5 font-semibold ${emphasis ? "text-3xl" : "text-2xl"}`}>
             <AnimatedValue value={value} suffix={suffix} />
           </p>
@@ -305,6 +306,27 @@ function AttendanceTrend({ data }: { data: DashboardData["trends"]["attendance_m
   );
 }
 
+type DonutLabelProps = { cx?: number; cy?: number; midAngle?: number; innerRadius?: number; outerRadius?: number; value?: number; percent?: number };
+function renderDonutLabel(props: DonutLabelProps) {
+  const { cx = 0, cy = 0, midAngle = 0, innerRadius = 0, outerRadius = 0, value = 0, percent = 0 } = props;
+  const pct = Math.round(percent * 100);
+  if (pct < 6) return null; // slice too thin - text would overflow it
+  const RADIAN = Math.PI / 180;
+  const r = (innerRadius + outerRadius) / 2;
+  const x = cx + r * Math.cos(-midAngle * RADIAN);
+  const y = cy + r * Math.sin(-midAngle * RADIAN);
+  return (
+    <g>
+      <text x={x} y={y - 6} textAnchor="middle" dominantBaseline="middle" className="fill-white text-[11px] font-bold">
+        {pct}%
+      </text>
+      <text x={x} y={y + 7} textAnchor="middle" dominantBaseline="middle" className="fill-white/75 text-[9px]">
+        {value}
+      </text>
+    </g>
+  );
+}
+
 function DonutStatus({ rows }: { rows: DashboardData["headcount_by_status"] }) {
   const data = rows
     .filter((r) => r.total > 0)
@@ -325,6 +347,8 @@ function DonutStatus({ rows }: { rows: DashboardData["headcount_by_status"] }) {
               paddingAngle={3}
               strokeWidth={2}
               style={{ stroke: "var(--card)" }}
+              label={renderDonutLabel}
+              labelLine={false}
             >
               {data.map((d) => (
                 <Cell key={d.name} fill={d.color} />

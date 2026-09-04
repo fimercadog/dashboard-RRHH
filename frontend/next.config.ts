@@ -11,7 +11,10 @@ const nextConfig: NextConfig = {
   // hacia 127.0.0.1:8001 (que no existe en el servidor) solo genera 500.
   async rewrites() {
     if (!isDev) return [];
-    return [{ source: "/api/:path*", destination: "http://127.0.0.1:8001/api/:path*" }];
+    return [
+      { source: "/api/:path*", destination: "http://127.0.0.1:8001/api/:path*" },
+      { source: "/sanctum/:path*", destination: "http://127.0.0.1:8001/sanctum/:path*" },
+    ];
   },
 
   // El CDN de Hostinger (hcdn) cachea el HTML de las paginas prerenderizadas

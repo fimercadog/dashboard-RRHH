@@ -6,11 +6,8 @@ const FORM_URL =
 // el comentario.
 const NOMBRE_DESARROLLO = "DFC Talento Humano";
 
-// entry.NNNN de la pregunta "Desarrollo de origen" en el form. Mientras no
-// exista esa pregunta se deja vacio y el form se abre sin prellenar.
-// Para activarlo: crear la pregunta en Google Forms, sacar su entry.xxxx del
-// enlace prellenado y pegarlo aqui.
-const ENTRY_DESARROLLO = "";
+// entry.NNNN de la pregunta "Desarrollo de origen" en el form.
+const ENTRY_DESARROLLO = "entry.1663960621";
 
 export function feedbackFormUrl(): string {
   if (!ENTRY_DESARROLLO) return FORM_URL;

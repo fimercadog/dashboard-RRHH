@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
@@ -30,10 +31,10 @@ class AuthController extends Controller
             ]);
         }
 
-        $user->tokens()->where('name', 'hrms-web')->delete();
+        Auth::login($user);
+        $request->session()->regenerate();
 
         return response()->json([
-            'token' => $user->createToken('hrms-web', $user->getAllPermissions()->pluck('name')->all())->plainTextToken,
             'user' => $this->userPayload($user),
         ]);
     }
@@ -80,7 +81,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()?->delete();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->noContent();
     }
