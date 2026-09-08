@@ -23,13 +23,38 @@ export function EmployeeProfileMockup() {
 }
 
 export function AttendanceMockup() {
+  const stats = [
+    ["38", "presentes"],
+    ["2", "ausentes"],
+    ["3", "tarde"],
+    ["1", "incapacidad"],
+  ];
+  const rows: Array<{ name: string; initials: string; in: string; out: string; status: string; tone: string }> = [
+    { name: "Laura Gomez", initials: "LG", in: "08:00", out: "17:00", status: "Presente", tone: "bg-success/10 text-success" },
+    { name: "Carlos Ruiz", initials: "CR", in: "08:19", out: "17:02", status: "Tarde", tone: "bg-warning/10 text-warning" },
+    { name: "Diana Peña", initials: "DP", in: "—", out: "—", status: "Ausente", tone: "bg-destructive/10 text-destructive" },
+  ];
   return (
     <div className="rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
-      <div className="grid grid-cols-4 gap-3">
-        {["38 presentes", "2 ausentes", "3 tarde", "1 incapacidad"].map((item) => <div key={item} className="rounded-2xl bg-muted p-3 text-center text-xs font-semibold text-navy">{item}</div>)}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {stats.map(([value, label]) => (
+          <div key={label} className="rounded-2xl bg-muted p-3 text-center">
+            <p className="text-lg font-bold text-navy">{value}</p>
+            <p className="text-xs text-muted-foreground">{label}</p>
+          </div>
+        ))}
       </div>
       <div className="mt-5 overflow-hidden rounded-2xl border border-border">
-        {["Laura | 08:00 | 17:00 | Presente", "Carlos | 08:19 | 17:02 | Tarde", "Diana | -- | -- | Ausente"].map((row) => <div key={row} className="border-b border-border px-4 py-3 text-sm last:border-0">{row}</div>)}
+        {rows.map((row) => (
+          <div key={row.name} className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-0">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent text-xs font-bold text-primary">{row.initials}</span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-navy">{row.name}</p>
+              <p className="text-xs text-muted-foreground">{row.in} – {row.out}</p>
+            </div>
+            <span className={`shrink-0 rounded-md px-2 py-1 text-xs font-medium ${row.tone}`}>{row.status}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -58,9 +83,31 @@ export function DocumentsMockup() {
 }
 
 export function ShiftsMockup() {
+  const days = ["Lun", "Mar", "Mie", "Jue", "Vie"];
+  const rows: Array<{ name: string; shifts: string[] }> = [
+    { name: "Laura", shifts: ["8-5", "8-5", "8-5", "Libre", "8-5"] },
+    { name: "Carlos", shifts: ["6-2", "6-2", "Libre", "6-2", "6-2"] },
+    { name: "Diana", shifts: ["2-10", "Libre", "2-10", "2-10", "2-10"] },
+  ];
   return (
     <div className="rounded-4xl border border-border bg-white p-6 shadow-(--marketing-shadow)">
-      {["Laura | 8-5 | 8-5 | 8-5 | Libre | 8-5", "Carlos | 6-2 | 6-2 | Libre | 6-2 | 6-2", "Diana | 2-10 | Libre | 2-10 | 2-10 | 2-10"].map((row) => <div key={row} className="mb-3 rounded-2xl border border-border px-4 py-3 text-sm text-muted-foreground">{row}</div>)}
+      <div className="grid grid-cols-[auto_repeat(5,1fr)] gap-x-2 gap-y-2 text-center text-xs">
+        <span />
+        {days.map((day) => <span key={day} className="font-semibold text-navy">{day}</span>)}
+        {rows.map((row) => (
+          <div key={row.name} className="contents">
+            <span className="flex items-center pr-1 text-sm font-medium text-navy">{row.name}</span>
+            {row.shifts.map((shift, index) => (
+              <span
+                key={index}
+                className={`rounded-lg px-1.5 py-1.5 font-medium ${shift === "Libre" ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"}`}
+              >
+                {shift}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

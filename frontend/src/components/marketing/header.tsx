@@ -44,8 +44,11 @@ export function MarketingHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-white/90 backdrop-blur">
       <div className="relative z-50 mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link className="shrink-0" href="/">
-          <Logo size="lg" />
+        <Link className="min-w-0 shrink" href="/">
+          <Logo
+            size="lg"
+            className="px-2 py-1.5 sm:px-3 sm:py-2 [&>img]:h-8 sm:[&>img]:h-11 xl:[&>img]:h-14"
+          />
         </Link>
         <nav className="hidden items-center gap-6 xl:flex">
           <Dropdown label="Producto" items={navProduct} />
@@ -61,7 +64,7 @@ export function MarketingHeader() {
           <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm font-medium text-navy transition-colors hover:bg-muted" href="/login" target="_blank" rel="noopener noreferrer">Iniciar sesion</Link>
           <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-white transition-transform duration-200 hover:scale-105 hover:opacity-90 active:scale-95" href="/demo">Solicitar demo</Link>
         </div>
-        <div className="flex items-center gap-2 xl:hidden">
+        <div className="flex shrink-0 items-center gap-2 xl:hidden">
           <Link
             className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-3 text-sm font-medium text-navy transition-colors hover:bg-muted"
             href="/login"
