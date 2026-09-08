@@ -1,3 +1,9 @@
+# Hostinger/CloudLinux: forzar PHP 8.4 (el default del hosting es 8.2 y las
+# dependencias del backend requieren >=8.4). Redundante si el panel ya esta en 8.4.
+<IfModule mime_module>
+    AddHandler application/x-httpd-alt-php84___lsphp .php
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
