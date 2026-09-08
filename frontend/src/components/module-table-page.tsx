@@ -5,6 +5,7 @@ import { Pencil, Plus, WifiOff } from "lucide-react";
 import { CrudField, CrudModal } from "@/components/crud/crud-modal";
 import { DataTable } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
+import { API_BASE } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { useApiTable } from "@/lib/use-api-table";
 import { useContingency } from "@/lib/contingency/context";
@@ -111,7 +112,7 @@ export function ModuleTablePage<T extends object & RowWithId>({
 
       <DataTable
         columns={tableColumns}
-        exportBaseUrl={exportResource ? `${process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8001/api"}/exports/${exportResource}` : undefined}
+        exportBaseUrl={exportResource ? `${API_BASE}/exports/${exportResource}` : undefined}
         data={table.data}
         search={table.search}
         onSearchChange={table.setSearch}

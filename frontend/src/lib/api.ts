@@ -1,7 +1,13 @@
 import axios from "axios";
 import { AUTH_EXPIRED_EVENT, clearAuthSession, getToken } from "@/lib/auth";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "/api";
+// Tolera que NEXT_PUBLIC_API_URL venga sin esquema (p.ej. "host.com/api"): sin
+// el "https://" axios la trata como ruta relativa y pega al origen del frontend.
+const rawApiBase = process.env.NEXT_PUBLIC_API_URL ?? "/api";
+export const API_BASE =
+  rawApiBase.startsWith("http") || rawApiBase.startsWith("/")
+    ? rawApiBase
+    : `https://${rawApiBase}`;
 
 export const api = axios.create({
   baseURL: API_BASE,
