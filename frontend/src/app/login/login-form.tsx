@@ -7,7 +7,7 @@ import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { isAxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { api, primeCsrfCookie } from "@/lib/api";
+import { api } from "@/lib/api";
 import { AuthUser, storeAuthSession } from "@/lib/auth";
 
 const demoUsers = [
@@ -19,6 +19,7 @@ const demoUsers = [
 ];
 
 type LoginResponse = {
+  token: string;
   user: AuthUser;
 };
 
@@ -45,9 +46,8 @@ export function LoginForm({
     setSuccess("");
 
     try {
-      await primeCsrfCookie();
       const response = await api.post<LoginResponse>("/auth/login", { email: selectedEmail, password: selectedPassword });
-      storeAuthSession(response.data.user);
+      storeAuthSession(response.data.user, response.data.token);
       setSuccess(`Sesion iniciada como ${response.data.user.roles.join(", ")}`);
       router.push("/app/dashboard");
     } catch (err) {

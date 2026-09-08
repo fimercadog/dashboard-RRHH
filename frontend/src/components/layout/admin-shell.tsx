@@ -223,9 +223,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   React.useEffect(() => {
-    // La sesion vive en una cookie httpOnly (invisible a JS): no hay forma de
-    // saber local si existe sin preguntarle a /auth/me. Pinta ya desde la
-    // cache (cliente) mientras se resuelve, y redirige si /auth/me falla.
+    // El token Bearer vive en localStorage, pero solo /auth/me confirma que
+    // sigue siendo valido. Pinta ya desde la cache (cliente) mientras se
+    // resuelve, y redirige si /auth/me falla.
     const cached = getStoredUser();
     if (cached) {
       setUser(cached);
