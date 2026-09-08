@@ -18,9 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(SecurityHeaders::class);
         $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : route('login'));
-        // Cookie httpOnly de sesion en vez de bearer token: habilita CSRF +
-        // auth por cookie para los dominios en SANCTUM_STATEFUL_DOMAINS.
-        $middleware->statefulApi();
+        // Auth por token Sanctum (Bearer): la SPA guarda el plainTextToken y lo
+        // manda en Authorization. Sin statefulApi() -> sin cookie de sesion/CSRF.
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $exception, Request $request) {

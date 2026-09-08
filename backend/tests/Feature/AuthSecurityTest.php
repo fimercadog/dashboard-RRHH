@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -22,6 +23,34 @@ class AuthSecurityTest extends TestCase
         $known->assertOk();
         $unknown->assertOk();
         $this->assertSame($known->json('message'), $unknown->json('message'));
+    }
+
+    public function test_login_returns_a_working_sanctum_token(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'real@andespeople.co',
+            'password' => Hash::make('secret1234'),
+            'status' => 'active',
+        ]);
+
+        $token = $this->postJson('/api/auth/login', [
+            'email' => 'real@andespeople.co',
+            'password' => 'secret1234',
+        ])->assertOk()->json('token');
+
+        $this->assertNotEmpty($token);
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->getJson('/api/auth/me')
+            ->assertOk()
+            ->assertJsonPath('user.id', $user->id);
+
+        // logout revoca el token: la fila desaparece de personal_access_tokens.
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/auth/logout')
+            ->assertNoContent();
+
+        $this->assertSame(0, $user->tokens()->count());
     }
 
     public function test_login_is_rate_limited_after_repeated_failures(): void

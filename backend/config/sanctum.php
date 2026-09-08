@@ -37,7 +37,8 @@ return [
     |
     */
 
-    'guard' => ['web'],
+    // Sin sesion de primera parte: la SPA se autentica solo con token Bearer.
+    'guard' => [],
 
     /*
     |--------------------------------------------------------------------------

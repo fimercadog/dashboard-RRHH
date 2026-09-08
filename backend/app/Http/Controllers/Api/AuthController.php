@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
@@ -31,10 +30,10 @@ class AuthController extends Controller
             ]);
         }
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        $token = $user->createToken('spa')->plainTextToken;
 
         return response()->json([
+            'token' => $token,
             'user' => $this->userPayload($user),
         ]);
     }
@@ -81,9 +80,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->noContent();
     }

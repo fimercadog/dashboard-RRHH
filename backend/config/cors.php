@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*'],
 
     'allowed_methods' => ['*'],
 
@@ -22,5 +22,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true,
+    // Auth por token Bearer en el header Authorization, no cookies.
+    'supports_credentials' => false,
 ];
