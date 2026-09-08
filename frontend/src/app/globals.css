@@ -110,6 +110,13 @@ body {
   color: var(--foreground);
 }
 
+/* Red de seguridad: nada debe generar scroll horizontal en movil. `clip` (no
+   `hidden`) no rompe `position: sticky` del header del panel. */
+html,
+body {
+  overflow-x: clip;
+}
+
 button, input, select { font: inherit; }
 
 html {
