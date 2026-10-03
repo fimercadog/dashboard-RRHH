@@ -23,6 +23,11 @@ export type DashboardData = {
     documents: { id: number; name: string; expiration_date: string }[];
     birthdays: { id: number; first_name: string; last_name: string; birth_date: string }[];
   };
+  crm_metrics?: {
+    open_deals: number;
+    deals_by_stage: Record<string, number>;
+    activities_due_today: number;
+  } | null;
 };
 
 export function useDashboard() {

@@ -13,6 +13,7 @@ import {
   Clock3,
   FileWarning,
   Filter,
+  Handshake,
   HeartPulse,
   Minus,
   Plane,
@@ -712,6 +713,28 @@ export default function DashboardPage() {
           <MiniStat label="Docs. por vencer" value={data.upcoming_events.documents.length} icon={FileWarning} tone={TONE.slate} />
         </div>
       </motion.div>
+
+      {/* CRM metrics — visible solo cuando el backend retorna crm_metrics */}
+      {data.crm_metrics ? (
+        <motion.div variants={item}>
+          <SectionLabel>CRM · pipeline</SectionLabel>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <KpiCard
+              label="Deals abiertos"
+              value={data.crm_metrics.open_deals}
+              icon={Handshake}
+              tone={TONE.indigo}
+              emphasis
+            />
+            <KpiCard
+              label="Actividades hoy"
+              value={data.crm_metrics.activities_due_today}
+              icon={Activity}
+              tone={TONE.amber}
+            />
+          </div>
+        </motion.div>
+      ) : null}
 
       {/* Analytics */}
       <motion.div variants={item}>

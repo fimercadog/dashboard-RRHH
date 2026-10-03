@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\AuditService;
+use App\Services\TableQueryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -15,6 +16,21 @@ class UserController extends BaseCrudController
     protected array $with = ['employee'];
     protected array $searchable = ['name', 'email'];
     protected array $filterable = ['status' => 'status'];
+
+    public function index(Request $request, TableQueryService $tables)
+    {
+        $query = User::query()
+            ->where('company_id', $this->companyId($request))
+            ->with($this->with);
+
+        if ($request->filled('role')) {
+            $query->whereHas('roles', fn ($q) => $q->where('name', $request->input('role')));
+        }
+
+        $tables->apply($request, $query, $this->searchable, $this->filterable);
+
+        return UserResource::collection($query->paginate(min((int) $request->input('per_page', 10), 100)));
+    }
 
     public function store(Request $request, AuditService $audit)
     {

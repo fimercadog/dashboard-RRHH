@@ -14,20 +14,26 @@ import {
   ClipboardList,
   Clock3,
   FileText,
+  Handshake,
   Inbox,
+  Layers,
   LayoutDashboard,
   Lock,
   LogOut,
   Menu,
   MessageSquarePlus,
   Moon,
+  Package,
   Settings,
   Shield,
   ShieldAlert,
   Stethoscope,
   Sun,
+  Tag,
   UserCircle,
+  UserRound,
   Users,
+  Warehouse,
   WifiOff,
   X,
   type LucideIcon,
@@ -73,29 +79,81 @@ type NavItem = {
   alert?: boolean;
 };
 
-const mainNav: NavItem[] = [
-  { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard, permissions: ["dashboard.view"] },
-  { href: "/app/empleados", label: "Empleados", icon: Users, permissions: ["employees.manage"] },
-  { href: "/app/asistencia", label: "Asistencia", icon: Clock3, permissions: ["attendance.manage"] },
-  { href: "/app/vacaciones", label: "Vacaciones", icon: CalendarDays, permissions: ["requests.approve"] },
-  { href: "/app/permisos", label: "Permisos", icon: BadgeCheck, permissions: ["requests.approve"] },
-  { href: "/app/incapacidades", label: "Incapacidades", icon: Stethoscope, permissions: ["requests.approve"] },
-  { href: "/app/documentos", label: "Documentos", icon: FileText, permissions: ["documents.manage"] },
-  { href: "/app/turnos", label: "Turnos", icon: Activity, permissions: ["attendance.manage"] },
-  { href: "/app/reportes", label: "Reportes", icon: BarChart3, permissions: ["reports.view"] },
-  { href: "/app/contingencia", label: "Modo contingencia", icon: WifiOff, alert: true },
-  { href: "/app/ia", label: "IA para RRHH", icon: Bot, premium: true },
+type NavGroup = {
+  /** Sin label = sin encabezado visible (primer bloque). */
+  label?: string;
+  items: NavItem[];
+};
+
+const navGroups: NavGroup[] = [
+  {
+    items: [
+      { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard, permissions: ["dashboard.view"] },
+    ],
+  },
+  {
+    label: "Recursos Humanos",
+    items: [
+      { href: "/app/empleados", label: "Empleados", icon: Users, permissions: ["employees.manage"] },
+      { href: "/app/asistencia", label: "Asistencia", icon: Clock3, permissions: ["attendance.manage"] },
+      { href: "/app/vacaciones", label: "Vacaciones", icon: CalendarDays, permissions: ["requests.approve"] },
+      { href: "/app/permisos", label: "Permisos", icon: BadgeCheck, permissions: ["requests.approve"] },
+      { href: "/app/incapacidades", label: "Incapacidades", icon: Stethoscope, permissions: ["requests.approve"] },
+      { href: "/app/documentos", label: "Documentos", icon: FileText, permissions: ["documents.manage"] },
+      { href: "/app/turnos", label: "Turnos", icon: Activity, permissions: ["attendance.manage"] },
+    ],
+  },
+  {
+    label: "CRM",
+    items: [
+      { href: "/app/leads",            label: "Leads",        icon: Inbox,      permissions: ["leads.view"] },
+      { href: "/app/clientes",         label: "Clientes",     icon: Users,      permissions: ["clients.manage"] },
+      { href: "/app/crm/contactos",    label: "Contactos",    icon: UserRound,  permissions: ["contacts.manage"] },
+      { href: "/app/crm/deals",        label: "Oportunidades", icon: Handshake, permissions: ["deals.manage"] },
+      { href: "/app/crm/actividades",  label: "Actividades",  icon: Activity,   permissions: ["activities.manage"] },
+      { href: "/app/crm/segmentos",    label: "Segmentos",    icon: Tag,        permissions: ["segments.manage"] },
+    ],
+  },
+  {
+    label: "Inventario",
+    items: [
+      { href: "/app/inventario/productos",   label: "Productos",   icon: Package,   permissions: ["inventory.manage"] },
+      { href: "/app/inventario/categorias",  label: "Categorías",  icon: Layers,    permissions: ["inventory.manage"] },
+      { href: "/app/inventario/marcas",      label: "Marcas",      icon: Tag,       permissions: ["inventory.manage"] },
+      { href: "/app/inventario/unidades",    label: "Unidades",    icon: Settings,  permissions: ["inventory.manage"] },
+      { href: "/app/inventario/bodegas",     label: "Bodegas",     icon: Warehouse, permissions: ["inventory.manage"] },
+      { href: "/app/inventario/stock",       label: "Stock",       icon: BarChart3, permissions: ["inventory.view"] },
+      { href: "/app/inventario/movimientos", label: "Movimientos", icon: Activity,  permissions: ["inventory.view"] },
+    ],
+  },
+  {
+    label: "Reportes",
+    items: [
+      { href: "/app/reportes", label: "Reportes", icon: BarChart3, permissions: ["reports.view"] },
+    ],
+  },
+  {
+    label: "Herramientas",
+    items: [
+      { href: "/app/contingencia", label: "Modo contingencia", icon: WifiOff, alert: true },
+      { href: "/app/ia", label: "IA para RRHH", icon: Bot, premium: true },
+    ],
+  },
+  {
+    label: "Administracion",
+    items: [
+      { href: "/app/organizacion", label: "Organizacion", icon: Building2, permissions: ["settings.manage"] },
+      { href: "/app/reclutamiento", label: "Reclutamiento", icon: BriefcaseBusiness, permissions: ["employees.manage"] },
+      { href: "/app/auditoria", label: "Auditoria", icon: ClipboardList, permissions: ["audit.view"] },
+      { href: "/app/usuarios", label: "Usuarios", icon: UserCircle, permissions: ["users.manage"] },
+      { href: "/app/roles", label: "Roles", icon: Shield, permissions: ["roles.manage"] },
+      { href: "/app/configuracion", label: "Configuracion", icon: Settings, permissions: ["settings.manage"] },
+    ],
+  },
 ];
 
-const adminNav: NavItem[] = [
-  { href: "/app/organizacion", label: "Organizacion", icon: Building2, permissions: ["settings.manage"] },
-  { href: "/app/reclutamiento", label: "Reclutamiento", icon: BriefcaseBusiness, permissions: ["employees.manage"] },
-  { href: "/app/leads", label: "Leads", icon: Inbox, permissions: ["leads.view"] },
-  { href: "/app/auditoria", label: "Auditoria", icon: ClipboardList, permissions: ["audit.view"] },
-  { href: "/app/usuarios", label: "Usuarios", icon: UserCircle, permissions: ["users.manage"] },
-  { href: "/app/roles", label: "Roles", icon: Shield, permissions: ["roles.manage"] },
-  { href: "/app/configuracion", label: "Configuracion", icon: Settings, permissions: ["settings.manage"] },
-];
+/** Todos los items aplanados — para el guard de ruta y filtros de permiso. */
+const allNavItems = navGroups.flatMap((g) => g.items);
 
 function PremiumBadge() {
   return (
@@ -255,13 +313,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleExpiredSession);
   }, [router]);
 
-  const visibleMainNav = mainNav.filter((item) => hasAnyPermission(user, item.permissions));
-  const visibleAdminNav = adminNav.filter((item) => hasAnyPermission(user, item.permissions));
-
   // Guard por ruta: si la ruta actual corresponde a un modulo del menu y el
   // usuario no tiene su permiso, se muestra una pantalla de acceso denegado.
   // El backend igual responde 403; esto es UX (evita tabla rota + 403 en rojo).
-  const activeNav = [...mainNav, ...adminNav]
+  const activeNav = allNavItems
     .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
     .sort((a, b) => b.href.length - a.href.length)[0];
   const authorized = !user || !activeNav || hasAnyPermission(user, activeNav.permissions);
@@ -294,13 +349,20 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   const navBody = (
     <nav className="flex-1 space-y-6 overflow-y-auto p-4">
-      <div className="space-y-1">{visibleMainNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
-      {visibleAdminNav.length ? (
-        <div>
-          <p className="mb-2 px-3 text-xs font-medium uppercase text-muted-foreground">Administracion</p>
-          <div className="space-y-1">{visibleAdminNav.map((item) => <NavLink key={item.href} item={item} />)}</div>
-        </div>
-      ) : null}
+      {navGroups.map((group, i) => {
+        const visible = group.items.filter((item) => hasAnyPermission(user, item.permissions));
+        if (!visible.length) return null;
+        return (
+          <div key={i}>
+            {group.label ? (
+              <p className="mb-2 px-3 text-xs font-medium uppercase text-muted-foreground">{group.label}</p>
+            ) : null}
+            <div className="space-y-1">
+              {visible.map((item) => <NavLink key={item.href} item={item} />)}
+            </div>
+          </div>
+        );
+      })}
     </nav>
   );
 

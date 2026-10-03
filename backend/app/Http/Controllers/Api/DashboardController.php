@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\Concerns\ResolvesCompany;
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Attendance;
 use App\Models\AuditLog;
+use App\Models\Deal;
 use App\Models\Employee;
 use App\Models\EmployeeDocument;
 use App\Models\PermissionRequest;
 use App\Models\SickLeave;
 use App\Models\VacationRequest;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -119,7 +122,30 @@ class DashboardController extends Controller
                     'user' => $log->user?->name,
                     'created_at' => $log->created_at,
                 ]),
+            'crm_metrics' => $this->crmMetrics($request->user(), $companyId, $today),
         ]);
+    }
+
+    private function crmMetrics(mixed $user, int $companyId, Carbon $today): ?array
+    {
+        if (! $user?->can('deals.manage') || ! Schema::hasTable('deals')) {
+            return null;
+        }
+
+        return [
+            'open_deals' => Deal::where('company_id', $companyId)
+                ->whereNotIn('stage', ['won', 'lost'])
+                ->count(),
+            'deals_by_stage' => Deal::where('company_id', $companyId)
+                ->whereNotIn('stage', ['won', 'lost'])
+                ->selectRaw('stage, count(*) as total')
+                ->groupBy('stage')
+                ->pluck('total', 'stage'),
+            'activities_due_today' => Activity::where('company_id', $companyId)
+                ->where('status', 'pending')
+                ->whereDate('due_at', $today)
+                ->count(),
+        ];
     }
 
     /** @return array{current: float|int, previous: float|int, pct: float|null} */

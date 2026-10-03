@@ -2,12 +2,24 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\StockController;
+use App\Http\Controllers\Api\StockMovementController;
+use App\Http\Controllers\Api\UnitController;
+use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\ClientNoteController;
 use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ContingencyController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\DealController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\EmployeeDocumentController;
@@ -17,6 +29,7 @@ use App\Http\Controllers\Api\PermissionRequestController;
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SegmentController;
 use App\Http\Controllers\Api\ShiftController;
 use App\Http\Controllers\Api\SickLeaveController;
 use App\Http\Controllers\Api\UserController;
@@ -69,8 +82,28 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::apiResource('roles', RoleController::class)->only(['index', 'store', 'update'])->middleware('can:roles.manage');
     Route::apiResource('users', UserController::class)->only(['index', 'store', 'update'])->middleware('can:users.manage');
 
+    // CRM — Fase A.
+    Route::apiResource('contacts', ContactController::class)->middleware('can:contacts.manage');
+    Route::apiResource('client-notes', ClientNoteController::class)->only(['index', 'store', 'destroy'])->middleware('can:clients.manage');
+    Route::apiResource('deals', DealController::class)->middleware('can:deals.manage');
+    Route::apiResource('activities', ActivityController::class)->middleware('can:activities.manage');
+    Route::apiResource('segments', SegmentController::class)->middleware('can:segments.manage');
+    Route::post('/segments/{segment}/clients', [SegmentController::class, 'syncClients'])->middleware('can:segments.manage');
+
+    Route::apiResource('clients', ClientController::class)->middleware('can:clients.manage');
+
+    // Inventario — Fase B.
+    Route::apiResource('categories', CategoryController::class)->middleware('can:inventory.manage');
+    Route::apiResource('brands', BrandController::class)->middleware('can:inventory.manage');
+    Route::apiResource('units', UnitController::class)->middleware('can:inventory.manage');
+    Route::apiResource('warehouses', WarehouseController::class)->middleware('can:inventory.manage');
+    Route::apiResource('products', ProductController::class)->middleware('can:inventory.manage');
+    Route::get('/stock', [StockController::class, 'index'])->middleware('can:inventory.view');
+    Route::get('/stock-movements', [StockMovementController::class, 'index'])->middleware('can:inventory.view');
+    Route::post('/stock-movements', [StockMovementController::class, 'store'])->middleware('can:inventory.movements');
+
     // El permiso por recurso se valida dentro del controlador.
     Route::get('/exports/{resource}.{format}', ExportController::class)
-        ->whereIn('resource', ['employees', 'attendances', 'vacation-requests', 'permission-requests', 'sick-leaves', 'employee-documents', 'audit-logs'])
+        ->whereIn('resource', ['employees', 'attendances', 'vacation-requests', 'permission-requests', 'sick-leaves', 'employee-documents', 'audit-logs', 'clients', 'contacts', 'deals', 'activities', 'segments', 'products', 'stock-movements'])
         ->whereIn('format', ['csv', 'pdf']);
 });
