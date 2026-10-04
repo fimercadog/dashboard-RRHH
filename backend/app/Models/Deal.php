@@ -17,7 +17,7 @@ class Deal extends Model
 
     protected $fillable = [
         'company_id', 'client_id', 'owner_id', 'title', 'amount', 'stage',
-        'expected_close_date', 'notes',
+        'expected_close_date', 'notes', 'sale_order_id',
     ];
 
     protected $casts = ['amount' => 'float'];
@@ -26,4 +26,5 @@ class Deal extends Model
     public function client(): BelongsTo { return $this->belongsTo(Client::class); }
     public function owner(): BelongsTo { return $this->belongsTo(User::class, 'owner_id'); }
     public function activities(): HasMany { return $this->hasMany(Activity::class); }
+    public function saleOrder(): BelongsTo { return $this->belongsTo(SaleOrder::class); }
 }

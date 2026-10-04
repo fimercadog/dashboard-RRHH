@@ -2,6 +2,7 @@
 
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
+import { CLIENT_IDENTIFICATION_TYPE_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
 import { Client } from "@/lib/types";
@@ -17,14 +18,7 @@ const columns: AppColumnDef<Client>[] = [
 const fields: CrudField[] = [
   { name: "first_name", label: "Nombres", required: true },
   { name: "last_name", label: "Apellidos", required: true },
-  {
-    name: "identification_type", label: "Tipo de documento", type: "select",
-    options: [
-      { label: "CC", value: "CC" }, { label: "CE", value: "CE" },
-      { label: "Pasaporte", value: "PA" }, { label: "NIT", value: "NIT" },
-      { label: "PPT", value: "PPT" }, { label: "TI", value: "TI" },
-    ],
-  },
+  { name: "identification_type", label: "Tipo de documento", type: "select", options: CLIENT_IDENTIFICATION_TYPE_OPTIONS },
   { name: "company_name", label: "Nombre empresa", hint: "Si es persona juridica" },
   { name: "identification_number", label: "Numero de documento" },
   { name: "email", label: "Correo", type: "email" },
@@ -32,10 +26,7 @@ const fields: CrudField[] = [
   { name: "city", label: "Ciudad" },
   { name: "address", label: "Direccion", type: "textarea", colSpan: "full" },
   { name: "notes", label: "Notas", type: "textarea", colSpan: "full" },
-  {
-    name: "status", label: "Estado", type: "select", required: true,
-    options: [{ label: "Activo", value: "active" }, { label: "Inactivo", value: "inactive" }],
-  },
+  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
 ];
 
 export default function ClientesPage() {

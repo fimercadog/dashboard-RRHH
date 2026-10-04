@@ -36,6 +36,16 @@ import {
   Warehouse,
   WifiOff,
   X,
+  Receipt,
+  ShoppingCart,
+  Banknote,
+  ArrowLeftRight,
+  TrendingUp,
+  Wallet,
+  BookOpen,
+  CalendarRange,
+  BookText,
+  SlidersHorizontal,
   type LucideIcon,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
@@ -124,6 +134,43 @@ const navGroups: NavGroup[] = [
       { href: "/app/inventario/bodegas",     label: "Bodegas",     icon: Warehouse, permissions: ["inventory.manage"] },
       { href: "/app/inventario/stock",       label: "Stock",       icon: BarChart3, permissions: ["inventory.view"] },
       { href: "/app/inventario/movimientos", label: "Movimientos", icon: Activity,  permissions: ["inventory.view"] },
+    ],
+  },
+  {
+    label: "Compras",
+    items: [
+      { href: "/app/compras/proveedores", label: "Proveedores",    icon: Users,      permissions: ["purchases.manage"] },
+      { href: "/app/compras/ordenes",     label: "Órdenes",        icon: ClipboardList, permissions: ["purchases.manage"] },
+      { href: "/app/compras/recepciones", label: "Recepciones",    icon: Package,    permissions: ["purchases.manage"] },
+      { href: "/app/compras/facturas",    label: "Facturas",       icon: FileText,   permissions: ["purchases.manage"] },
+      { href: "/app/compras/cxp",         label: "CxP",            icon: ShieldAlert, permissions: ["purchases.view"] },
+    ],
+  },
+  {
+    label: "Ventas",
+    items: [
+      { href: "/app/ventas/cotizaciones", label: "Cotizaciones", icon: FileText,      permissions: ["sales.manage"] },
+      { href: "/app/ventas/pedidos",      label: "Pedidos",      icon: ShoppingCart,  permissions: ["sales.manage"] },
+      { href: "/app/ventas/facturas",     label: "Facturas",     icon: Receipt,       permissions: ["sales.manage"] },
+      { href: "/app/ventas/cxc",          label: "CxC",          icon: ShieldAlert,   permissions: ["sales.view"] },
+    ],
+  },
+  {
+    label: "Finanzas",
+    items: [
+      { href: "/app/finanzas/cuentas",        label: "Cuentas",      icon: Wallet,          permissions: ["finance.manage"] },
+      { href: "/app/finanzas/pagos",           label: "Pagos",        icon: Banknote,        permissions: ["finance.manage"] },
+      { href: "/app/finanzas/transferencias",  label: "Transferencias", icon: ArrowLeftRight, permissions: ["finance.manage"] },
+      { href: "/app/finanzas/movimientos",     label: "Movimientos",  icon: TrendingUp,      permissions: ["finance.view"] },
+    ],
+  },
+  {
+    label: "Contabilidad",
+    items: [
+      { href: "/app/contabilidad/plan-cuentas",  label: "Plan de Cuentas", icon: BookOpen,          permissions: ["accounting.view"] },
+      { href: "/app/contabilidad/periodos",       label: "Períodos",        icon: CalendarRange,      permissions: ["accounting.view"] },
+      { href: "/app/contabilidad/diario",         label: "Libro Diario",    icon: BookText,           permissions: ["accounting.view"] },
+      { href: "/app/contabilidad/configuracion",  label: "Configuración",   icon: SlidersHorizontal,  permissions: ["accounting.manage"] },
     ],
   },
   {

@@ -34,6 +34,23 @@ use App\Http\Controllers\Api\ShiftController;
 use App\Http\Controllers\Api\SickLeaveController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VacationRequestController;
+use App\Http\Controllers\Api\AccountPayableController;
+use App\Http\Controllers\Api\PurchaseInvoiceController;
+use App\Http\Controllers\Api\PurchaseOrderController;
+use App\Http\Controllers\Api\PurchaseReceiptController;
+use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\QuoteController;
+use App\Http\Controllers\Api\SaleOrderController;
+use App\Http\Controllers\Api\SaleInvoiceController;
+use App\Http\Controllers\Api\AccountsReceivableController;
+use App\Http\Controllers\Api\CashAccountController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\FinancialTransactionController;
+use App\Http\Controllers\Api\TransferController;
+use App\Http\Controllers\Api\ChartOfAccountController;
+use App\Http\Controllers\Api\AccountingPeriodController;
+use App\Http\Controllers\Api\JournalEntryController;
+use App\Http\Controllers\Api\AccountingAccountConfigController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -101,6 +118,50 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/stock', [StockController::class, 'index'])->middleware('can:inventory.view');
     Route::get('/stock-movements', [StockMovementController::class, 'index'])->middleware('can:inventory.view');
     Route::post('/stock-movements', [StockMovementController::class, 'store'])->middleware('can:inventory.movements');
+
+    // Compras — Fase C.
+    Route::apiResource('suppliers', SupplierController::class)->middleware('can:purchases.manage');
+    Route::apiResource('purchase-orders', PurchaseOrderController::class)->middleware('can:purchases.manage');
+    Route::apiResource('purchase-receipts', PurchaseReceiptController::class)->middleware('can:purchases.manage');
+    Route::post('/purchase-receipts/{id}/post', [PurchaseReceiptController::class, 'post'])->middleware('can:purchases.manage');
+    Route::apiResource('purchase-invoices', PurchaseInvoiceController::class)->middleware('can:purchases.manage');
+    Route::post('/purchase-invoices/{id}/post', [PurchaseInvoiceController::class, 'post'])->middleware('can:purchases.manage');
+    Route::apiResource('accounts-payable', AccountPayableController::class)->only(['index', 'show'])->middleware('can:purchases.view');
+
+    // Ventas — Fase D.
+    Route::apiResource('quotes', QuoteController::class)->middleware('can:sales.manage');
+    Route::apiResource('sale-orders', SaleOrderController::class)->middleware('can:sales.manage');
+    Route::post('/sale-orders/{id}/confirm', [SaleOrderController::class, 'confirm'])->middleware('can:sales.manage');
+    Route::apiResource('sale-invoices', SaleInvoiceController::class)->middleware('can:sales.manage');
+    Route::post('/sale-invoices/{id}/post', [SaleInvoiceController::class, 'post'])->middleware('can:sales.manage');
+    Route::post('/sale-invoices/{id}/return', [SaleInvoiceController::class, 'createReturn'])->middleware('can:sales.manage');
+    Route::apiResource('accounts-receivable', AccountsReceivableController::class)->only(['index', 'show'])->middleware('can:sales.view');
+
+    // Finanzas — Fase E.
+    Route::apiResource('cash-accounts', CashAccountController::class)->middleware('can:finance.manage');
+    Route::apiResource('payments', PaymentController::class)->only(['index', 'show', 'store'])->middleware('can:finance.manage');
+    Route::post('/payments/{id}/cancel', [PaymentController::class, 'cancel'])->middleware('can:finance.manage');
+    Route::apiResource('transfers', TransferController::class)->only(['index', 'show', 'store'])->middleware('can:finance.manage');
+    Route::post('/transfers/{id}/cancel', [TransferController::class, 'cancel'])->middleware('can:finance.manage');
+    Route::apiResource('financial-transactions', FinancialTransactionController::class)->only(['index', 'show'])->middleware('can:finance.view');
+
+    // Contabilidad — Fase F.
+    // GET index registrado antes del apiResource para que accounting.view no quede sombrado por accounting.manage.
+    Route::get('/chart-of-accounts', [ChartOfAccountController::class, 'index'])->middleware('can:accounting.view');
+    Route::apiResource('chart-of-accounts', ChartOfAccountController::class)->except(['index'])->middleware('can:accounting.manage');
+
+    Route::get('/accounting-periods', [AccountingPeriodController::class, 'index'])->middleware('can:accounting.view');
+    Route::apiResource('accounting-periods', AccountingPeriodController::class)->only(['show', 'store'])->middleware('can:accounting.manage');
+    Route::post('/accounting-periods/{id}/close', [AccountingPeriodController::class, 'close'])->middleware('can:accounting.close');
+    Route::post('/accounting-periods/{id}/opening', [JournalEntryController::class, 'opening'])->middleware('can:accounting.manage');
+
+    Route::get('/journal-entries', [JournalEntryController::class, 'index'])->middleware('can:accounting.view');
+    Route::apiResource('journal-entries', JournalEntryController::class)->only(['show', 'store'])->middleware('can:accounting.manage');
+    Route::post('/journal-entries/{id}/reverse', [JournalEntryController::class, 'reverse'])->middleware('can:accounting.manage');
+    Route::post('/journal-entries/{id}/post', [JournalEntryController::class, 'post'])->middleware('can:accounting.post');
+
+    Route::get('/accounting-configs', [AccountingAccountConfigController::class, 'index'])->middleware('can:accounting.view');
+    Route::apiResource('accounting-configs', AccountingAccountConfigController::class)->except(['index'])->middleware('can:accounting.manage');
 
     // El permiso por recurso se valida dentro del controlador.
     Route::get('/exports/{resource}.{format}', ExportController::class)

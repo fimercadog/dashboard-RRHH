@@ -14,7 +14,7 @@ const TYPE_LABEL: Record<StockMovement["type"], string> = {
 const fmt = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
 
 const columns: AppColumnDef<StockMovement>[] = [
-  { header: "Tipo", cell: ({ row }) => <Badge variant="outline">{TYPE_LABEL[row.original.type]}</Badge> },
+  { header: "Tipo", cell: ({ row }) => <Badge>{TYPE_LABEL[row.original.type]}</Badge> },
   { header: "Producto", cell: ({ row }) => row.original.product?.name ?? "—" },
   { header: "Bodega", cell: ({ row }) => row.original.warehouse?.name ?? "—" },
   { header: "Cantidad", cell: ({ row }) => row.original.quantity },

@@ -3,6 +3,7 @@
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge } from "@/components/ui/badge";
+import { STATUS_OPTIONS } from "@/lib/constants";
 import { AppColumnDef } from "@/lib/table-types";
 import { Category } from "@/lib/types";
 
@@ -17,7 +18,7 @@ const fields: CrudField[] = [
   { name: "parent_id", label: "ID Categoria padre", type: "number" },
   {
     name: "status", label: "Estado", type: "select", required: true,
-    options: [{ label: "Activo", value: "active" }, { label: "Inactivo", value: "inactive" }],
+    options: STATUS_OPTIONS,
   },
 ];
 

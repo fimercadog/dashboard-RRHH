@@ -15,7 +15,7 @@ const STATUS_LABEL: Record<Activity["status"], string> = {
 
 const columns: AppColumnDef<Activity>[] = [
   { accessorKey: "title", header: "Titulo" },
-  { header: "Tipo", cell: ({ row }) => <Badge variant="outline">{TYPE_LABEL[row.original.type]}</Badge> },
+  { header: "Tipo", cell: ({ row }) => <Badge>{TYPE_LABEL[row.original.type]}</Badge> },
   { header: "Estado", cell: ({ row }) => <Badge>{STATUS_LABEL[row.original.status]}</Badge> },
   { header: "Oportunidad", cell: ({ row }) => row.original.deal?.title ?? "—" },
   { header: "Cliente", cell: ({ row }) => row.original.client?.company_name ?? row.original.client?.first_name ?? "—" },

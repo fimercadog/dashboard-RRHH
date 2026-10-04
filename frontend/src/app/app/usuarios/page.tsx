@@ -5,6 +5,7 @@ import { CrudField } from "@/components/crud/crud-modal";
 import { ToggleStatusAction } from "@/components/crud/toggle-status-action";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge } from "@/components/ui/badge";
+import { STATUS_OPTIONS } from "@/lib/constants";
 import { api, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { AppUser, Role } from "@/lib/types";
@@ -22,16 +23,7 @@ const baseFields: CrudField[] = [
   { name: "email", label: "Correo", type: "email", required: true },
   { name: "password", label: "Contrasena", type: "password", placeholder: "Dejar en blanco para generar una automatica", omitWhenEmpty: true },
   { name: "employee_id", label: "ID empleado", type: "number" },
-  {
-    name: "status",
-    label: "Estado",
-    type: "select",
-    required: true,
-    options: [
-      { label: "Activo", value: "active" },
-      { label: "Inactivo", value: "inactive" },
-    ],
-  },
+  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
 ];
 
 export default function AppUsersPage() {

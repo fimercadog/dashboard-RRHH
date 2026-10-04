@@ -16,6 +16,7 @@ use App\Models\SickLeave;
 use App\Models\User;
 use App\Models\VacationRequest;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Seeders\AccountingSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -406,5 +407,7 @@ class DatabaseSeeder extends Seeder
                 $log->forceFill(['created_at' => $at, 'updated_at' => $at])->saveQuietly();
             }
         }
+
+        $this->call(AccountingSeeder::class);
     }
 }

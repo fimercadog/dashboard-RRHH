@@ -6,6 +6,7 @@ import { CrudField } from "@/components/crud/crud-modal";
 import { ToggleStatusAction } from "@/components/crud/toggle-status-action";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge } from "@/components/ui/badge";
+import { EMPLOYEE_IDENTIFICATION_TYPE_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
 import { AppColumnDef } from "@/lib/table-types";
 import { Employee } from "@/lib/types";
 
@@ -24,21 +25,7 @@ const fields: CrudField[] = [
   { name: "employee_code", label: "Codigo", required: true, pattern: "[A-Za-z0-9\\-]+", hint: "Letras, numeros y guion" },
   { name: "first_name", label: "Nombres", required: true, pattern: NAME_PATTERN, hint: "Solo letras" },
   { name: "last_name", label: "Apellidos", required: true, pattern: NAME_PATTERN, hint: "Solo letras" },
-  {
-    name: "identification_type",
-    label: "Tipo de documento",
-    type: "select",
-    required: true,
-    options: [
-      { label: "Cedula de ciudadania (CC)", value: "CC" },
-      { label: "Cedula de extranjeria (CE)", value: "CE" },
-      { label: "Tarjeta de identidad (TI)", value: "TI" },
-      { label: "Pasaporte (PA)", value: "PA" },
-      { label: "Permiso especial (PEP)", value: "PEP" },
-      { label: "NIT", value: "NIT" },
-      { label: "Registro civil (RC)", value: "RC" },
-    ],
-  },
+  { name: "identification_type", label: "Tipo de documento", type: "select", required: true, options: EMPLOYEE_IDENTIFICATION_TYPE_OPTIONS },
   { name: "identification_number", label: "Numero de documento", required: true, pattern: "[0-9][0-9.\\-]*", hint: "Solo numeros" },
   { name: "email", label: "Correo", type: "email", hint: "ejemplo@dominio.com" },
   { name: "hire_date", label: "Fecha de ingreso", type: "date", required: true },
@@ -48,8 +35,7 @@ const fields: CrudField[] = [
     type: "select",
     required: true,
     options: [
-      { label: "Activo", value: "active" },
-      { label: "Inactivo", value: "inactive" },
+      ...STATUS_OPTIONS,
       { label: "Terminado", value: "terminated" },
       { label: "En licencia", value: "on_leave" },
     ],

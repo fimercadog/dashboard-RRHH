@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
+import { STATUS_OPTIONS } from "@/lib/constants";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { AppColumnDef } from "@/lib/table-types";
 
@@ -20,16 +21,7 @@ const fields: CrudField[] = [
   { name: "start_time", label: "Inicio", type: "time", required: true },
   { name: "end_time", label: "Fin", type: "time", required: true },
   { name: "break_minutes", label: "Minutos de descanso", type: "number" },
-  {
-    name: "status",
-    label: "Estado",
-    type: "select",
-    required: true,
-    options: [
-      { label: "Activo", value: "active" },
-      { label: "Inactivo", value: "inactive" },
-    ],
-  },
+  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
 ];
 
 export default function ShiftsPage() {

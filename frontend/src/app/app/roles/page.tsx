@@ -4,6 +4,7 @@ import { CrudField } from "@/components/crud/crud-modal";
 import { ToggleStatusAction } from "@/components/crud/toggle-status-action";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge } from "@/components/ui/badge";
+import { STATUS_OPTIONS } from "@/lib/constants";
 import { AppColumnDef } from "@/lib/table-types";
 import { Role } from "@/lib/types";
 
@@ -15,16 +16,7 @@ const columns: AppColumnDef<Role>[] = [
 
 const fields: CrudField[] = [
   { name: "name", label: "Nombre del rol", required: true },
-  {
-    name: "status",
-    label: "Estado",
-    type: "select",
-    required: true,
-    options: [
-      { label: "Activo", value: "active" },
-      { label: "Inactivo", value: "inactive" },
-    ],
-  },
+  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
 ];
 
 export default function AppRolesPage() {

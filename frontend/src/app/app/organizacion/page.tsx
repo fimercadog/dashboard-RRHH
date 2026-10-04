@@ -2,22 +2,14 @@
 
 import { Badge } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
+import { STATUS_OPTIONS } from "@/lib/constants";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { AppColumnDef } from "@/lib/table-types";
 
 type Department = { id: number; name: string; description?: string; status: string };
 type Position = { id: number; name: string; description?: string; status: string; department?: { id: number; name: string } | null };
 
-const statusField: CrudField = {
-  name: "status",
-  label: "Estado",
-  type: "select",
-  required: true,
-  options: [
-    { label: "Activo", value: "active" },
-    { label: "Inactivo", value: "inactive" },
-  ],
-};
+const statusField: CrudField = { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS };
 
 const departmentColumns: AppColumnDef<Department>[] = [
   { accessorKey: "name", header: "Departamento" },

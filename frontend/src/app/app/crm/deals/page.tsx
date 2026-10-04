@@ -16,10 +16,12 @@ const STAGE_LABEL: Record<Deal["stage"], string> = {
   stalled: "Estancado",
 };
 
+const fmt = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
+
 const columns: AppColumnDef<Deal>[] = [
   { accessorKey: "title", header: "Titulo" },
   { header: "Cliente", cell: ({ row }) => row.original.client?.company_name ?? row.original.client?.first_name ?? "—" },
-  { header: "Valor", cell: ({ row }) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(row.original.amount) },
+  { header: "Valor", cell: ({ row }) => fmt.format(row.original.amount) },
   { header: "Etapa", cell: ({ row }) => <Badge>{STAGE_LABEL[row.original.stage]}</Badge> },
   { header: "Cierre esperado", cell: ({ row }) => row.original.expected_close_date ? new Date(row.original.expected_close_date).toLocaleDateString("es-CO") : "—" },
   { header: "Responsable", cell: ({ row }) => row.original.owner?.name ?? "—" },
