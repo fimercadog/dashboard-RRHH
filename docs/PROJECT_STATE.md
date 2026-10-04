@@ -151,6 +151,21 @@
 
 ---
 
+### K4 — Smoke Tests SQLite + MySQL ✅ COMPLETO (2026-10-04)
+
+| Motor | Migraciones | Seeders | Tests | Assertions | Incompatibilidades |
+|-------|------------|---------|-------|------------|-------------------|
+| SQLite (in-memory) | ✅ 50/50 | ✅ AccountingSeeder | ✅ 115/115 | 279 | ninguna |
+| MySQL 9.5 (local port 3307) | ✅ 50/50 | ✅ AccountingSeeder | ✅ 115/115 | 279 | 1 bug resuelto (ver abajo) |
+
+**Bug encontrado y resuelto:** `with('client:id,name')` en 4 controladores de Ventas generaba `SELECT id, name FROM clients` — columna `name` no existe en producción MySQL. SQLite lo ignoraba silenciosamente. Fix: `client:id,first_name,last_name` en controladores + `$this->client->full_name` en 4 resources (usa el accessor `getFullNameAttribute` del modelo).
+
+**Archivos modificados en K4:**
+- `QuoteController.php`, `SaleOrderController.php`, `SaleInvoiceController.php`, `AccountsReceivableController.php` — `$with` corregido
+- `QuoteResource.php`, `SaleOrderResource.php`, `SaleInvoiceResource.php`, `AccountsReceivableResource.php` — accessor corregido
+
+---
+
 ### Autorización (K1) ✅ COMPLETO (2026-10-04)
 
 | Capa | Estado |

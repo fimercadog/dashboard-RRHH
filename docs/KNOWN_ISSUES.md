@@ -58,6 +58,27 @@
 **Impacto:** El usuario no puede crear OC/Recepción/Factura desde la UI en la demo actual. Puede hacerlo vía API directa.
 **Pendiente:** Wizard/formulario con tabla de ítems editable para: Orden de Compra → Recepción → Factura de Compra. Incluir: selector de proveedor, selector de bodega, fecha, líneas (producto + cantidad + precio unitario), totales automáticos, botón "Postear".
 
+### INC-001 — UAC de Windows al iniciar sesión (incidente abierto, bajo investigación)
+**Gravedad:** Desconocida — pendiente prueba controlada
+**Estado:** Abierto / pendiente de cierre
+**Fecha:** 2026-10-04
+**Detalle:** El usuario reportó que al iniciar sesión en el ERP aparece el diálogo UAC de Windows ("¿Quieres permitir que esta aplicación haga cambios en el dispositivo?").
+
+**Hallazgos del diagnóstico (2026-10-04):**
+- Scan completo del proyecto: sin `shell_exec`, `exec()`, `proc_open`, `system()`, `Process::`, ni llamadas a procesos nativos en backend ni frontend.
+- Scripts npm y Composer: todos estándar, sin manifests de elevación.
+- Único binario `.exe` en el proyecto: `vendor/symfony/console/Resources/bin/hiddeninput.exe` (Symfony, oculta input de consola — no tiene manifest UAC, solo corre en comandos artisan interactivos).
+- **Hipótesis principal:** Durante la sesión K4 de tests, Claude inició `mysqld.exe` (MySQL Server 9.5) directamente como proceso de usuario para las pruebas de compatibilidad. Ese proceso coincidió temporalmente con el intento de login. Ya fue terminado.
+
+**Prueba controlada pendiente (NO hacer cambios):**
+1. Abrir el ERP en el navegador.
+2. Iniciar sesión normalmente.
+3. No ejecutar MySQL ni comandos de administración.
+4. Si el UAC NO vuelve: cerrar como externo al ERP (coincidió con mysqld.exe de K4).
+5. Si el UAC VUELVE: NO aceptar — capturar nombre exacto del ejecutable, proceso padre, ruta completa, y notificar antes de cualquier cambio.
+
+**Diagnóstico no declarado definitivamente resuelto — espera confirmación de la prueba.**
+
 ---
 
 ## Deudas técnicas conocidas y aceptadas

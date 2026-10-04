@@ -105,6 +105,11 @@ Para distintos estilos usar Tailwind directo: `className="bg-muted text-muted-fo
 **Por qué:** `exists:TABLE,id` sin company_id permite pasar IDs de otra empresa (cross-company FK contamination).
 **Tablas afectadas:** suppliers, clients, warehouses, products, purchase_orders, purchase_receipts, sale_orders, quotes, deals, employees, departments, positions, categories, brands, units.
 
+## M22 — `with('model:id,name')` falla en MySQL si la columna no existe (SQLite silencioso)
+**Aprendido:** K4 — Smoke tests MySQL
+**Regla:** En `$with` de controladores, NO usar `model:id,name` si el modelo no tiene columna `name`. Los accessors de Eloquent (como `getFullNameAttribute`) no son columnas reales. SQLite ignora el error (devuelve NULL), MySQL lanza `Unknown column`. Usar las columnas reales: `client:id,first_name,last_name`. En el Resource, usar `$this->client->full_name` (el accessor).
+**Columnas afectadas:** `clients` no tiene `name` — tiene `first_name`, `last_name`, accessor `full_name`.
+
 ## M14 — Tablas de líneas de documentos no llevan company_id
 **Regla:** `purchase_order_items`, `purchase_receipt_items` (y futuras `sale_order_items`, etc.) NO tienen `company_id`.
 La multitenancy se resuelve por JOIN con la tabla padre.

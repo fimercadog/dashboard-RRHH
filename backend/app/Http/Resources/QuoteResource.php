@@ -19,7 +19,7 @@ class QuoteResource extends JsonResource
             'tax'            => $this->tax,
             'total'          => $this->total,
             'notes'          => $this->notes,
-            'client'         => $this->whenLoaded('client', fn() => ['id' => $this->client->id, 'name' => $this->client->name]),
+            'client'         => $this->whenLoaded('client', fn() => ['id' => $this->client->id, 'name' => $this->client->full_name]),
             'deal'           => $this->whenLoaded('deal', fn() => ['id' => $this->deal->id, 'title' => $this->deal->title]),
             'items'          => $this->whenLoaded('items'),
             'created_at'     => $this->created_at,

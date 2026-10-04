@@ -14,7 +14,7 @@ class AccountsReceivableResource extends JsonResource
             'balance'     => $this->balance,
             'due_date'    => $this->due_date?->toDateString(),
             'status'      => $this->status,
-            'client'      => $this->whenLoaded('client', fn() => ['id' => $this->client->id, 'name' => $this->client->name]),
+            'client'      => $this->whenLoaded('client', fn() => ['id' => $this->client->id, 'name' => $this->client->full_name]),
             'sale_invoice'=> $this->whenLoaded('saleInvoice', fn() => ['id' => $this->saleInvoice->id, 'number' => $this->saleInvoice->number, 'total' => $this->saleInvoice->total]),
             'created_at'  => $this->created_at,
         ];

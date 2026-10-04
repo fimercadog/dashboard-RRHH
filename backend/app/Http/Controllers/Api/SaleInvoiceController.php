@@ -14,7 +14,7 @@ class SaleInvoiceController extends BaseCrudController
 {
     protected string $model    = SaleInvoice::class;
     protected string $resource = SaleInvoiceResource::class;
-    protected array $with       = ['client:id,name', 'saleOrder:id,number,warehouse_id', 'items.product:id,sku,name', 'accountReceivable'];
+    protected array $with       = ['client:id,first_name,last_name', 'saleOrder:id,number,warehouse_id', 'items.product:id,sku,name', 'accountReceivable'];
     protected array $searchable = ['number', 'notes'];
     protected array $filterable = ['status' => 'status', 'type' => 'type', 'client_id' => 'client_id'];
 

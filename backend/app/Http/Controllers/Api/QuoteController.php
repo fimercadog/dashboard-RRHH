@@ -13,7 +13,7 @@ class QuoteController extends BaseCrudController
 {
     protected string $model    = Quote::class;
     protected string $resource = QuoteResource::class;
-    protected array $with       = ['client:id,name', 'items.product:id,sku,name'];
+    protected array $with       = ['client:id,first_name,last_name', 'items.product:id,sku,name'];
     protected array $searchable = ['number', 'notes'];
     protected array $filterable = ['status' => 'status', 'client_id' => 'client_id'];
 

@@ -14,7 +14,7 @@ class SaleOrderController extends BaseCrudController
 {
     protected string $model    = SaleOrder::class;
     protected string $resource = SaleOrderResource::class;
-    protected array $with       = ['client:id,name', 'warehouse:id,name', 'items.product:id,sku,name'];
+    protected array $with       = ['client:id,first_name,last_name', 'warehouse:id,name', 'items.product:id,sku,name'];
     protected array $searchable = ['number', 'notes'];
     protected array $filterable = ['status' => 'status', 'client_id' => 'client_id'];
 
