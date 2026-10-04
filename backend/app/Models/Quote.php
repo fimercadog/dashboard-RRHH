@@ -14,6 +14,7 @@ class Quote extends Model
         'company_id', 'client_id', 'deal_id', 'user_id',
         'number', 'date', 'valid_until', 'status',
         'subtotal', 'discount_total', 'tax', 'total', 'notes',
+        'client_uuid',
     ];
 
     protected $casts = [

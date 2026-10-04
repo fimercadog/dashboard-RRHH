@@ -20,6 +20,17 @@ class QuoteController extends BaseCrudController
     public function store(Request $request, AuditService $audit)
     {
         $companyId = $this->companyId($request);
+
+        // Idempotency guard: sync replay of an offline-queued quote.
+        if ($request->filled('client_uuid')) {
+            $existing = Quote::where('client_uuid', $request->client_uuid)
+                ->where('company_id', $companyId)
+                ->first();
+            if ($existing) {
+                return (new QuoteResource($existing->load($this->with)))->response()->setStatusCode(200);
+            }
+        }
+
         $payload   = $this->validatedInput($request);
 
         $quote = DB::transaction(function () use ($payload, $companyId, $request) {

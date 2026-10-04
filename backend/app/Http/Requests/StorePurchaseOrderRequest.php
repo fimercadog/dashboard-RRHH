@@ -7,6 +7,7 @@ class StorePurchaseOrderRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
+            'client_uuid'   => ['nullable', 'uuid'],
             'supplier_id'   => ['required', 'integer', $this->ownedExists('suppliers')],
             'warehouse_id'  => ['required', 'integer', $this->ownedExists('warehouses')],
             'date'          => ['required', 'date'],

@@ -23,8 +23,44 @@ const attendances: ContingencyAdapter = {
   },
 };
 
+const crm_clients: ContingencyAdapter = {
+  key: "crm_clients",
+  summarize: (p) => {
+    const name = [p.first_name, p.last_name].filter(Boolean).join(" ") || "Cliente";
+    return `${name}${p.email ? ` — ${p.email}` : ""}`;
+  },
+  sync: async (payload, clientUuid) => {
+    await api.post("/clients", { ...payload, client_uuid: clientUuid });
+  },
+};
+
+const quotes: ContingencyAdapter = {
+  key: "quotes",
+  summarize: (p) => {
+    const num = p.number ?? "borrador";
+    return `Cotización ${num}${p.total != null ? ` — $${p.total}` : ""}`;
+  },
+  sync: async (payload, clientUuid) => {
+    await api.post("/quotes", { ...payload, client_uuid: clientUuid });
+  },
+};
+
+const purchase_orders: ContingencyAdapter = {
+  key: "purchase_orders",
+  summarize: (p) => {
+    const num = p.number ?? "borrador";
+    return `OC ${num}${p.total != null ? ` — $${p.total}` : ""}`;
+  },
+  sync: async (payload, clientUuid) => {
+    await api.post("/purchase-orders", { ...payload, client_uuid: clientUuid });
+  },
+};
+
 const adapters: Record<string, ContingencyAdapter> = {
   [attendances.key]: attendances,
+  [crm_clients.key]: crm_clients,
+  [quotes.key]: quotes,
+  [purchase_orders.key]: purchase_orders,
 };
 
 export function getAdapter(moduleKey: string): ContingencyAdapter | undefined {

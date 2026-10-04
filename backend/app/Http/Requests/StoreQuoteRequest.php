@@ -7,6 +7,7 @@ class StoreQuoteRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
+            'client_uuid'          => ['nullable', 'uuid'],
             'client_id'            => ['required', 'integer', $this->ownedExists('clients')],
             'deal_id'              => ['nullable', 'integer', $this->ownedExists('deals')],
             'date'                 => ['required', 'date'],

@@ -7,6 +7,7 @@ class StoreClientRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
+            'client_uuid'           => ['nullable', 'uuid'],
             'first_name'            => ['nullable', 'string', 'max:80'],
             'last_name'             => ['nullable', 'string', 'max:80'],
             'company_name'          => ['nullable', 'string', 'max:150'],

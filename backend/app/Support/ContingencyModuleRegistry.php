@@ -24,6 +24,21 @@ class ContingencyModuleRegistry
                 'label' => 'Asistencia',
                 'description' => 'Registro diario de asistencia. Solo creacion; cada fila es independiente.',
             ],
+            [
+                'key' => 'crm_clients',
+                'label' => 'Clientes CRM',
+                'description' => 'Crear nuevos clientes en campo. Solo creacion; no modifica registros existentes.',
+            ],
+            [
+                'key' => 'quotes',
+                'label' => 'Cotizaciones',
+                'description' => 'Crear cotizaciones en borrador durante visitas. Solo creacion en estado draft.',
+            ],
+            [
+                'key' => 'purchase_orders',
+                'label' => 'Órdenes de Compra',
+                'description' => 'Crear órdenes de compra en borrador. Solo creacion en estado draft; no dispara movimientos de stock.',
+            ],
         ];
     }
 

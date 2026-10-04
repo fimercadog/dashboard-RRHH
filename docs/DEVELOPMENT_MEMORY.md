@@ -110,6 +110,17 @@ Para distintos estilos usar Tailwind directo: `className="bg-muted text-muted-fo
 **Regla:** En `$with` de controladores, NO usar `model:id,name` si el modelo no tiene columna `name`. Los accessors de Eloquent (como `getFullNameAttribute`) no son columnas reales. SQLite ignora el error (devuelve NULL), MySQL lanza `Unknown column`. Usar las columnas reales: `client:id,first_name,last_name`. En el Resource, usar `$this->client->full_name` (el accessor).
 **Columnas afectadas:** `clients` no tiene `name` — tiene `first_name`, `last_name`, accessor `full_name`.
 
+## M23 — Patrón de idempotencia para módulos de contingencia
+**Aprendido:** K7 — Extensión contingencia offline
+**Regla:** Para agregar un módulo a contingencia:
+1. Migración: `client_uuid` UUID nullable unique en la tabla.
+2. Modelo: `'client_uuid'` en `$fillable`.
+3. FormRequest: `'client_uuid' => ['nullable', 'uuid']` en las reglas.
+4. Controller: guard al inicio de `store()` — si `$request->filled('client_uuid')` y existe registro con ese UUID, devuelve 200 sin crear. Modelos simples usan `firstOrCreate`; con items complejos, lookup previo + retorno.
+5. Registry: entrada en `ContingencyModuleRegistry::all()`.
+6. Frontend adapter: `summarize()` + `sync()` con `client_uuid` en `adapters.ts`.
+**Elegibilidad:** Solo operaciones puramente aditivas (crean filas, nunca modifican ni dependen de estado actual). Stock movements, payments, invoice posting = NO elegibles.
+
 ## M14 — Tablas de líneas de documentos no llevan company_id
 **Regla:** `purchase_order_items`, `purchase_receipt_items` (y futuras `sale_order_items`, etc.) NO tienen `company_id`.
 La multitenancy se resuelve por JOIN con la tabla padre.

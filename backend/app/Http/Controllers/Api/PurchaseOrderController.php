@@ -21,6 +21,17 @@ class PurchaseOrderController extends BaseCrudController
     public function store(Request $request, AuditService $audit)
     {
         $companyId = $this->companyId($request);
+
+        // Idempotency guard: sync replay of an offline-queued purchase order.
+        if ($request->filled('client_uuid')) {
+            $existing = PurchaseOrder::where('client_uuid', $request->client_uuid)
+                ->where('company_id', $companyId)
+                ->first();
+            if ($existing) {
+                return (new PurchaseOrderResource($existing->load($this->with)))->response()->setStatusCode(200);
+            }
+        }
+
         $payload   = $this->validatedInput($request);
 
         $order = DB::transaction(function () use ($payload, $companyId, $request) {

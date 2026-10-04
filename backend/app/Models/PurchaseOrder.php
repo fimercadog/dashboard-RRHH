@@ -14,6 +14,7 @@ class PurchaseOrder extends Model
         'company_id', 'supplier_id', 'warehouse_id', 'user_id',
         'number', 'date', 'expected_date', 'status',
         'subtotal', 'tax', 'total', 'notes',
+        'client_uuid',
     ];
 
     protected $casts = [

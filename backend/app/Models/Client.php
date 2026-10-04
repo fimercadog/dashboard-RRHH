@@ -14,6 +14,7 @@ class Client extends Model
     protected $fillable = [
         'company_id', 'identification_type', 'identification_number', 'company_name',
         'first_name', 'last_name', 'email', 'phone', 'address', 'city', 'notes', 'status',
+        'client_uuid',
     ];
 
     public function getFullNameAttribute(): string

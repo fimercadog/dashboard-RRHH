@@ -191,7 +191,7 @@
 | Auditoría | ✅ Tabla de audit_logs con filtros |
 | Reportes | ⚠️ Catálogo visual, no todos los reportes tabulares |
 | IA | ⚠️ Interfaz lista, sin proveedor conectado |
-| Contingencia | ✅ Modo offline con cola local y sincronización |
+| Contingencia | ✅ Modo offline con cola local y sincronización (K7: +crm_clients, +quotes, +purchase_orders) |
 | Configuración | ⚠️ UI parcial |
 | Organización | ✅ Departamentos y cargos |
 
