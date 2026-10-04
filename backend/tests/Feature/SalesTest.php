@@ -229,6 +229,70 @@ class SalesTest extends TestCase
         $this->assertEquals($stockAfterSale + 1, $stockAfterReturn);
     }
 
+    // ── Validación 422 ──────────────────────────────────────────────────────
+
+    public function test_create_quote_without_client_returns_422(): void
+    {
+        $this->postJson('/api/quotes', [
+            'date'        => now()->toDateString(),
+            'valid_until' => now()->addDays(15)->toDateString(),
+            'items'       => [['product_id' => $this->product->id, 'quantity' => 1, 'unit_price' => 10000, 'discount_pct' => 0]],
+        ])->assertStatus(422)->assertJsonValidationErrors('client_id');
+    }
+
+    public function test_create_quote_without_items_returns_422(): void
+    {
+        $this->postJson('/api/quotes', [
+            'client_id'   => $this->client->id,
+            'date'        => now()->toDateString(),
+            'valid_until' => now()->addDays(15)->toDateString(),
+            'items'       => [],
+        ])->assertStatus(422)->assertJsonValidationErrors('items');
+    }
+
+    public function test_create_sale_order_without_client_returns_422(): void
+    {
+        $this->postJson('/api/sale-orders', [
+            'warehouse_id' => $this->wh->id,
+            'date'         => now()->toDateString(),
+            'items'        => [['product_id' => $this->product->id, 'quantity' => 1, 'unit_price' => 10000, 'discount_pct' => 0]],
+        ])->assertStatus(422)->assertJsonValidationErrors('client_id');
+    }
+
+    public function test_create_sale_order_without_items_returns_422(): void
+    {
+        $this->postJson('/api/sale-orders', [
+            'client_id'    => $this->client->id,
+            'warehouse_id' => $this->wh->id,
+            'date'         => now()->toDateString(),
+            'items'        => [],
+        ])->assertStatus(422)->assertJsonValidationErrors('items');
+    }
+
+    public function test_create_sale_invoice_without_items_returns_422(): void
+    {
+        $this->postJson('/api/sale-invoices', [
+            'client_id' => $this->client->id,
+            'number'    => 'FV-VAL-001',
+            'date'      => now()->toDateString(),
+            'due_date'  => now()->addDays(30)->toDateString(),
+            'items'     => [],
+        ])->assertStatus(422)->assertJsonValidationErrors('items');
+    }
+
+    public function test_sales_require_permission(): void
+    {
+        $guest = User::factory()->create(['company_id' => $this->company->id]);
+        $this->actingAs($guest, 'sanctum');
+
+        $this->postJson('/api/quotes', [
+            'client_id'   => $this->client->id,
+            'date'        => now()->toDateString(),
+            'valid_until' => now()->addDays(15)->toDateString(),
+            'items'       => [['product_id' => $this->product->id, 'quantity' => 1, 'unit_price' => 10000, 'discount_pct' => 0]],
+        ])->assertStatus(403);
+    }
+
     // ── 9. Multitenancy: no ve CxC de otra empresa ──────────────────────────
 
     public function test_cannot_see_other_company_accounts_receivable(): void

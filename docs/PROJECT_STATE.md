@@ -65,11 +65,12 @@
 | API | ✅ Routes: /suppliers, /purchase-orders, /purchase-receipts (+ POST /post), /purchase-invoices (+ POST /post), /accounts-payable |
 | Frontend — Types | ✅ Supplier, PurchaseOrder, PurchaseReceipt, PurchaseInvoice, AccountPayable en types.ts |
 | Frontend — Páginas | ✅ /app/compras/proveedores, /ordenes, /recepciones, /facturas, /cxp |
+| Frontend — UI Wizards (K9) | ✅ Modales de creación: OC (con líneas), Recepción (con líneas + auto-fill proveedor), Factura compra (flat form). Acciones: Postear recepción, Postear factura. Badges de estado, 422 per-field, mobile-first. |
 | Frontend — Nav | ✅ Grupo "Compras" en admin-shell.tsx |
 | Permisos | ✅ purchases.manage / purchases.view · guard=web · asignados a Super Admin y Administrador |
 | StockService | ✅ PurchaseService usa StockService.entry() con reference_type='purchase_receipt' |
 | Multitenancy | ✅ company_id en todas las tablas de cabecera |
-| Tests | ✅ PurchasesTest 9/9 passed (15 assertions) |
+| Tests | ✅ PurchasesTest 14/14 passed (5 nuevos casos 422/403) |
 | Build | ✅ npm run build verde, TypeScript OK |
 | E2E | ❌ Pendiente (no bloqueante para demo) |
 
@@ -91,8 +92,9 @@
 | Permisos | ✅ sales.manage / sales.view · guard=web · asignados a Super Admin y Administrador |
 | Frontend — Types | ✅ Quote, SaleOrder, SaleInvoice, AccountsReceivable en types.ts |
 | Frontend — Páginas | ✅ /app/ventas/cotizaciones, /pedidos, /facturas, /cxc |
+| Frontend — UI Wizards (K10) | ✅ Modales de creación: Cotización (con líneas), Pedido (con líneas + auto-fill cotización/cliente), Factura venta (con líneas). Acciones: Confirmar pedido, Postear factura. Badges de estado, 422 per-field, mobile-first. |
 | Frontend — Nav | ✅ Grupo "Ventas" en admin-shell.tsx |
-| Tests | ✅ SalesTest 13/13 passed (25 assertions) |
+| Tests | ✅ SalesTest 19/19 passed (6 nuevos casos 422/403) |
 | Build | ✅ npm run build verde, TypeScript OK |
 | E2E | ❌ Pendiente (no bloqueante para demo) |
 

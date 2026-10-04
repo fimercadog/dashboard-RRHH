@@ -183,6 +183,60 @@ class PurchasesTest extends TestCase
         $this->assertEquals('open', $cxp->status);
     }
 
+    // ── Validación 422 ──────────────────────────────────────────────────────
+
+    public function test_create_order_without_supplier_returns_422(): void
+    {
+        $this->postJson('/api/purchase-orders', [
+            'warehouse_id' => $this->wh->id,
+            'date'         => now()->toDateString(),
+            'items'        => [['product_id' => $this->product->id, 'quantity' => 1, 'unit_cost' => 1000]],
+        ])->assertStatus(422)->assertJsonValidationErrors('supplier_id');
+    }
+
+    public function test_create_order_without_items_returns_422(): void
+    {
+        $this->postJson('/api/purchase-orders', [
+            'supplier_id'  => $this->supplier->id,
+            'warehouse_id' => $this->wh->id,
+            'date'         => now()->toDateString(),
+            'items'        => [],
+        ])->assertStatus(422)->assertJsonValidationErrors('items');
+    }
+
+    public function test_create_order_with_invalid_quantity_returns_422(): void
+    {
+        $this->postJson('/api/purchase-orders', [
+            'supplier_id'  => $this->supplier->id,
+            'warehouse_id' => $this->wh->id,
+            'date'         => now()->toDateString(),
+            'items'        => [['product_id' => $this->product->id, 'quantity' => 0, 'unit_cost' => 1000]],
+        ])->assertStatus(422)->assertJsonValidationErrors('items.0.quantity');
+    }
+
+    public function test_create_receipt_without_supplier_returns_422(): void
+    {
+        $this->postJson('/api/purchase-receipts', [
+            'warehouse_id' => $this->wh->id,
+            'date'         => now()->toDateString(),
+            'type'         => 'receipt',
+            'items'        => [['product_id' => $this->product->id, 'quantity' => 1, 'unit_cost' => 1000]],
+        ])->assertStatus(422)->assertJsonValidationErrors('supplier_id');
+    }
+
+    public function test_purchases_require_permission(): void
+    {
+        $guest = User::factory()->create(['company_id' => $this->company->id]);
+        $this->actingAs($guest, 'sanctum');
+
+        $this->postJson('/api/purchase-orders', [
+            'supplier_id'  => $this->supplier->id,
+            'warehouse_id' => $this->wh->id,
+            'date'         => now()->toDateString(),
+            'items'        => [['product_id' => $this->product->id, 'quantity' => 1, 'unit_cost' => 1000]],
+        ])->assertStatus(403);
+    }
+
     // ── 8. Multitenancy: no ve recursos de otra empresa ─────────────────────
 
     public function test_cannot_see_other_company_supplier(): void
