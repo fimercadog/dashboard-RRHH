@@ -151,6 +151,21 @@
 
 ---
 
+### Autorización (K1) ✅ COMPLETO (2026-10-04)
+
+| Capa | Estado |
+|------|--------|
+| Multitenancy | ✅ BaseCrudController + todos los custom actions ya escopaban company_id |
+| Route middleware | ✅ `can:X.manage` / `can:X.view` en todas las rutas sensibles |
+| FK cross-company | ✅ BRECHA CERRADA — `ApiFormRequest::ownedExists()` scope a company_id en todos los FormRequests (17 archivos) |
+| Laravel Policies | ✅ EmployeePolicy + StockMovementPolicy creadas y registradas en AppServiceProvider |
+| Tests K1 | ✅ AuthorizationTest 5/5 passed — verifica rechazo de IDs de otra empresa |
+| Suite total | ✅ 115/115 passed (279 assertions) |
+
+**Brecha cerrada:** `exists:TABLE,id` sin `company_id` en FormRequests permitía pasar IDs de otra empresa en POST. Solucionado con helper `ownedExists()` en `ApiFormRequest` que aplica `Rule::exists()->where('company_id', $cid)` cuando hay usuario autenticado, con fallback seguro para el path update de BaseCrudController.
+
+---
+
 ## Módulos core (siempre presentes)
 
 | Módulo | Estado |

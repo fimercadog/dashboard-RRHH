@@ -6,24 +6,17 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class StoreAttendanceRequest extends ApiFormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
+    /** @return array<string, ValidationRule|array<mixed>|string> */
     public function rules(): array
     {
         return [
             'client_uuid' => ['nullable', 'uuid'],
-            'employee_id' => ['required', 'exists:employees,id'],
+            'employee_id' => ['required', $this->ownedExists('employees')],
             'date' => ['required', 'date'],
             'check_in' => ['nullable', 'date_format:H:i'],
             'check_out' => ['nullable', 'date_format:H:i'],

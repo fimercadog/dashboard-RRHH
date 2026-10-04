@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Exists;
 
 /**
  * Base de los FormRequest del API: mensajes y nombres de campo en espanol
@@ -12,6 +14,21 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 abstract class ApiFormRequest extends FormRequest
 {
+    /**
+     * Devuelve un Rule::exists() scoped al company_id del usuario autenticado.
+     * Cuando no hay usuario en contexto (p.ej. BaseCrudController crea el
+     * FormRequest con `new $class` en el path de update), cae a `exists:table,id`
+     * sin scope — el registro ya fue cargado con company_id en el controller.
+     */
+    protected function ownedExists(string $table): Exists|string
+    {
+        $cid = $this->user()?->company_id;
+
+        return $cid
+            ? Rule::exists($table, 'id')->where('company_id', $cid)
+            : "exists:{$table},id";
+    }
+
     public function authorize(): bool
     {
         return true;

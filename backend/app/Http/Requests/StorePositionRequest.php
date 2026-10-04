@@ -6,24 +6,17 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class StorePositionRequest extends ApiFormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
+    /** @return array<string, ValidationRule|array<mixed>|string> */
     public function rules(): array
     {
         return [
             'name' => ['required', 'string', 'max:120'],
-            'department_id' => ['nullable', 'exists:departments,id'],
+            'department_id' => ['nullable', $this->ownedExists('departments')],
             'description' => ['nullable', 'string'],
             'status' => ['required', 'in:active,inactive'],
         ];

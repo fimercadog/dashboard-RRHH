@@ -98,6 +98,13 @@ No intentar crear CxC/CxP con `sale_invoice_id = null`.
 **Regla:** `src/components/ui/badge.tsx` solo acepta `className: string`. No tiene prop `variant`.
 Para distintos estilos usar Tailwind directo: `className="bg-muted text-muted-foreground"`, `"bg-destructive/10 text-destructive"`, `"border border-input bg-transparent"`.
 
+## M21 — FormRequests usan `ownedExists()` para validar FKs con company_id
+**Aprendido:** K1 — Autorización
+**Regla:** Para campos FK a tablas company-scoped, NO usar `'exists:TABLE,id'` sino `$this->ownedExists('TABLE')`.
+`ApiFormRequest::ownedExists()` aplica `Rule::exists(TABLE)->where('company_id', $cid)` cuando hay usuario autenticado, y cae a `'exists:TABLE,id'` en el path de update de BaseCrudController (que usa `new $class` sin contexto de auth).
+**Por qué:** `exists:TABLE,id` sin company_id permite pasar IDs de otra empresa (cross-company FK contamination).
+**Tablas afectadas:** suppliers, clients, warehouses, products, purchase_orders, purchase_receipts, sale_orders, quotes, deals, employees, departments, positions, categories, brands, units.
+
 ## M14 — Tablas de líneas de documentos no llevan company_id
 **Regla:** `purchase_order_items`, `purchase_receipt_items` (y futuras `sale_order_items`, etc.) NO tienen `company_id`.
 La multitenancy se resuelve por JOIN con la tabla padre.

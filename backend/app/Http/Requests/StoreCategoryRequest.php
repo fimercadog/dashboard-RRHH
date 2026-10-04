@@ -8,7 +8,7 @@ class StoreCategoryRequest extends ApiFormRequest
     {
         return [
             'name'      => ['required', 'string', 'max:100'],
-            'parent_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'parent_id' => ['nullable', 'integer', $this->ownedExists('categories')],
             'status'    => ['required', 'in:active,inactive'],
         ];
     }

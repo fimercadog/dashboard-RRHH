@@ -2,11 +2,20 @@
 
 namespace App\Providers;
 
+use App\Models\Employee;
+use App\Models\StockMovement;
+use App\Policies\EmployeePolicy;
+use App\Policies\StockMovementPolicy;
 use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends AuthServiceProvider
 {
+    protected $policies = [
+        Employee::class      => EmployeePolicy::class,
+        StockMovement::class => StockMovementPolicy::class,
+    ];
+
     /**
      * Register any application services.
      */
@@ -20,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->registerPolicies();
+
         ResetPassword::createUrlUsing(function ($notifiable, string $token) {
             $frontendUrl = rtrim(config('app.frontend_url'), '/');
 

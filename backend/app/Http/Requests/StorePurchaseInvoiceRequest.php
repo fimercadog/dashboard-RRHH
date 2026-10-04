@@ -7,9 +7,9 @@ class StorePurchaseInvoiceRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'supplier_id'         => ['required', 'integer', 'exists:suppliers,id'],
-            'purchase_order_id'   => ['nullable', 'integer', 'exists:purchase_orders,id'],
-            'purchase_receipt_id' => ['nullable', 'integer', 'exists:purchase_receipts,id'],
+            'supplier_id'         => ['required', 'integer', $this->ownedExists('suppliers')],
+            'purchase_order_id'   => ['nullable', 'integer', $this->ownedExists('purchase_orders')],
+            'purchase_receipt_id' => ['nullable', 'integer', $this->ownedExists('purchase_receipts')],
             'number'              => ['required', 'string', 'max:60'],
             'date'                => ['required', 'date'],
             'due_date'            => ['required', 'date'],

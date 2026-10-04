@@ -6,19 +6,12 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class StoreEmployeeRequest extends ApiFormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
+    /** @return array<string, ValidationRule|array<mixed>|string> */
     public function rules(): array
     {
         return [
@@ -30,8 +23,8 @@ class StoreEmployeeRequest extends ApiFormRequest
             'email' => ['nullable', 'email', 'regex:/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/i'],
             'hire_date' => ['required', 'date', 'before_or_equal:today'],
             'employment_status' => ['required', 'in:active,inactive,terminated,on_leave'],
-            'department_id' => ['nullable', 'exists:departments,id'],
-            'position_id' => ['nullable', 'exists:positions,id'],
+            'department_id' => ['nullable', $this->ownedExists('departments')],
+            'position_id' => ['nullable', $this->ownedExists('positions')],
             'salary' => ['nullable', 'numeric', 'min:0', 'max:99999999'],
         ];
     }
