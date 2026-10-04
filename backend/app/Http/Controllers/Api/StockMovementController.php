@@ -103,8 +103,6 @@ class StockMovementController extends Controller
             ? StockMovementResource::collection(collect($result))
             : new StockMovementResource($result->load(['product:id,sku,name', 'warehouse:id,name', 'user:id,name']));
 
-        return $resource instanceof \Illuminate\Http\Resources\Json\AnonymousResourceCollection
-            ? $resource->response()->setStatusCode(201)
-            : $resource->response()->setStatusCode(201);
+        return $resource->response()->setStatusCode(201);
     }
 }
