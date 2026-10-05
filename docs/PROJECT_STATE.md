@@ -192,6 +192,8 @@
 | Reportes | ⚠️ Catálogo visual, no todos los reportes tabulares |
 | IA | ⚠️ Interfaz lista, sin proveedor conectado |
 | Contingencia | ✅ Modo offline con cola local y sincronización (K7: +crm_clients, +quotes, +purchase_orders) |
+| Login UX | ✅ Demo mode: selector de usuarios con password bloqueado. Prod: login convencional. Toggle: NEXT_PUBLIC_DEMO_MODE |
+| Permisos nav | ✅ Super Admin y Administrador de empresa reciben todos los permisos (39). Nav muestra todos los módulos. |
 | Configuración | ⚠️ UI parcial |
 | Organización | ✅ Departamentos y cargos |
 
