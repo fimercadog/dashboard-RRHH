@@ -43,19 +43,24 @@ class DatabaseSeeder extends Seeder
             'locale' => 'es',
         ]);
 
-        $permissionNames = [
+        // Permisos base RRHH — los verticales los agregan vía sus propias migraciones.
+        $hrmsPermissions = [
             'dashboard.view', 'employees.manage', 'attendance.manage', 'requests.approve',
             'documents.manage', 'reports.view', 'users.manage', 'roles.manage', 'audit.view', 'settings.manage',
             'leads.view',
         ];
 
-        foreach ($permissionNames as $name) {
+        foreach ($hrmsPermissions as $name) {
             Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
         }
 
+        // Super Admin y Administrador reciben TODOS los permisos existentes en BD
+        // (incluyendo los que las migraciones de verticales ya crearon).
+        $allPermissions = Permission::pluck('name')->all();
+
         $roles = [
-            'Super Admin' => $permissionNames,
-            'Administrador de empresa' => $permissionNames,
+            'Super Admin' => $allPermissions,
+            'Administrador de empresa' => $allPermissions,
             'Recursos Humanos' => ['dashboard.view', 'employees.manage', 'attendance.manage', 'requests.approve', 'documents.manage', 'reports.view', 'leads.view'],
             'Supervisor' => ['dashboard.view', 'attendance.manage', 'requests.approve', 'reports.view'],
             'Empleado' => ['dashboard.view'],

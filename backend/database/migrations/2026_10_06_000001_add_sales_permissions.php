@@ -15,7 +15,7 @@ return new class extends Migration
         }
 
         $superAdmin = Role::where('name', 'Super Admin')->first();
-        $admin      = Role::where('name', 'Administrador')->first();
+        $admin      = Role::where('name', 'Administrador de empresa')->first();
 
         foreach ([$superAdmin, $admin] as $role) {
             $role?->givePermissionTo(['sales.manage', 'sales.view']);
