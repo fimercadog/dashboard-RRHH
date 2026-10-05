@@ -26,7 +26,7 @@ export default async function LoginPage({
     <AuthSplitLayout>
       <h1 className="text-2xl font-semibold text-foreground">Iniciar sesion</h1>
       {demoMode ? (
-        <div className="mt-3 rounded-xl border border-primary/25 bg-primary/8 px-4 py-3">
+        <div className="mt-3 rounded-xl border border-primary/20 bg-primary/10 px-4 py-3">
           <p className="text-sm font-semibold text-primary">
             Selecciona un usuario demo — entra al panel y prueba cada rol sin escribir credenciales.
           </p>

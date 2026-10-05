@@ -52,7 +52,6 @@ export function LoginForm({
       setLoading(true);
       setError("");
       setSuccess("");
-
       try {
         const response = await api.post<LoginResponse>("/auth/login", {
           email: loginEmail,
@@ -94,41 +93,28 @@ export function LoginForm({
     await login();
   }
 
-  // ── DEMO MODE ──────────────────────────────────────────────────────────────
-  if (demoMode) {
-    return (
-      <form className="mt-5 space-y-4" onSubmit={submit}>
-        {/* User selector */}
-        <div className="space-y-2">
-          {demoUsers.map(([role, userEmail], index) => (
-            <button
-              key={userEmail}
-              type="button"
-              onClick={() => selectDemoUser(index)}
-              className={`w-full rounded-xl border px-4 py-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                selectedDemo === index
-                  ? "border-primary bg-primary/8 ring-1 ring-primary"
-                  : "border-border bg-card hover:border-primary/40 hover:bg-accent"
-              }`}
-            >
-              <p className={`text-sm font-semibold ${selectedDemo === index ? "text-primary" : "text-foreground"}`}>
-                {role}
-              </p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{userEmail}</p>
-            </button>
-          ))}
-        </div>
-
-        {/* Password — always locked in demo mode */}
+  return (
+    <>
+      <form className="mt-6 space-y-4" onSubmit={submit}>
+        <Input
+          placeholder="Email"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
         <Input
           placeholder="Contraseña"
           type="password"
           value={password}
-          readOnly
-          tabIndex={-1}
-          className="cursor-not-allowed select-none opacity-60"
+          readOnly={demoMode}
+          onChange={demoMode ? undefined : (event) => setPassword(event.target.value)}
+          className={demoMode ? "cursor-not-allowed opacity-60" : ""}
         />
-
+        <div className="text-right">
+          <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
         {error ? (
           <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
             <AlertCircle className="h-4 w-4" /> {error}
@@ -139,48 +125,39 @@ export function LoginForm({
             <CheckCircle2 className="h-4 w-4" /> {success}
           </div>
         ) : null}
-
-        <Button className="w-full" disabled={loading || selectedDemo === null}>
-          {loading ? "Entrando..." : selectedDemo === null ? "Elige un usuario arriba" : "Entrar al panel"}
+        <Button className="w-full" disabled={loading}>
+          {loading ? "Entrando..." : "Entrar al panel"}
         </Button>
-
-        <div className="text-center">
-          <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
-            ¿Olvidaste tu contraseña?
-          </Link>
-        </div>
       </form>
-    );
-  }
 
-  // ── PRODUCTION MODE ────────────────────────────────────────────────────────
-  return (
-    <form className="mt-6 space-y-4" onSubmit={submit}>
-      <Input placeholder="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
-      <Input
-        placeholder="Password"
-        type="password"
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-      />
-      <div className="text-right">
-        <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
-          ¿Olvidaste tu contraseña?
-        </Link>
-      </div>
-      {error ? (
-        <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          <AlertCircle className="h-4 w-4" /> {error}
+      {demoMode ? (
+        <div className="mt-6 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Usuarios demo
+          </p>
+          {demoUsers.map(([role, userEmail], index) => (
+            <button
+              key={userEmail}
+              type="button"
+              onClick={() => selectDemoUser(index)}
+              className={`w-full rounded-xl border px-4 py-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                selectedDemo === index
+                  ? "border-primary bg-primary/10 ring-1 ring-primary"
+                  : "border-border bg-card hover:border-primary/40 hover:bg-accent"
+              }`}
+            >
+              <p
+                className={`text-sm font-semibold ${
+                  selectedDemo === index ? "text-primary" : "text-foreground"
+                }`}
+              >
+                {role}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{userEmail}</p>
+            </button>
+          ))}
         </div>
       ) : null}
-      {success ? (
-        <div className="flex items-center gap-2 rounded-xl bg-success/10 px-3 py-2 text-sm text-success">
-          <CheckCircle2 className="h-4 w-4" /> {success}
-        </div>
-      ) : null}
-      <Button className="w-full" disabled={loading}>
-        {loading ? "Entrando..." : "Entrar al panel"}
-      </Button>
-    </form>
+    </>
   );
 }
