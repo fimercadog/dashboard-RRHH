@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'google' => [
+        'sheets_api_key'       => env('GOOGLE_SHEETS_API_KEY'),
+        'sheets_spreadsheet_id' => env('GOOGLE_SHEETS_SPREADSHEET_ID'),
+    ],
+
 ];
