@@ -52,6 +52,16 @@ Modal de creación/edición genérico alimentado por `CrudField[]`.
 ### `useApiTable` hook
 Hook que maneja state de tabla (data, search, page, loading, error, refresh) contra una API REST.
 
+### `admin-shell.tsx` — Layout compartido del panel
+`src/components/layout/admin-shell.tsx` es el único shell del panel privado.
+Toda vertical lo usa. Contiene sidebar, header, guard de autorización y contingencia.
+
+**Regla de ubicación del usuario autenticado:**
+El bloque de identidad del usuario (nombre · ● Online · rol) pertenece al **sidebar**, no al header.
+Orden en sidebar: logo+vertical → divisor → usuario → navegación.
+El header contiene únicamente: BetaNotice, feedback, cambio de tema, logout.
+**No mover el bloque de usuario al header.** No crear un segundo sidebar ni un segundo user-block.
+
 ### Auth guard
 - `src/middleware.ts` protege `/app/*`
 - `/auth/me` valida sesión activa
