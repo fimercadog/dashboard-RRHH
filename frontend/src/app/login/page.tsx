@@ -25,11 +25,17 @@ export default async function LoginPage({
   return (
     <AuthSplitLayout>
       <h1 className="text-2xl font-semibold text-foreground">Iniciar sesion</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        {demoMode
-          ? "Usa un usuario demo para entrar al panel y probar roles."
-          : "Ingresa con las credenciales de tu cuenta."}
-      </p>
+      {demoMode ? (
+        <div className="mt-3 rounded-xl border border-primary/25 bg-primary/8 px-4 py-3">
+          <p className="text-sm font-semibold text-primary">
+            Selecciona un usuario demo — entra al panel y prueba cada rol sin escribir credenciales.
+          </p>
+        </div>
+      ) : (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Ingresa con las credenciales de tu cuenta.
+        </p>
+      )}
       <LoginForm initialEmail={initialEmail} autoLogin={Boolean(initialEmail)} demoMode={demoMode} />
     </AuthSplitLayout>
   );

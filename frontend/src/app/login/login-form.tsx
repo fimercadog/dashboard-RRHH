@@ -10,13 +10,15 @@ import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { AuthUser, storeAuthSession } from "@/lib/auth";
 
-const demoUsers = [
+const demoUsers: [string, string][] = [
   ["Super Admin", "superadmin@andespeople.co"],
   ["Admin empresa", "admin@andespeople.co"],
   ["RRHH", "rrhh@andespeople.co"],
   ["Supervisor", "supervisor@andespeople.co"],
   ["Empleado", "empleado@andespeople.co"],
 ];
+
+const DEMO_PASSWORD = "password";
 
 type LoginResponse = {
   token: string;
@@ -34,55 +36,99 @@ export function LoginForm({
 }) {
   const router = useRouter();
   const [email, setEmail] = useState(initialEmail);
-  const [password, setPassword] = useState(demoMode ? "password" : "");
+  const [password, setPassword] = useState(demoMode ? DEMO_PASSWORD : "");
+  const [selectedDemo, setSelectedDemo] = useState<number | null>(() => {
+    if (!demoMode || !initialEmail) return null;
+    const idx = demoUsers.findIndex(([, e]) => e === initialEmail);
+    return idx !== -1 ? idx : null;
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const autoLoginStarted = useRef(false);
 
-  const login = useCallback(async (selectedEmail = email, selectedPassword = password) => {
-    setLoading(true);
-    setError("");
-    setSuccess("");
+  const login = useCallback(
+    async (loginEmail = email, loginPassword = password) => {
+      setLoading(true);
+      setError("");
+      setSuccess("");
 
-    try {
-      const response = await api.post<LoginResponse>("/auth/login", { email: selectedEmail, password: selectedPassword });
-      storeAuthSession(response.data.user, response.data.token);
-      setSuccess(`Sesion iniciada como ${response.data.user.roles.join(", ")}`);
-      router.push("/app/dashboard");
-    } catch (err) {
-      if (isAxiosError(err) && err.response?.status === 429) {
-        const retryAfter = Number(err.response.headers["retry-after"]) || 60;
-        setError(`Demasiados intentos fallidos. Espera ${retryAfter} segundos e intenta de nuevo.`);
-      } else {
-        setError("No se pudo iniciar sesion. Revisa el usuario y la contraseña.");
+      try {
+        const response = await api.post<LoginResponse>("/auth/login", {
+          email: loginEmail,
+          password: loginPassword,
+        });
+        storeAuthSession(response.data.user, response.data.token);
+        setSuccess(`Sesion iniciada como ${response.data.user.roles.join(", ")}`);
+        router.push("/app/dashboard");
+      } catch (err) {
+        if (isAxiosError(err) && err.response?.status === 429) {
+          const retryAfter = Number(err.response.headers["retry-after"]) || 60;
+          setError(`Demasiados intentos fallidos. Espera ${retryAfter} segundos e intenta de nuevo.`);
+        } else {
+          setError("No se pudo iniciar sesion. Revisa el usuario y la contraseña.");
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  }, [email, password, router]);
+    },
+    [email, password, router],
+  );
 
   useEffect(() => {
     if (!autoLogin || autoLoginStarted.current) return;
     autoLoginStarted.current = true;
-    void login(initialEmail, "password");
+    void login(initialEmail, DEMO_PASSWORD);
   }, [autoLogin, initialEmail, login]);
+
+  function selectDemoUser(index: number) {
+    const [, userEmail] = demoUsers[index];
+    setSelectedDemo(index);
+    setEmail(userEmail);
+    setPassword(DEMO_PASSWORD);
+    setError("");
+  }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     await login();
   }
 
-  return (
-    <>
-      <form className="mt-6 space-y-4" onSubmit={submit}>
-        <Input placeholder="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
-        <Input placeholder="Password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
-        <div className="text-right">
-          <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
-            ¿Olvidaste tu contraseña?
-          </Link>
+  // ── DEMO MODE ──────────────────────────────────────────────────────────────
+  if (demoMode) {
+    return (
+      <form className="mt-5 space-y-4" onSubmit={submit}>
+        {/* User selector */}
+        <div className="space-y-2">
+          {demoUsers.map(([role, userEmail], index) => (
+            <button
+              key={userEmail}
+              type="button"
+              onClick={() => selectDemoUser(index)}
+              className={`w-full rounded-xl border px-4 py-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                selectedDemo === index
+                  ? "border-primary bg-primary/8 ring-1 ring-primary"
+                  : "border-border bg-card hover:border-primary/40 hover:bg-accent"
+              }`}
+            >
+              <p className={`text-sm font-semibold ${selectedDemo === index ? "text-primary" : "text-foreground"}`}>
+                {role}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{userEmail}</p>
+            </button>
+          ))}
         </div>
+
+        {/* Password — always locked in demo mode */}
+        <Input
+          placeholder="Contraseña"
+          type="password"
+          value={password}
+          readOnly
+          tabIndex={-1}
+          className="cursor-not-allowed select-none opacity-60"
+        />
+
         {error ? (
           <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
             <AlertCircle className="h-4 w-4" /> {error}
@@ -93,32 +139,48 @@ export function LoginForm({
             <CheckCircle2 className="h-4 w-4" /> {success}
           </div>
         ) : null}
-        <Button className="w-full" disabled={loading}>
-          {loading ? "Entrando..." : "Entrar al panel"}
+
+        <Button className="w-full" disabled={loading || selectedDemo === null}>
+          {loading ? "Entrando..." : selectedDemo === null ? "Elige un usuario arriba" : "Entrar al panel"}
         </Button>
+
+        <div className="text-center">
+          <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
       </form>
-      {demoMode ? (
-        <div className="mt-8 rounded-2xl bg-muted p-4">
-          <p className="text-sm font-semibold text-foreground">Usuarios demo</p>
-          <p className="mt-1 text-xs text-muted-foreground">Password para todos: password</p>
-          <div className="mt-4 space-y-2">
-            {demoUsers.map(([role, userEmail]) => (
-              <button
-                key={userEmail}
-                type="button"
-                className="w-full rounded-xl bg-card px-3 py-2 text-left text-xs transition hover:bg-accent"
-                onClick={() => {
-                  setEmail(userEmail);
-                  setPassword("password");
-                }}
-              >
-                <p className="font-medium text-foreground">{role}</p>
-                <p className="text-muted-foreground">{userEmail}</p>
-              </button>
-            ))}
-          </div>
+    );
+  }
+
+  // ── PRODUCTION MODE ────────────────────────────────────────────────────────
+  return (
+    <form className="mt-6 space-y-4" onSubmit={submit}>
+      <Input placeholder="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+      <Input
+        placeholder="Password"
+        type="password"
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+      />
+      <div className="text-right">
+        <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </div>
+      {error ? (
+        <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <AlertCircle className="h-4 w-4" /> {error}
         </div>
       ) : null}
-    </>
+      {success ? (
+        <div className="flex items-center gap-2 rounded-xl bg-success/10 px-3 py-2 text-sm text-success">
+          <CheckCircle2 className="h-4 w-4" /> {success}
+        </div>
+      ) : null}
+      <Button className="w-full" disabled={loading}>
+        {loading ? "Entrando..." : "Entrar al panel"}
+      </Button>
+    </form>
   );
 }
