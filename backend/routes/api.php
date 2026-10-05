@@ -51,6 +51,8 @@ use App\Http\Controllers\Api\ChartOfAccountController;
 use App\Http\Controllers\Api\AccountingPeriodController;
 use App\Http\Controllers\Api\JournalEntryController;
 use App\Http\Controllers\Api\AccountingAccountConfigController;
+use App\Http\Controllers\Api\PendingController;
+use App\Http\Controllers\Api\CampaignController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -162,6 +164,14 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::get('/accounting-configs', [AccountingAccountConfigController::class, 'index'])->middleware('can:accounting.view');
     Route::apiResource('accounting-configs', AccountingAccountConfigController::class)->except(['index'])->middleware('can:accounting.manage');
+
+    // CORE — Pendientes (cualquier usuario autenticado ve los que tiene permiso).
+    Route::get('/pending', PendingController::class);
+
+    // CORE — Comunicaciones/Campañas.
+    Route::get('/campaigns/sources', [CampaignController::class, 'sources'])->middleware('can:communications.view');
+    Route::apiResource('campaigns', CampaignController::class)->middleware('can:communications.manage');
+    Route::get('/campaigns/{campaign}/preview-audience', [CampaignController::class, 'previewAudience'])->middleware('can:communications.view');
 
     // El permiso por recurso se valida dentro del controlador.
     Route::get('/exports/{resource}.{format}', ExportController::class)

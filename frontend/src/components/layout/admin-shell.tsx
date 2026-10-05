@@ -50,6 +50,8 @@ import {
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { BetaNotice } from "@/components/layout/beta-notice";
+import { PendingButton } from "@/components/layout/pending-button";
+import { CommunicationsButton } from "@/components/layout/communications-button";
 import { ContingencyBanner } from "@/components/layout/contingency-banner";
 import { useContingency } from "@/lib/contingency/context";
 import { openFeedbackForm } from "@/lib/feedback";
@@ -490,6 +492,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <BetaNotice />
+            <PendingButton />
+            <CommunicationsButton />
             <Button
               variant="outline"
               size="icon"

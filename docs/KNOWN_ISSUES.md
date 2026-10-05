@@ -81,6 +81,20 @@
 
 ---
 
+### K11 — Comunicaciones: envío real diferido (sin proveedor de mensajería)
+**Gravedad:** Baja (diseño consciente)
+**Estado:** Deuda aceptada
+**Detalle:** Las campañas se crean como `draft` en la BD. No hay envío real de email/WhatsApp porque no hay proveedor configurado. `GoogleSheetsSource` está preparada arquitectónicamente pero deshabilitada hasta que `GOOGLE_SHEETS_API_KEY` sea configurada. `CsvSource` también es stub.
+**Cuándo resolver:** Al configurar un proveedor de mensajería (Mailgun, SendGrid, Twilio, etc.) en `.env`.
+
+### K12 — E2E Playwright: flujos CORE pendientes
+**Gravedad:** Media
+**Estado:** Abierto
+**Detalle:** Los 13 pasos E2E especificados para Pendientes y Comunicaciones no están escritos. Backend + Frontend funcionan correctamente (tests de integración + build verde), pero no hay test de navegador.
+**Cuándo resolver:** Antes de despliegue a cliente real (parte del gate de calidad).
+
+---
+
 ## Deudas técnicas conocidas y aceptadas
 
 | Deuda | Por qué se acepta | Cuándo resolver |

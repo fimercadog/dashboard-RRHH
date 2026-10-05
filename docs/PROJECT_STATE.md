@@ -151,6 +151,38 @@
 
 ---
 
+### CORE — Pendientes + Comunicaciones ✅ COMPLETO (2026-10-05)
+
+| Capa | Estado |
+|------|--------|
+| Backend — Contratos | ✅ `PendingProvider` interface + `AudienceSource` interface |
+| Backend — PendingService | ✅ Registro de providers · sum de counts · sort high→medium→low |
+| Backend — Providers | ✅ HrPendingProvider · CrmPendingProvider · PurchasesPendingProvider · SalesPendingProvider · FinancePendingProvider |
+| Backend — AudienceSources | ✅ ErpEmployeeSource · ErpClientSource · ErpLeadSource · GoogleSheetsSource (preparada, sin key) · CsvSource (stub) |
+| BD — Migrations | ✅ add_communications_permissions + create_campaigns_table |
+| Backend — Model | ✅ Campaign (TYPES / STATUSES / SOURCES · HasFactory) |
+| Backend — Controllers | ✅ PendingController (invokable) · CampaignController (index, store, show, update, destroy, sources, previewAudience) |
+| Backend — FormRequest | ✅ StoreCampaignRequest |
+| Backend — Resource | ✅ CampaignResource |
+| API | ✅ GET /pending · GET/POST/PUT/DELETE /campaigns · GET /campaigns/sources · GET /campaigns/{id}/preview-audience |
+| Permisos | ✅ communications.manage / communications.view · asignados en migración |
+| Multitenancy | ✅ company_id en campaigns · PendingProviders filtran por company_id · CampaignController verifica authorizeCompany() |
+| Frontend — Hook | ✅ `usePending()` con polling 60s |
+| Frontend — Componentes | ✅ `PendingButton` (badge rojo · dropdown con items · prioridades coloreadas) · `CommunicationsButton` (list/create views · sources con estado ready/not-ready) |
+| Frontend — Header | ✅ Ambos botones en admin-shell.tsx header |
+| Factories | ✅ EmployeeFactory · VacationRequestFactory · PermissionRequestFactory · CampaignFactory · ClientFactory |
+| Tests | ✅ PendingTest 9/9 passed · CommunicationTest 13/13 passed (141 total, 363 assertions) |
+| Build | ✅ npm run build verde, TypeScript OK |
+| E2E | ❌ Pendiente |
+
+**Restricciones de diseño:**
+- FinancePendingProvider: SOLO CashAccount con balance < 0 (overdraft). CxP → Compras. CxC → Ventas.
+- GoogleSheetsSource: `isReady()` = false sin `GOOGLE_SHEETS_API_KEY`. No hay integración falsa.
+- PendingController: sin permission middleware propio. Cada provider filtra internamente por `$user->can(...)`.
+- Envío real de campañas: DIFERIDO. Requiere proveedor de mensajería (no configurado).
+
+---
+
 ### K4 — Smoke Tests SQLite + MySQL ✅ COMPLETO (2026-10-04)
 
 | Motor | Migraciones | Seeders | Tests | Assertions | Incompatibilidades |

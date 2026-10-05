@@ -118,7 +118,29 @@ products.sale_account_code         → null hasta Fase F
 
 ---
 
-## 6. Lo que NUNCA vuelve
+## 6. CORE — Pendientes y Comunicaciones (reglas permanentes)
+
+Los dos botones del header (`PendingButton`, `CommunicationsButton`) son servicios CORE del ERP.
+
+### PendingService / PendingProvider
+- `PendingService` vive en `app/Services/PendingService.php` y se registra como singleton en `AppServiceProvider`.
+- Cada vertical que tenga ítems pendientes **registra su propio `PendingProvider`** en `AppServiceProvider::boot()`.
+- **Una vertical NO duplica pendientes que ya pertenecen a otra vertical.** Regla de ownership:
+  - CxP (AccountPayable) → PurchasesPendingProvider
+  - CxC (AccountsReceivable) → SalesPendingProvider
+  - Overdraft (CashAccount < 0) → FinancePendingProvider
+- Cada provider llama internamente a `$user->can(...)` — el endpoint no lleva su propio gate de permisos.
+- **NO** se crea una tabla `pending_actions`. Los ítems son cálculos en tiempo real.
+
+### CampaignController / AudienceSource
+- `CampaignController` recibe `AudienceSource[]` por constructor (DI en `AppServiceProvider::register()`).
+- `GoogleSheetsSource::isReady()` retorna `false` sin `GOOGLE_SHEETS_API_KEY`. **Nunca mostrarla como lista.**
+- El envío real de campañas está DIFERIDO — requiere proveedor de mensajería. Las campañas solo se guardan como `draft`.
+- `communications.manage / communications.view` son los permisos — agregados en migración `2026_10_10_000001`.
+
+---
+
+## 7. Lo que NUNCA vuelve
 
 - Módulos veterinarios/clínicos: Agenda, Citas, Pacientes, Servicios, Especies, Razas.
   → Fueron eliminados en limpieza 2026-10-03. Están en proyecto separado `demo-erp-web-veterinaria`.

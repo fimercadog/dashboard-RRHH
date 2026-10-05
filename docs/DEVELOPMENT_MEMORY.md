@@ -125,3 +125,18 @@ Para distintos estilos usar Tailwind directo: `className="bg-muted text-muted-fo
 **Regla:** `purchase_order_items`, `purchase_receipt_items` (y futuras `sale_order_items`, etc.) NO tienen `company_id`.
 La multitenancy se resuelve por JOIN con la tabla padre.
 Solo las tablas de cabecera (suppliers, purchase_orders, purchase_receipts, purchase_invoices, accounts_payable) llevan `company_id`.
+
+## M24 — PendingProvider: cada vertical registra su propio provider, no duplica pendientes de otra
+**Aprendido:** CORE — Pendientes y Comunicaciones
+**Regla:** Cada vertical crea e implementa su `PendingProvider` y lo registra en `AppServiceProvider::boot()`. Ownership estricto: CxP → Compras, CxC → Ventas, Overdraft → Finanzas. Un provider nunca consulta tablas de otra vertical.
+**Por qué:** Evita doble-conteo en el badge y viola la separación de verticales.
+
+## M25 — Tests con roles Spatie: crear con Role::firstOrCreate en setUp, nunca assignRole('nombre') sin crear el rol
+**Aprendido:** CORE — tests PendingTest + CommunicationTest
+**Regla:** Con `RefreshDatabase`, los seeders no corren. Si un test usa `assignRole('Administrador de empresa')` sin crear el rol primero, lanza `RoleDoesNotExist`. Siempre crear roles con `Role::firstOrCreate` y asignar permisos con `Permission::firstOrCreate` en el `setUp()`.
+**Por qué:** `CompanyFactory` tiene definición vacía (igual que `EmployeeFactory` original). Todos los factories con definición vacía requieren que se les pasen los campos obligatorios explícitamente.
+
+## M26 — Factories vacíos: employee_code, start_date, identification_number son NOT NULL en SQLite
+**Aprendido:** CORE — tests PendingTest
+**Regla:** `EmployeeFactory`, `VacationRequestFactory` y `PermissionRequestFactory` tenían definición vacía `[]`. Con `RefreshDatabase`, insertar sin esos campos lanza `NOT NULL constraint failed`. Siempre llenar en `definition()` los campos NOT NULL sin default. Columnas con `default()` en la migración pueden omitirse en el factory.
+**Por qué:** SQLite es estricto con NOT NULL. Descubrirlo en tests es el momento correcto (no en prod).
