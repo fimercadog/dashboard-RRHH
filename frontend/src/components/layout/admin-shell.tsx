@@ -394,6 +394,25 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 
+  const sidebarUserBlock = (
+    <div className="border-b border-border px-5 py-4">
+      <div className="flex items-center gap-2">
+        <UserCircle className="h-5 w-5 shrink-0 text-primary" />
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-foreground">{user?.name ?? "Usuario"}</p>
+          <span className="flex items-center gap-1" aria-label="Usuario conectado">
+            <span className="relative flex h-1.5 w-1.5 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
+            </span>
+            <span className="text-[10px] text-green-600 dark:text-green-400">Online</span>
+          </span>
+          <p className="truncate text-xs text-muted-foreground">{user?.roles?.[0] ?? user?.email}</p>
+        </div>
+      </div>
+    </div>
+  );
+
   const navBody = (
     <nav className="flex-1 space-y-6 overflow-y-auto p-4">
       {navGroups.map((group, i) => {
@@ -417,6 +436,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background text-foreground">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-border bg-card lg:flex lg:flex-col">
         {sidebarHeader}
+        {sidebarUserBlock}
         {navBody}
       </aside>
 
@@ -441,6 +461,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <X className="h-4 w-4" />
               </Button>
             </div>
+            {sidebarUserBlock}
             {navBody}
           </div>
         </div>
@@ -468,20 +489,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-            <div className="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-2 sm:flex">
-              <UserCircle className="h-4 w-4 text-primary" />
-              <div className="min-w-0">
-                <p className="truncate text-xs font-medium">{user?.name ?? "Usuario"}</p>
-                <span className="flex items-center gap-1" aria-label="Usuario conectado">
-                  <span className="relative flex h-1.5 w-1.5 shrink-0">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
-                  </span>
-                  <span className="text-[10px] text-green-600 dark:text-green-400">Online</span>
-                </span>
-                <p className="truncate text-[11px] text-muted-foreground">{user?.roles?.[0] ?? user?.email}</p>
-              </div>
-            </div>
             <BetaNotice />
             <Button
               variant="outline"
