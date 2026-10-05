@@ -472,6 +472,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <UserCircle className="h-4 w-4 text-primary" />
               <div className="min-w-0">
                 <p className="truncate text-xs font-medium">{user?.name ?? "Usuario"}</p>
+                <span className="flex items-center gap-1" aria-label="Usuario conectado">
+                  <span className="relative flex h-1.5 w-1.5 shrink-0">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
+                  </span>
+                  <span className="text-[10px] text-green-600 dark:text-green-400">Online</span>
+                </span>
                 <p className="truncate text-[11px] text-muted-foreground">{user?.roles?.[0] ?? user?.email}</p>
               </div>
             </div>
