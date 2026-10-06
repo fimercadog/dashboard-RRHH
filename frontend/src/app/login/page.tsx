@@ -1,6 +1,8 @@
 import { AuthSplitLayout } from "@/components/auth/auth-split-layout";
 import { LoginForm } from "./login-form";
 
+export const dynamic = "force-static";
+
 // Este dominio es un showcase: los atajos de usuarios demo se muestran por
 // defecto para que cualquiera entre y pruebe roles. Para un despliegue con
 // datos reales de cliente: NEXT_PUBLIC_DEMO_MODE=false y rotar las cuentas.

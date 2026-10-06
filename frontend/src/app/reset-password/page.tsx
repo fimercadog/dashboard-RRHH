@@ -1,6 +1,8 @@
 import { AuthSplitLayout } from "@/components/auth/auth-split-layout";
 import { ResetPasswordForm } from "./reset-password-form";
 
+export const dynamic = "force-static";
+
 export default async function ResetPasswordPage({
   searchParams,
 }: {

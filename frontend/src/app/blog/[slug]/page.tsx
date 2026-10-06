@@ -2,6 +2,10 @@ import { notFound } from "next/navigation";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { blogPosts } from "@/components/marketing/marketing-data";
 
+export function generateStaticParams() {
+  return blogPosts.map((post) => ({ slug: post.slug }));
+}
+
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = blogPosts.find((item) => item.slug === slug);

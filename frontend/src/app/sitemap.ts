@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "@/components/marketing/marketing-data";
 
+export const dynamic = "force-static";
+
 const baseUrl = "https://dfctalentohumano.fidelmercadotech.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {

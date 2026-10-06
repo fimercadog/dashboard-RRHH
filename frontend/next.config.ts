@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV === "development";
 
 const nextConfig: NextConfig = {
+  output: "export",
+  // next/image no funciona en export sin unoptimized; Hostinger sirve las imagenes directas
+  images: { unoptimized: true },
   devIndicators: false,
   allowedDevOrigins: ["*.ngrok-free.dev", "*.ngrok-free.app"],
 
