@@ -184,6 +184,28 @@ class CommunicationTest extends TestCase
         $this->assertGreaterThanOrEqual(3, $res->json('count'));
     }
 
+    public function test_preview_audience_erp_leads(): void
+    {
+        // Leads are platform-level (no company_id) — ErpLeadSource returns all leads
+        \App\Models\Lead::create(['name' => 'Lead A', 'email' => 'a@test.co', 'source' => 'contact', 'status' => 'new', 'ip_address' => '1.2.3.4']);
+        \App\Models\Lead::create(['name' => 'Lead B', 'email' => 'b@test.co', 'source' => 'demo',    'status' => 'new', 'ip_address' => '1.2.3.5']);
+
+        $campaign = Campaign::factory()->create([
+            'company_id'      => $this->company->id,
+            'created_by'      => $this->admin->id,
+            'audience_source' => 'erp_leads',
+        ]);
+
+        $res = $this->actingAs($this->admin, 'sanctum')
+            ->getJson("/api/campaigns/{$campaign->id}/preview-audience");
+
+        $res->assertOk()
+            ->assertJsonPath('ready', true)
+            ->assertJsonStructure(['ready', 'count', 'sample']);
+
+        $this->assertGreaterThanOrEqual(2, $res->json('count'));
+    }
+
     public function test_preview_audience_google_sheets_returns_not_ready(): void
     {
         $campaign = Campaign::factory()->create([

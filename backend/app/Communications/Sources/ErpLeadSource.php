@@ -14,7 +14,9 @@ class ErpLeadSource implements AudienceSource
 
     public function preview(int $companyId, array $filters = []): array
     {
-        $query = Lead::where('company_id', $companyId);
+        // Leads are platform-level (no company_id column) — all leads are
+        // available as an audience regardless of which company runs the campaign.
+        $query = Lead::query();
 
         if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
