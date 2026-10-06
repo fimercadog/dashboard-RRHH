@@ -142,8 +142,6 @@ Los dos botones del header (`PendingButton`, `CommunicationsButton`) son servici
 
 ## 7. Lo que NUNCA vuelve
 
-- Módulos veterinarios/clínicos: Agenda, Citas, Pacientes, Servicios, Especies, Razas.
-  → Fueron eliminados en limpieza 2026-10-03. Están en proyecto separado `demo-erp-web-veterinaria`.
 
 ---
 
