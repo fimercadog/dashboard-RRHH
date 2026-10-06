@@ -1,5 +1,6 @@
 import { AuthSplitLayout } from "@/components/auth/auth-split-layout";
 import { LoginForm } from "./login-form";
+import { DEMO_USERS } from "@/lib/demo-users";
 
 export const dynamic = "force-static";
 
@@ -8,13 +9,11 @@ export const dynamic = "force-static";
 // datos reales de cliente: NEXT_PUBLIC_DEMO_MODE=false y rotar las cuentas.
 const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
-const demoEmails: Record<string, string> = {
-  superadmin: "superadmin@andespeople.co",
-  admin: "admin@andespeople.co",
-  rrhh: "rrhh@andespeople.co",
-  supervisor: "supervisor@andespeople.co",
-  empleado: "empleado@andespeople.co",
-};
+// Mapa slug → email para el shortcut ?demo=superadmin en la URL.
+// Slug = prefijo del email (superadmin, admin, rrhh, supervisor, empleado).
+const demoEmails = Object.fromEntries(
+  DEMO_USERS.map((u) => [u.email.split("@")[0], u.email])
+);
 
 export default async function LoginPage({
   searchParams,

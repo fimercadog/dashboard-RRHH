@@ -9,16 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { AuthUser, storeAuthSession } from "@/lib/auth";
-
-const demoUsers: [string, string][] = [
-  ["Super Admin", "superadmin@andespeople.co"],
-  ["Admin empresa", "admin@andespeople.co"],
-  ["RRHH", "rrhh@andespeople.co"],
-  ["Supervisor", "supervisor@andespeople.co"],
-  ["Empleado", "empleado@andespeople.co"],
-];
-
-const DEMO_PASSWORD = "password";
+import { DEMO_USERS, DEMO_PASSWORD } from "@/lib/demo-users";
 
 type LoginResponse = {
   token: string;
@@ -39,7 +30,7 @@ export function LoginForm({
   const [password, setPassword] = useState(demoMode ? DEMO_PASSWORD : "");
   const [selectedDemo, setSelectedDemo] = useState<number | null>(() => {
     if (!demoMode || !initialEmail) return null;
-    const idx = demoUsers.findIndex(([, e]) => e === initialEmail);
+    const idx = DEMO_USERS.findIndex((u) => u.email === initialEmail);
     return idx !== -1 ? idx : null;
   });
   const [loading, setLoading] = useState(false);
@@ -81,9 +72,8 @@ export function LoginForm({
   }, [autoLogin, initialEmail, login]);
 
   function selectDemoUser(index: number) {
-    const [, userEmail] = demoUsers[index];
     setSelectedDemo(index);
-    setEmail(userEmail);
+    setEmail(DEMO_USERS[index].email);
     setPassword(DEMO_PASSWORD);
     setError("");
   }
@@ -94,50 +84,12 @@ export function LoginForm({
   }
 
   return (
-    <>
-      <form className="mt-6 space-y-4" onSubmit={submit}>
-        <Input
-          placeholder="Email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
-        <Input
-          placeholder="Contraseña"
-          type="password"
-          value={password}
-          readOnly={demoMode}
-          onChange={demoMode ? undefined : (event) => setPassword(event.target.value)}
-          className={demoMode ? "cursor-not-allowed opacity-60" : ""}
-        />
-        <div className="text-right">
-          <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
-            ¿Olvidaste tu contraseña?
-          </Link>
-        </div>
-        {error ? (
-          <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            <AlertCircle className="h-4 w-4" /> {error}
-          </div>
-        ) : null}
-        {success ? (
-          <div className="flex items-center gap-2 rounded-xl bg-success/10 px-3 py-2 text-sm text-success">
-            <CheckCircle2 className="h-4 w-4" /> {success}
-          </div>
-        ) : null}
-        <Button className="w-full" disabled={loading}>
-          {loading ? "Entrando..." : "Entrar al panel"}
-        </Button>
-      </form>
-
+    <form className="mt-6 space-y-4" onSubmit={submit}>
       {demoMode ? (
-        <div className="mt-6 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Usuarios demo
-          </p>
-          {demoUsers.map(([role, userEmail], index) => (
+        <div className="space-y-2">
+          {DEMO_USERS.map((user, index) => (
             <button
-              key={userEmail}
+              key={user.email}
               type="button"
               onClick={() => selectDemoUser(index)}
               className={`w-full rounded-xl border px-4 py-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
@@ -146,18 +98,51 @@ export function LoginForm({
                   : "border-border bg-card hover:border-primary/40 hover:bg-accent"
               }`}
             >
-              <p
-                className={`text-sm font-semibold ${
-                  selectedDemo === index ? "text-primary" : "text-foreground"
-                }`}
-              >
-                {role}
+              <p className={`text-sm font-semibold ${selectedDemo === index ? "text-primary" : "text-foreground"}`}>
+                {user.name}
               </p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{userEmail}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {user.role} · {user.email}
+              </p>
             </button>
           ))}
         </div>
+      ) : (
+        <Input
+          placeholder="Email"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+      )}
+      <Input
+        placeholder="Contraseña"
+        type="password"
+        value={password}
+        readOnly={demoMode}
+        onChange={demoMode ? undefined : (event) => setPassword(event.target.value)}
+        className={demoMode ? "cursor-not-allowed opacity-60" : ""}
+      />
+      {!demoMode && (
+        <div className="text-right">
+          <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+      )}
+      {error ? (
+        <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <AlertCircle className="h-4 w-4" /> {error}
+        </div>
       ) : null}
-    </>
+      {success ? (
+        <div className="flex items-center gap-2 rounded-xl bg-success/10 px-3 py-2 text-sm text-success">
+          <CheckCircle2 className="h-4 w-4" /> {success}
+        </div>
+      ) : null}
+      <Button className="w-full" disabled={loading || (demoMode && selectedDemo === null)}>
+        {loading ? "Entrando..." : "Entrar al panel"}
+      </Button>
+    </form>
   );
 }
