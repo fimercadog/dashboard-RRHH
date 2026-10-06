@@ -4,6 +4,9 @@ const isDev = process.env.NODE_ENV === "development";
 
 const nextConfig: NextConfig = {
   output: "export",
+  // trailingSlash=true genera login/index.html en vez de login.html,
+  // evitando que Apache devuelva 403 cuando el dir existe pero no tiene index
+  trailingSlash: true,
   // next/image no funciona en export sin unoptimized; Hostinger sirve las imagenes directas
   images: { unoptimized: true },
   devIndicators: false,
