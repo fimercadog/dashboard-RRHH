@@ -81,6 +81,16 @@ No escribir stock_movements, product_stock ni accounts_receivable directamente d
 **Aprendido:** SalesTest setUp
 **Regla:** Al crear un ProductStock directo en tests, incluir `company_id`.
 
+## M19 — Leads: formulario público → módulo Leads del ERP
+**Aprendido:** Wizard de contacto (2026-10-05)
+**Regla:** El endpoint público `POST /api/leads` (sin auth, throttle 5/min) es suficiente para cualquier vertical.
+Campos: `name`, `company_name`, `email`, `phone`, `employee_count`, `priority_module`, `message`, `source`, `consent`.
+No hay `company_id` en leads — es tabla plataforma, no tenant.
+`priority_module` y `employee_count` son strings libres: las opciones se definen en frontend (pills).
+`ContactForm` para formulario plano; `ContactWizard` para flujo multi-paso de calificación.
+Para verticales futuras: copiar `ContactWizard`, cambiar `source` y la lista de módulos.
+**Bug conocido:** `ErpLeadSource` (Communications) referencia `company_id` que no existe en la migración → falla en tiempo de ejecución. No afecta creación de leads pero bloquea `CampaignService` si usa esta fuente.
+
 ## M18 — PaymentService es el único escritor de saldos de caja y transacciones financieras
 **Regla:** Ningún código escribe `cash_accounts.balance` ni `financial_transactions` directamente.
 Solo `PaymentService::registerPayment()`, `::cancelPayment()`, `::transfer()`, `::cancelTransfer()`.

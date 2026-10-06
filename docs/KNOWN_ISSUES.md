@@ -15,8 +15,8 @@
 
 ### K3 — Formularios públicos no envían datos
 **Gravedad:** Baja (demo)
-**Estado:** Abierto
-**Detalle:** El formulario de contacto en el sitio público es visual. No tiene endpoint backend ni envío real.
+**Estado:** RESUELTO (2026-10-05)
+**Detalle:** `/contacto` reemplazado por `ContactWizard` (5 pasos). Envía a `POST /api/leads` — persistencia real en módulo Leads del ERP.
 
 ### K4 — Sin tests automatizados
 **Gravedad:** Alta (para producción)
