@@ -190,6 +190,15 @@ Solo las tablas de cabecera (suppliers, purchase_orders, purchase_receipts, purc
 **Regla:** Con `RefreshDatabase`, los seeders no corren. Si un test usa `assignRole('Administrador de empresa')` sin crear el rol primero, lanza `RoleDoesNotExist`. Siempre crear roles con `Role::firstOrCreate` y asignar permisos con `Permission::firstOrCreate` en el `setUp()`.
 **Por qué:** `CompanyFactory` tiene definición vacía (igual que `EmployeeFactory` original). Todos los factories con definición vacía requieren que se les pasen los campos obligatorios explícitamente.
 
+## M32 — SSH al servidor: OpenSSH exclusivamente, NUNCA PuTTY
+**Aprendido:** 2026-10-06 — error `puttygen command line error: unrecognised option '-o'`
+**Regla:** Para cualquier conexión SSH a Hostinger o cualquier servidor, usar exclusivamente OpenSSH desde terminal:
+- `ssh -p 65002 -i ~/.ssh/hostinger_apirrhh u910322706@82.29.157.42`
+- `scp`, `ssh-keygen`, `sftp` — todos de `C:\Windows\System32\OpenSSH\` (OpenSSH 10.0p2 disponible)
+**PROHIBIDO:** `putty.exe`, `plink.exe`, `puttygen.exe`, `pscp.exe` — aunque estén instalados en el sistema.
+
+**Por qué:** PuTTY tiene sintaxis incompatible con flags estándar y no se debe usar en scripts automatizados ni en el workflow de deploy. El método actual (GitHub branch → wget → cp) no requiere SSH cliente; cuando se requiere SSH directo, usar OpenSSH.
+
 ## M26 — Factories vacíos: employee_code, start_date, identification_number son NOT NULL en SQLite
 **Aprendido:** CORE — tests PendingTest
 **Regla:** `EmployeeFactory`, `VacationRequestFactory` y `PermissionRequestFactory` tenían definición vacía `[]`. Con `RefreshDatabase`, insertar sin esos campos lanza `NOT NULL constraint failed`. Siempre llenar en `definition()` los campos NOT NULL sin default. Columnas con `default()` en la migración pueden omitirse en el factory.
