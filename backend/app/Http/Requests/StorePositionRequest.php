@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Contracts\Validation\ValidationRule;
+
+class StorePositionRequest extends ApiFormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /** @return array<string, ValidationRule|array<mixed>|string> */
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:120'],
+            'department_id' => ['nullable', $this->ownedExists('departments')],
+            'description' => ['nullable', 'string'],
+            'status' => ['required', 'in:active,inactive'],
+        ];
+    }
+}

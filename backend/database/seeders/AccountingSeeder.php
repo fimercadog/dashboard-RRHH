@@ -1,0 +1,113 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\AccountingAccountConfig;
+use App\Models\ChartOfAccount;
+use App\Models\Company;
+use Illuminate\Database\Seeder;
+
+/**
+ * Siembra un plan de cuentas básico funcional para Colombia.
+ * ⚠️ NO es el PUC oficial (Decreto 2649/1993) — estructura funcional de referencia.
+ * VALIDAR NORMATIVAMENTE antes de usar en producción con obligaciones legales.
+ */
+class AccountingSeeder extends Seeder
+{
+    public function run(): void
+    {
+        Company::all()->each(fn ($company) => $this->seedForCompany($company->id));
+    }
+
+    private function seedForCompany(int $companyId): void
+    {
+        $tree = [
+            // ACTIVOS
+            ['1', 'ACTIVO', 'asset', 'debit', null, 1, false],
+            ['11', 'Disponible', 'asset', 'debit', '1', 2, false],
+            ['1105', 'Caja', 'asset', 'debit', '11', 3, true],
+            ['1110', 'Bancos', 'asset', 'debit', '11', 3, true],
+            ['1115', 'Cuentas de ahorro', 'asset', 'debit', '11', 3, true],
+            ['13', 'Deudores', 'asset', 'debit', '1', 2, false],
+            ['1305', 'Clientes (CxC)', 'asset', 'debit', '13', 3, true],
+            ['14', 'Inventarios', 'asset', 'debit', '1', 2, false],
+            ['1435', 'Mercancías', 'asset', 'debit', '14', 3, true],
+            // PASIVOS
+            ['2', 'PASIVO', 'liability', 'credit', null, 1, false],
+            ['22', 'Proveedores', 'liability', 'credit', '2', 2, false],
+            ['2205', 'Proveedores nacionales (CxP)', 'liability', 'credit', '22', 3, true],
+            ['24', 'Impuestos, gravámenes y tasas', 'liability', 'credit', '2', 2, false],
+            ['2408', 'IVA por pagar', 'liability', 'credit', '24', 3, true],
+            // PATRIMONIO
+            ['3', 'PATRIMONIO', 'equity', 'credit', null, 1, false],
+            ['31', 'Capital social', 'equity', 'credit', '3', 2, false],
+            ['3105', 'Capital suscrito', 'equity', 'credit', '31', 3, true],
+            ['36', 'Resultados del ejercicio', 'equity', 'credit', '3', 2, false],
+            ['3605', 'Utilidad del ejercicio', 'equity', 'credit', '36', 3, true],
+            ['3610', 'Pérdida del ejercicio', 'equity', 'debit', '36', 3, true],
+            ['37', 'Resultados de ejercicios anteriores', 'equity', 'credit', '3', 2, false],
+            ['3705', 'Utilidades acumuladas', 'equity', 'credit', '37', 3, true],
+            // INGRESOS
+            ['4', 'INGRESOS', 'revenue', 'credit', null, 1, false],
+            ['41', 'Ingresos operacionales', 'revenue', 'credit', '4', 2, false],
+            ['4135', 'Comercio al por mayor y al por menor', 'revenue', 'credit', '41', 3, true],
+            ['4155', 'Servicios', 'revenue', 'credit', '41', 3, true],
+            // GASTOS
+            ['5', 'GASTOS', 'expense', 'debit', null, 1, false],
+            ['51', 'Gastos operacionales de administración', 'expense', 'debit', '5', 2, false],
+            ['5105', 'Gastos de personal', 'expense', 'debit', '51', 3, true],
+            ['5195', 'Diversos', 'expense', 'debit', '51', 3, true],
+            // COSTOS
+            ['6', 'COSTOS', 'cost', 'debit', null, 1, false],
+            ['61', 'Costo de ventas', 'cost', 'debit', '6', 2, false],
+            ['6135', 'Costo de ventas — mercancías', 'cost', 'debit', '61', 3, true],
+        ];
+
+        // Primero pasada: crear todas las cuentas sin parent (para que los IDs existan)
+        $codeToId = [];
+        foreach ($tree as [$code, $name, $type, $nature, $parentCode, $level, $allows]) {
+            $account = ChartOfAccount::firstOrCreate(
+                ['company_id' => $companyId, 'code' => $code],
+                [
+                    'name'             => $name,
+                    'type'             => $type,
+                    'nature'           => $nature,
+                    'level'            => $level,
+                    'allows_movements' => $allows,
+                    'status'           => 'active',
+                ]
+            );
+            $codeToId[$code] = $account->id;
+        }
+
+        // Segunda pasada: asignar parent_id
+        foreach ($tree as [$code, , , , $parentCode]) {
+            if ($parentCode) {
+                ChartOfAccount::where('company_id', $companyId)
+                    ->where('code', $code)
+                    ->update(['parent_id' => $codeToId[$parentCode]]);
+            }
+        }
+
+        // Configuración de cuentas de integración por defecto
+        $defaults = [
+            'cxc_default'      => '1305',
+            'cxp_default'      => '2205',
+            'inventory_default'=> '1435',
+            'cogs_default'     => '6135',
+            'revenue_default'  => '4135',
+            'net_income'       => '3605',
+            'retained_earnings'=> '3705',
+        ];
+
+        foreach ($defaults as $key => $code) {
+            $accountId = $codeToId[$code] ?? null;
+            if ($accountId) {
+                AccountingAccountConfig::updateOrCreate(
+                    ['company_id' => $companyId, 'config_key' => $key],
+                    ['account_id' => $accountId]
+                );
+            }
+        }
+    }
+}

@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+Disallow: /app
+
+Sitemap: https://dfctalentohumano.fidelmercadotech.com/sitemap.xml
