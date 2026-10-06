@@ -203,14 +203,15 @@ export default function TransferenciasPage() {
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/50">
               <tr>
-                {["Fecha", "Origen", "Destino", "Monto", "Referencia", "Notas", "Estado", ""].map((h) => (
+                {["N.º", "Fecha", "Origen", "Destino", "Monto", "Referencia", "Notas", "Estado", ""].map((h) => (
                   <th key={h} className="px-4 py-3 text-left font-medium text-muted-foreground">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {transfers.map((t) => (
+              {transfers.map((t, i) => (
                 <tr key={t.id} className="border-b last:border-0 hover:bg-muted/30">
+                  <td className="px-3 py-3 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
                   <td className="px-4 py-3">{t.date as unknown as string}</td>
                   <td className="px-4 py-3">{t.from_account?.name ?? `#${t.id}`}</td>
                   <td className="px-4 py-3">{t.to_account?.name ?? "-"}</td>

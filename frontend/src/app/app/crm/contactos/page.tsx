@@ -14,7 +14,7 @@ const columns: AppColumnDef<Contact>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "client_id", label: "ID Cliente", type: "number", required: true },
+  { name: "client_id", label: "Cliente", type: "relation-select", endpoint: "/clients?per_page=100", required: true },
   { name: "name", label: "Nombre", required: true },
   { name: "job_title", label: "Cargo" },
   { name: "email", label: "Correo", type: "email" },

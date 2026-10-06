@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeDocumentResource extends JsonResource
 {
@@ -20,6 +21,7 @@ class EmployeeDocumentResource extends JsonResource
             'document_type' => $this->document_type,
             'name' => $this->name,
             'file_path' => $this->file_path,
+            'file_url'  => $this->file_path ? Storage::disk('public')->url($this->file_path) : null,
             'issue_date' => $this->issue_date,
             'expiration_date' => $this->expiration_date,
             'status' => $this->status,

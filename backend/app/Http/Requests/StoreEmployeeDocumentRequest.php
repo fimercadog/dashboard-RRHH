@@ -16,9 +16,9 @@ class StoreEmployeeDocumentRequest extends ApiFormRequest
     {
         return [
             'employee_id' => ['required', $this->ownedExists('employees')],
-            'document_type' => ['required', 'string', 'max:100'],
+            'document_type' => ['required', 'in:contrato,hoja_vida,diploma,certificado,soporte_disciplinario,otro'],
             'name' => ['required', 'string', 'max:160'],
-            'file_path' => ['required', 'string'],
+            'file' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:10240'],
             'issue_date' => ['nullable', 'date'],
             'expiration_date' => ['nullable', 'date'],
             'status' => ['required', 'in:valid,expiring,expired,pending_review'],

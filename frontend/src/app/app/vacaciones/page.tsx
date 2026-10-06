@@ -15,7 +15,7 @@ const columns: AppColumnDef<RequestRow>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "employee_id", label: "ID empleado", type: "number", required: true },
+  { name: "employee_id", label: "Empleado", type: "relation-select", endpoint: "/employees/selector", required: true },
   { name: "start_date", label: "Inicio", type: "date", required: true },
   { name: "end_date", label: "Fin", type: "date", required: true },
   { name: "requested_days", label: "Dias solicitados", type: "number", required: true },
@@ -24,6 +24,7 @@ const fields: CrudField[] = [
     label: "Estado",
     type: "select",
     required: true,
+    defaultValue: "pending",
     options: [
       { label: "Pendiente", value: "pending" },
       { label: "Aprobada", value: "approved" },

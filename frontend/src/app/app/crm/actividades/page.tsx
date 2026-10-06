@@ -34,14 +34,14 @@ const fields: CrudField[] = [
     ],
   },
   {
-    name: "status", label: "Estado", type: "select", required: true,
+    name: "status", label: "Estado", type: "select", required: true, defaultValue: "pending",
     options: [
       { label: "Pendiente", value: "pending" }, { label: "Completada", value: "done" },
       { label: "Cancelada", value: "cancelled" },
     ],
   },
-  { name: "client_id", label: "ID Cliente", type: "number" },
-  { name: "deal_id", label: "ID Oportunidad", type: "number" },
+  { name: "client_id", label: "Cliente", type: "relation-select", endpoint: "/clients?per_page=100" },
+  { name: "deal_id", label: "Oportunidad", type: "relation-select", endpoint: "/deals?per_page=100" },
   { name: "due_at", label: "Fecha vencimiento", type: "date" },
   { name: "body", label: "Descripcion", type: "textarea", colSpan: "full" },
 ];

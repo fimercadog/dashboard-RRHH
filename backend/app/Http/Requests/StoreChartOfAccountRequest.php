@@ -2,12 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class StoreChartOfAccountRequest extends FormRequest
+class StoreChartOfAccountRequest extends ApiFormRequest
 {
-    public function authorize(): bool { return true; }
-
     public function rules(): array
     {
         return [
@@ -15,7 +11,7 @@ class StoreChartOfAccountRequest extends FormRequest
             'name'             => ['required', 'string', 'max:150'],
             'type'             => ['required', 'in:asset,liability,equity,revenue,expense,cost'],
             'nature'           => ['required', 'in:debit,credit'],
-            'parent_id'        => ['nullable', 'integer'],
+            'parent_id'        => ['nullable', 'integer', $this->ownedExists('chart_of_accounts')],
             'level'            => ['nullable', 'integer', 'min:1', 'max:8'],
             'allows_movements' => ['boolean'],
             'status'           => ['in:active,inactive'],

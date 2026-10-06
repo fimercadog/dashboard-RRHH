@@ -28,11 +28,11 @@ const columns: AppColumnDef<Deal>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "client_id", label: "ID Cliente", type: "number", required: true },
+  { name: "client_id", label: "Cliente", type: "relation-select", endpoint: "/clients?per_page=100", required: true },
   { name: "title", label: "Titulo", required: true },
   { name: "amount", label: "Valor (COP)", type: "number", required: true },
   {
-    name: "stage", label: "Etapa", type: "select", required: true,
+    name: "stage", label: "Etapa", type: "select", required: true, defaultValue: "prospecting",
     options: [
       { label: "Prospección", value: "prospecting" },
       { label: "Calificación", value: "qualification" },

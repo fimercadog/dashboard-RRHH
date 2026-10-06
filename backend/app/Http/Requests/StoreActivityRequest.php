@@ -3,19 +3,16 @@
 namespace App\Http\Requests;
 
 use App\Models\Activity;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreActivityRequest extends FormRequest
+class StoreActivityRequest extends ApiFormRequest
 {
-    public function authorize(): bool { return true; }
-
     public function rules(): array
     {
         return [
-            'deal_id'    => ['nullable', 'integer', 'min:1'],
-            'client_id'  => ['nullable', 'integer', 'min:1'],
-            'contact_id' => ['nullable', 'integer', 'min:1'],
+            'deal_id'    => ['nullable', 'integer', 'min:1', $this->ownedExists('deals')],
+            'client_id'  => ['nullable', 'integer', 'min:1', $this->ownedExists('clients')],
+            'contact_id' => ['nullable', 'integer', 'min:1', $this->ownedExists('contacts')],
             'type'       => ['nullable', Rule::in(Activity::TYPES)],
             'title'      => ['required', 'string', 'max:200'],
             'body'       => ['nullable', 'string', 'max:5000'],

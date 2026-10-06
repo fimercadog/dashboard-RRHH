@@ -34,14 +34,15 @@ const fields: CrudField[] = [
     label: "Estado",
     type: "select",
     required: true,
+    defaultValue: "active",
     options: [
       ...STATUS_OPTIONS,
       { label: "Terminado", value: "terminated" },
       { label: "En licencia", value: "on_leave" },
     ],
   },
-  { name: "department_id", label: "ID area", type: "number", min: 1, hint: "ID de un area existente" },
-  { name: "position_id", label: "ID cargo", type: "number", min: 1, hint: "ID de un cargo existente" },
+  { name: "department_id", label: "Area", type: "relation-select", endpoint: "/departments?per_page=100" },
+  { name: "position_id", label: "Cargo", type: "relation-select", endpoint: "/positions?per_page=100" },
   { name: "salary", label: "Salario", type: "number", min: 0, hint: "Solo numeros, sin negativos" },
 ];
 
@@ -55,7 +56,7 @@ export default function EmployeesPage() {
       columns={columns}
       fields={fields}
       actionLabel="Nuevo empleado"
-      modalDescription="Captura la informacion basica del colaborador. Los catalogos por ID se refinan luego con selects conectados."
+      modalDescription="Captura la informacion basica del colaborador."
       extraRowActions={(row, refresh) => (
         <>
           <Link href={`/app/empleados/${row.id}`} className="inline-flex h-8 items-center gap-2 rounded-md px-2 text-sm hover:bg-muted">

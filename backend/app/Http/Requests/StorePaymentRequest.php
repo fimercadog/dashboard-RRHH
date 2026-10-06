@@ -2,18 +2,19 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class StorePaymentRequest extends FormRequest
+class StorePaymentRequest extends ApiFormRequest
 {
-    public function authorize(): bool { return true; }
-
     public function rules(): array
     {
+        $payableTable = match ($this->input('payable_type')) {
+            'accounts_receivable' => 'accounts_receivable',
+            default               => 'accounts_payable',
+        };
+
         return [
             'payable_type'    => ['required', 'in:accounts_receivable,accounts_payable'],
-            'payable_id'      => ['required', 'integer', 'min:1'],
-            'cash_account_id' => ['required', 'integer', 'min:1'],
+            'payable_id'      => ['required', 'integer', 'min:1', $this->ownedExists($payableTable)],
+            'cash_account_id' => ['required', 'integer', 'min:1', $this->ownedExists('cash_accounts')],
             'amount'          => ['required', 'numeric', 'min:0.0001'],
             'date'            => ['required', 'date'],
             'method'          => ['required', 'in:cash,transfer,check,card,other'],

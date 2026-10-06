@@ -73,6 +73,7 @@ export default function PeriodosPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/40">
+                <th className="w-10 px-3 py-2 text-left font-medium">N.º</th>
                 <th className="px-4 py-2 text-left font-medium">Nombre</th>
                 <th className="px-4 py-2 text-left font-medium">Inicio</th>
                 <th className="px-4 py-2 text-left font-medium">Fin</th>
@@ -84,13 +85,14 @@ export default function PeriodosPage() {
             <tbody>
               {periods.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                     No hay períodos. Crea el primero para empezar a registrar asientos.
                   </td>
                 </tr>
               )}
-              {periods.map((p) => (
+              {periods.map((p, i) => (
                 <tr key={p.id} className="border-b last:border-0 hover:bg-muted/20">
+                  <td className="px-3 py-2 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
                   <td className="px-4 py-2 font-medium">{p.name}</td>
                   <td className="px-4 py-2">{p.start_date}</td>
                   <td className="px-4 py-2">{p.end_date}</td>

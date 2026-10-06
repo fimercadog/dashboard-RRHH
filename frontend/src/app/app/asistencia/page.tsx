@@ -16,13 +16,14 @@ const columns: AppColumnDef<Attendance>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "employee_id", label: "ID empleado", type: "number", required: true },
+  { name: "employee_id", label: "Empleado", type: "relation-select", endpoint: "/employees/selector", required: true },
   { name: "date", label: "Fecha", type: "date", required: true },
   {
     name: "status",
     label: "Estado",
     type: "select",
     required: true,
+    defaultValue: "present",
     options: [
       { label: "Presente", value: "present" },
       { label: "Ausente", value: "absent" },

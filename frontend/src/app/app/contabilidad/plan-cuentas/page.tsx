@@ -105,6 +105,7 @@ export default function PlanCuentasPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/40">
+                <th className="w-10 px-3 py-2 text-left font-medium">N.º</th>
                 <th className="px-4 py-2 text-left font-medium">Código</th>
                 <th className="px-4 py-2 text-left font-medium">Nombre</th>
                 <th className="px-4 py-2 text-left font-medium">Tipo</th>
@@ -117,13 +118,14 @@ export default function PlanCuentasPage() {
             <tbody>
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
                     {search ? "Sin resultados para la búsqueda." : "No hay cuentas registradas. Crea la primera."}
                   </td>
                 </tr>
               )}
-              {filtered.map((a) => (
+              {filtered.map((a, i) => (
                 <tr key={a.id} className="border-b last:border-0 hover:bg-muted/20">
+                  <td className="px-3 py-2 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
                   <td className="px-4 py-2 font-mono font-medium" style={{ paddingLeft: `${(a.level - 1) * 1.5 + 1}rem` }}>
                     {a.code}
                   </td>

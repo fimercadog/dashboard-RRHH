@@ -15,9 +15,9 @@ const columns: AppColumnDef<Category>[] = [
 
 const fields: CrudField[] = [
   { name: "name", label: "Nombre", required: true },
-  { name: "parent_id", label: "ID Categoria padre", type: "number" },
+  { name: "parent_id", label: "Categoria padre", type: "relation-select", endpoint: "/categories?per_page=100" },
   {
-    name: "status", label: "Estado", type: "select", required: true,
+    name: "status", label: "Estado", type: "select", required: true, defaultValue: "active",
     options: STATUS_OPTIONS,
   },
 ];

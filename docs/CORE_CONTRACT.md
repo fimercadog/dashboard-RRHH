@@ -144,3 +144,73 @@ Los dos botones del header (`PendingButton`, `CommunicationsButton`) son servici
 
 - Módulos veterinarios/clínicos: Agenda, Citas, Pacientes, Servicios, Especies, Razas.
   → Fueron eliminados en limpieza 2026-10-03. Están en proyecto separado `demo-erp-web-veterinaria`.
+
+---
+
+## 7b. Patrones backend CORE — descubiertos en K-FORMS Alignment Pass
+
+### FormRequest con FKs company-scoped (M29)
+
+Todo `FormRequest` que valide un campo FK a una tabla con `company_id` DEBE extender `ApiFormRequest` (no `FormRequest`) y usar `$this->ownedExists('tabla')`. Para FK polymorphic: `match($this->input('*_type'))` para elegir la tabla correcta en `rules()`.
+
+### Upload de archivos (M30)
+
+- BD: columna `file_path VARCHAR` (ruta relativa, no blob)
+- FormRequest: validar `'file'` como `['file', 'mimes:...', 'max:10240']`; NUNCA `file_path` como string al usuario
+- Controller: `$request->file('file')->store("dominio/{$cid}", 'public')`
+- Resource: exponer `file_url = Storage::disk('public')->url($this->file_path)`
+- Deploy: `php artisan storage:link` obligatorio
+
+### Selector sin permiso de módulo (M31)
+
+Cuando módulo A necesita selector de entidades del módulo B y el usuario puede no tener permiso de B: agregar `GET /{entidad}/selector` — solo `[id, label]`, sin `can:` middleware, registrado ANTES del `apiResource`. Solo cuando el endpoint no expone datos sensibles.
+
+---
+
+## 8. Reglas UX de formularios — heredables a todas las verticales
+
+Ver el documento completo en `docs/UX_FORM_RULES.md`.
+
+Resumen de las reglas CORE (auditoría K-FORMS, 2026-10-06):
+
+| Regla | Principio |
+|-------|-----------|
+| UX-001 | Ningún campo FK visible al usuario puede ser `type="number"`. Siempre selector cargado desde la API. |
+| UX-002 | Ningún campo de archivo puede ser `type="text"`. Siempre `<input type="file">` con upload real. |
+| UX-003 | Todo campo `status` en creación debe tener `defaultValue` explícito. Estados del sistema: read-only. |
+| UX-004 | Campos con conjunto finito de valores: `select` con opciones fijas, nunca texto libre. |
+| UX-005 | Selectores de FK solo retornan datos de la `company_id` activa (garantizado por Bearer token + ResolvesCompany). |
+
+**Violación de cualquiera de estas reglas = el formulario no está DONE.**
+
+---
+
+## 9. Protocolo de clasificación CORE / vertical
+
+Toda corrección o patrón nuevo descubierto durante una tarea debe clasificarse antes de cerrarla:
+
+```
+CAMBIO: _______________________________________________
+
+[ ] Específico de una sola vertical
+[ ] CORE reutilizable → actualizar: CORE_CONTRACT.md / UX_FORM_RULES.md /
+    DEVELOPMENT_MEMORY.md / VERTICALS.md / VERTICAL_TEMPLATE.md
+```
+
+Ver protocolo completo en `docs/VERTICAL_TEMPLATE.md` §4.
+
+---
+
+## 10. Orden de capas obligatorio (M28)
+
+**No se toca una capa sobre una BD provisional.**
+
+```
+BD → Backend (Alignment Pass) → Frontend/Formularios → Auth → E2E
+```
+
+- Si la BD está en auditoría: NO avanzar a Backend
+- Si Backend no está alineado con BD: NO avanzar a Frontend
+- "Backend Alignment Pass" = verificar que BD real ↔ Models ↔ Services ↔ API ↔ validaciones están alineados antes de tocar el frontend
+
+Ver checklist completo en `docs/VERTICAL_TEMPLATE.md` §3.

@@ -4,12 +4,13 @@
 
 1. Leer `docs/PROJECT_STATE.md` — qué existe y en qué estado.
 2. Leer `docs/CORE_CONTRACT.md` — qué no se toca y por qué.
-3. Si es una vertical nueva o extensión, leer `docs/VERTICALS.md`.
-4. Si la tarea toca Compras/Ventas/Finanzas/Contabilidad, leer `docs/arquitectura-fases-c-f.md`.
-5. Inspeccionar el código real relevante antes de escribir (no asumir desde memoria).
-6. Buscar si ya existe: componente, endpoint, servicio, hook, validación — BUSCAR ANTES DE CREAR.
-7. Crear plan: qué capas toca, qué cambia, qué reutiliza.
-8. Definir criterios de aceptación: ¿cómo sé que está terminado?
+3. Leer `docs/UX_FORM_RULES.md` — reglas de formularios que aplican a toda vertical.
+4. Si es una vertical nueva: leer `docs/VERTICAL_TEMPLATE.md` completo.
+5. Si la tarea toca Compras/Ventas/Finanzas/Contabilidad, leer `docs/arquitectura-fases-c-f.md`.
+6. Inspeccionar el código real relevante antes de escribir (no asumir desde memoria).
+7. Buscar si ya existe: componente, endpoint, servicio, hook, validación — BUSCAR ANTES DE CREAR.
+8. Crear plan: qué capas toca, qué cambia, qué reutiliza.
+9. Definir criterios de aceptación: ¿cómo sé que está terminado?
 
 ---
 
@@ -86,6 +87,42 @@ Una tarea NO está DONE hasta que todas las capas aplicables están implementada
 9. **Frontend** → página con ModuleTablePage
 10. **Nav** → link en admin-shell
 11. **Verificación** → checklist completo arriba
+
+---
+
+## Orden de capas obligatorio — regla permanente (M28)
+
+**No se toca una capa sobre una BD provisional.**
+
+```
+FASE 1: BD          → tablas, FK, company_id, estados, relaciones. SIGN OFF antes de continuar.
+FASE 2: Backend     → Models, Services, Resources, FormRequests, Controllers, Rutas.
+                      Backend Alignment Pass: BD real ↔ Models ↔ API ↔ validaciones alineados.
+FASE 3: Frontend    → formularios, selectores FK, upload archivos, estados, responsive.
+                      Aplicar checklist de UX_FORM_RULES.md antes de tocar el código.
+FASE 4: Auth        → permisos, roles, login producción/demo, nav filtrado.
+FASE 5: E2E         → Playwright flujos críticos, regresión módulos existentes.
+```
+
+**Consecuencia:** Si la BD cambia después del Backend, se crea una cadena de retrabajo:
+BD → Model → API → Frontend → tests. Por eso el contrato de datos se cierra primero.
+
+---
+
+## Protocolo de clasificación CORE vs. vertical — cierre de tarea obligatorio
+
+Antes de declarar DONE cualquier tarea, clasificar el cambio:
+
+```
+¿Este cambio aplica a más de una vertical o a todas las futuras?
+  SÍ → Es CORE. Actualizar antes de cerrar:
+       [ ] docs/CORE_CONTRACT.md
+       [ ] docs/UX_FORM_RULES.md (si es regla de formulario)
+       [ ] docs/DEVELOPMENT_MEMORY.md (nuevo M##)
+       [ ] docs/VERTICALS.md (si cambia el inventario CORE)
+       [ ] docs/VERTICAL_TEMPLATE.md (si el checklist de nueva vertical debe cambiar)
+  NO → Es específico. Documentar solo en docs/VERTICALS.md bajo la vertical correspondiente.
+```
 
 ---
 

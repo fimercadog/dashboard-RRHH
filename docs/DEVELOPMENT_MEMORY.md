@@ -131,6 +131,50 @@ Para distintos estilos usar Tailwind directo: `className="bg-muted text-muted-fo
 6. Frontend adapter: `summarize()` + `sync()` con `client_uuid` en `adapters.ts`.
 **Elegibilidad:** Solo operaciones puramente aditivas (crean filas, nunca modifican ni dependen de estado actual). Stock movements, payments, invoice posting = NO elegibles.
 
+## M27 — Protocolo de clasificación CORE vs. vertical
+**Aprendido:** Auditoría K-FORMS (2026-10-06) — 24 issues encontrados por no tener reglas UX escritas en el CORE.
+**Regla:** Antes de cerrar cualquier tarea, clasificar si el cambio es CORE reutilizable o específico de una vertical.
+- Si es CORE: actualizar `docs/CORE_CONTRACT.md`, `docs/UX_FORM_RULES.md`, `docs/DEVELOPMENT_MEMORY.md`, `docs/VERTICALS.md`, `docs/VERTICAL_TEMPLATE.md` según aplique — antes de declarar DONE.
+- Si es específico: documentar solo en `docs/VERTICALS.md` bajo la vertical correspondiente.
+**Por qué:** Las correcciones no deben morir en el commit donde fueron hechas. Si son generalizables, deben viajar al CORE para que las verticales futuras no redescubran el mismo problema.
+**Reglas UX universales descubiertas:** UX-001 (FK→selector), UX-002 (archivos→upload), UX-003 (estados→default), UX-004 (catálogos→select), UX-005 (multitenancy en selectores). Ver `docs/UX_FORM_RULES.md`.
+
+## M29 — FormRequest → ApiFormRequest: patrón CORE para FKs con company scope
+**Aprendido:** K-FORMS Backend Alignment Pass (2026-10-06)
+**Regla:** Todo `FormRequest` que valide campos FK a tablas con `company_id` DEBE extender `ApiFormRequest` y usar `$this->ownedExists('tabla')`.
+Sin `ownedExists()`, un usuario puede enviar IDs de otra empresa y el validador los acepta (cross-company FK injection).
+**Polymorphic FK:** usar `match()` en `rules()` para seleccionar la tabla según el campo `*_type` (ver StorePaymentRequest).
+**Clasificación:** CORE — aplica a todas las verticales.
+
+## M30 — Upload de archivos: patrón CORE de infraestructura
+**Aprendido:** K-FORMS Backend Alignment Pass (2026-10-06)
+**Regla:**
+1. BD: columna `file_path VARCHAR` (ruta relativa, no blob)
+2. FormRequest: `'file' => ['required', 'file', 'mimes:...', 'max:10240']` — NUNCA `file_path` como string
+3. Controller: override `store()` → `$request->file('file')->store("dominio/{$cid}", 'public')`
+4. Resource: exponer `file_url = Storage::disk('public')->url($this->file_path)` para el frontend
+5. Producción: `php artisan storage:link` obligatorio
+**Clasificación:** CORE — aplica a cualquier vertical con documentos adjuntos.
+
+## M31 — Selector de entidades: endpoint ligero sin permiso de módulo
+**Aprendido:** K-FORMS Backend Alignment Pass (2026-10-06)
+**Regla:** Cuando módulo A necesita selector de entidades de módulo B y el usuario puede tener permiso de A pero no de B:
+NO ampliar el permiso de B. AGREGAR `GET /{entidad}/selector` — devuelve `[id, label]`, scoped por company_id del Bearer token, sin `can:` middleware.
+Registrar ANTES del `apiResource` para evitar colisión con `show({id})`.
+Solo aplica cuando el endpoint devuelve únicamente identificador + label visible (sin datos sensibles).
+**Clasificación:** CORE — patrón `/selector` reutilizable en todas las verticales con FKs cruzadas.
+
+---
+
+## M28 — Orden de capas: BD primero, no se toca una capa sobre BD provisional
+**Aprendido:** Decisión de arquitectura (2026-10-06).
+**Regla:** El orden de implementación de cualquier vertical o módulo es inamovible:
+`BD → Backend (Alignment Pass) → Frontend → Auth → E2E`.
+No se empieza el Backend hasta que la estructura de datos tiene sign-off.
+No se empieza el Frontend hasta que el Backend Alignment Pass confirma que BD ↔ Models ↔ API ↔ validaciones están alineados.
+**Por qué:** Si la BD cambia después de que el Backend está escrito, se genera una cadena de retrabajo: BD → Model → API → Frontend → tests. Cerrar el contrato de datos primero elimina ese riesgo.
+**Backend Alignment Pass:** antes de pasar a Frontend, verificar que todos los models reflejan la BD real, que los Resources exponen los campos correctos y que las FormRequests validan con `ownedExists()` para FKs company-scoped.
+
 ## M14 — Tablas de líneas de documentos no llevan company_id
 **Regla:** `purchase_order_items`, `purchase_receipt_items` (y futuras `sale_order_items`, etc.) NO tienen `company_id`.
 La multitenancy se resuelve por JOIN con la tabla padre.

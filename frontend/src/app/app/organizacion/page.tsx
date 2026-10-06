@@ -9,7 +9,7 @@ import { AppColumnDef } from "@/lib/table-types";
 type Department = { id: number; name: string; description?: string; status: string };
 type Position = { id: number; name: string; description?: string; status: string; department?: { id: number; name: string } | null };
 
-const statusField: CrudField = { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS };
+const statusField: CrudField = { name: "status", label: "Estado", type: "select", required: true, defaultValue: "active", options: STATUS_OPTIONS };
 
 const departmentColumns: AppColumnDef<Department>[] = [
   { accessorKey: "name", header: "Departamento" },
@@ -32,7 +32,7 @@ const positionColumns: AppColumnDef<Position>[] = [
 
 const positionFields: CrudField[] = [
   { name: "name", label: "Nombre", required: true },
-  { name: "department_id", label: "ID departamento", type: "number" },
+  { name: "department_id", label: "Departamento", type: "relation-select", endpoint: "/departments?per_page=100" },
   { name: "description", label: "Descripcion", type: "textarea", colSpan: "full" },
   statusField,
 ];

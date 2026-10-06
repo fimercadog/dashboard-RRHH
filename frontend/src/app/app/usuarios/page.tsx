@@ -22,7 +22,7 @@ const baseFields: CrudField[] = [
   { name: "name", label: "Nombre", required: true },
   { name: "email", label: "Correo", type: "email", required: true },
   { name: "password", label: "Contrasena", type: "password", placeholder: "Dejar en blanco para generar una automatica", omitWhenEmpty: true },
-  { name: "employee_id", label: "ID empleado", type: "number" },
+  { name: "employee_id", label: "Empleado", type: "relation-select", endpoint: "/employees/selector" },
   { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
 ];
 

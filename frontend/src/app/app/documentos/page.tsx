@@ -15,17 +15,24 @@ const columns: AppColumnDef<DocumentRow>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "employee_id", label: "ID empleado", type: "number", required: true },
-  { name: "document_type", label: "Tipo", required: true },
+  { name: "employee_id", label: "Empleado", type: "relation-select", endpoint: "/employees/selector", required: true },
+  {
+    name: "document_type", label: "Tipo de documento", type: "select", required: true,
+    options: [
+      { label: "Contrato", value: "contrato" },
+      { label: "Hoja de vida", value: "hoja_vida" },
+      { label: "Diploma", value: "diploma" },
+      { label: "Certificado", value: "certificado" },
+      { label: "Soporte disciplinario", value: "soporte_disciplinario" },
+      { label: "Otro", value: "otro" },
+    ],
+  },
   { name: "name", label: "Nombre del documento", required: true },
-  { name: "file_path", label: "Ruta del archivo", required: true, colSpan: "full" },
+  { name: "file", label: "Archivo (PDF, imagen, Word)", type: "file", accept: ".pdf,.jpg,.jpeg,.png,.doc,.docx", required: true, createOnly: true, colSpan: "full" },
   { name: "issue_date", label: "Emision", type: "date" },
   { name: "expiration_date", label: "Vencimiento", type: "date" },
   {
-    name: "status",
-    label: "Estado",
-    type: "select",
-    required: true,
+    name: "status", label: "Estado", type: "select", required: true, defaultValue: "valid",
     options: [
       { label: "Valido", value: "valid" },
       { label: "Por vencer", value: "expiring" },

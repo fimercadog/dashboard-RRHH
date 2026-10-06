@@ -43,6 +43,7 @@ export function DataTable<TData extends object>({
 
   const exportQuery = new URLSearchParams({ search }).toString();
   const rows = table.getRowModel().rows;
+  const offset = (page - 1) * (data?.meta?.per_page ?? 15);
 
   async function downloadExport(format: "csv" | "pdf") {
     if (!exportBaseUrl) return;
@@ -110,6 +111,7 @@ export function DataTable<TData extends object>({
           <table className="w-full min-w-190 text-sm">
             <thead className="bg-muted text-left text-muted-foreground">
               <tr>
+                <th className="w-10 px-3 py-3 font-medium">N.º</th>
                 {columns.map((column, index) => (
                   <th key={columnKey(column, index)} className="px-4 py-3 font-medium">
                     {renderHeader(column)}
@@ -120,17 +122,18 @@ export function DataTable<TData extends object>({
             <tbody>
               {loading ? (
                 <tr>
-                  <td className="px-4 py-10 text-center text-muted-foreground" colSpan={columns.length}>
+                  <td className="px-4 py-10 text-center text-muted-foreground" colSpan={columns.length + 1}>
                     <RefreshCw className="mx-auto mb-2 h-5 w-5 animate-spin" /> Cargando datos...
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
-                  <td className="px-4 py-10 text-center text-destructive" colSpan={columns.length}>{error}</td>
+                  <td className="px-4 py-10 text-center text-destructive" colSpan={columns.length + 1}>{error}</td>
                 </tr>
               ) : rows.length ? (
-                rows.map((row) => (
+                rows.map((row, rowIndex) => (
                   <tr key={row.id} className="border-t border-border">
+                    <td className="px-3 py-3 align-middle text-xs tabular-nums text-muted-foreground">{offset + rowIndex + 1}</td>
                     {columns.map((column, index) => (
                       <td key={`${row.id}-${columnKey(column, index)}`} className="px-4 py-3 align-middle">
                         {renderCell(column, row.original)}
@@ -140,7 +143,7 @@ export function DataTable<TData extends object>({
                 ))
               ) : (
                 <tr>
-                  <td className="px-4 py-10 text-center text-muted-foreground" colSpan={columns.length}>No hay registros para mostrar.</td>
+                  <td className="px-4 py-10 text-center text-muted-foreground" colSpan={columns.length + 1}>No hay registros para mostrar.</td>
                 </tr>
               )}
             </tbody>

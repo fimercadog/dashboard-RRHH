@@ -220,14 +220,15 @@ export default function PagosPage() {
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/50">
               <tr>
-                {["Fecha", "Tipo", "ID Cuenta", "Monto", "Método", "Cuenta caja", "Referencia", "Estado", ""].map((h) => (
+                {["N.º", "Fecha", "Tipo", "ID Cuenta", "Monto", "Método", "Cuenta caja", "Referencia", "Estado", ""].map((h) => (
                   <th key={h} className="px-4 py-3 text-left font-medium text-muted-foreground">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {payments.map((p) => (
+              {payments.map((p, i) => (
                 <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30">
+                  <td className="px-3 py-3 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
                   <td className="px-4 py-3">{p.date as unknown as string}</td>
                   <td className="px-4 py-3 text-xs">{PAYABLE_LABELS[p.payable_type] ?? p.payable_type}</td>
                   <td className="px-4 py-3">#{p.payable_id}</td>

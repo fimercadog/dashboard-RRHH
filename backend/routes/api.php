@@ -88,6 +88,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/company', [CompanyController::class, 'show'])->middleware('can:settings.manage');
     Route::put('/company', [CompanyController::class, 'update'])->middleware('can:settings.manage');
 
+    Route::get('/employees/selector', [EmployeeController::class, 'selector']);
     Route::apiResource('employees', EmployeeController::class)->middleware('can:employees.manage');
     Route::apiResource('departments', DepartmentController::class)->middleware('can:settings.manage');
     Route::apiResource('positions', PositionController::class)->middleware('can:settings.manage');
