@@ -1,4 +1,4 @@
-import { ContactForm } from "@/components/marketing/contact-form";
+import { ContactWizard } from "@/components/marketing/contact-wizard";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { Reveal } from "@/components/marketing/reveal";
 import { SectionHeading } from "@/components/marketing/section-heading";
@@ -8,8 +8,15 @@ export default function ContactPage() {
     <MarketingLayout>
       <main className="bg-muted px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-          <Reveal><SectionHeading align="left" eyebrow="Contacto" title="Hablemos de tu operacion de Recursos Humanos" description="Cuéntanos cuántas personas gestionas, qué procesos son más manuales y qué módulo quieres priorizar." /></Reveal>
-          <Reveal><ContactForm /></Reveal>
+          <Reveal>
+            <SectionHeading
+              align="left"
+              eyebrow="Contacto"
+              title="Hablemos de tu operacion de Recursos Humanos"
+              description="Cuéntanos cuántas personas gestionas, qué procesos son más manuales y qué módulo quieres priorizar."
+            />
+          </Reveal>
+          <Reveal><ContactWizard /></Reveal>
         </div>
       </main>
     </MarketingLayout>
