@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class UserResource extends JsonResource
 {
@@ -20,6 +21,7 @@ class UserResource extends JsonResource
             'employee' => $this->whenLoaded('employee'),
             'role' => $this->getRoleNames()->first(),
             'roles' => $this->getRoleNames(),
+            'avatar_url' => $this->avatar_path ? Storage::disk('public')->url($this->avatar_path) : null,
             'created_at' => $this->created_at,
         ];
     }

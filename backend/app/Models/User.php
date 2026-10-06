@@ -28,6 +28,7 @@ class User extends Authenticatable
         'company_id',
         'employee_id',
         'status',
+        'avatar_path',
     ];
 
     /**

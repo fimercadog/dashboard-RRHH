@@ -396,10 +396,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 
+  const userInitials = user?.name
+    ? user.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase()
+    : "?";
+
   const sidebarUserBlock = (
     <div className="border-b border-border px-5 py-4">
       <div className="flex items-center gap-2">
-        <UserCircle className="h-5 w-5 shrink-0 text-primary" />
+        {user?.avatar_url ? (
+          <img
+            src={user.avatar_url}
+            alt={user.name}
+            className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-border"
+          />
+        ) : (
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+            {userInitials}
+          </span>
+        )}
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-foreground">{user?.name ?? "Usuario"}</p>
           <span className="flex items-center gap-1" aria-label="Usuario conectado">

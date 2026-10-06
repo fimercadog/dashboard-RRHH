@@ -74,6 +74,7 @@ export type AppUser = {
   employee?: Employee;
   role?: string;
   roles: string[];
+  avatar_url?: string | null;
 };
 
 export type Client = {

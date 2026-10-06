@@ -101,6 +101,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'show'])->middleware('can:audit.view');
     Route::apiResource('roles', RoleController::class)->only(['index', 'store', 'update'])->middleware('can:roles.manage');
     Route::apiResource('users', UserController::class)->only(['index', 'store', 'update'])->middleware('can:users.manage');
+    Route::post('users/{user}/avatar', [UserController::class, 'uploadAvatar'])->middleware('can:users.manage');
+    Route::delete('users/{user}/avatar', [UserController::class, 'deleteAvatar'])->middleware('can:users.manage');
 
     // CRM — Fase A.
     Route::apiResource('contacts', ContactController::class)->middleware('can:contacts.manage');

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\AuditService;
 use App\Services\TableQueryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class UserController extends BaseCrudController
@@ -47,6 +48,11 @@ class UserController extends BaseCrudController
         $payload['company_id'] ??= $this->companyId($request);
         $user = User::create($payload);
 
+        if ($request->hasFile('avatar')) {
+            $cid = $user->company_id;
+            $user->update(['avatar_path' => $request->file('avatar')->store("avatars/{$cid}", 'public')]);
+        }
+
         if ($request->filled('role')) {
             $user->syncRoles([$request->input('role')]);
         }
@@ -82,5 +88,37 @@ class UserController extends BaseCrudController
         $audit->record('updated', $user, $request, $oldValues);
 
         return new UserResource($user);
+    }
+
+    public function uploadAvatar(Request $request, string $id)
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ]);
+
+        $user = User::query()->where('company_id', $this->companyId($request))->findOrFail($id);
+
+        if ($user->avatar_path) {
+            Storage::disk('public')->delete($user->avatar_path);
+        }
+
+        $path = $request->file('avatar')->store("avatars/{$user->company_id}", 'public');
+        $user->update(['avatar_path' => $path]);
+
+        return response()->json([
+            'avatar_url' => Storage::disk('public')->url($path),
+        ]);
+    }
+
+    public function deleteAvatar(Request $request, string $id)
+    {
+        $user = User::query()->where('company_id', $this->companyId($request))->findOrFail($id);
+
+        if ($user->avatar_path) {
+            Storage::disk('public')->delete($user->avatar_path);
+            $user->update(['avatar_path' => null]);
+        }
+
+        return response()->json(['avatar_url' => null]);
     }
 }
