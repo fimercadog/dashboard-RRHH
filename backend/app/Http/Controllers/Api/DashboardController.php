@@ -102,17 +102,7 @@ class DashboardController extends Controller
             ],
             'upcoming_events' => [
                 'documents' => EmployeeDocument::with('employee')->where('company_id', $companyId)->whereBetween('expiration_date', [$today, $today->copy()->addDays(45)])->orderBy('expiration_date')->limit(6)->get(),
-                'birthdays' => Employee::where('company_id', $companyId)->where('employment_status', '!=', 'terminated')->whereNotNull('birth_date')->get(['id', 'first_name', 'last_name', 'birth_date'])
-                    ->sortBy(function ($e) use ($today) {
-                        $next = Carbon::parse($e->birth_date)->setYear($today->year)->startOfDay();
-                        if ($next->lt($today)) {
-                            $next->addYear();
-                        }
-
-                        return $today->diffInDays($next);
-                    })
-                    ->take(5)
-                    ->values(),
+                'birthdays' => $this->upcomingBirthdays($companyId, $today),
             ],
             'recent_activity' => AuditLog::with('user:id,name')->where('company_id', $companyId)->latest()->limit(8)->get()
                 ->map(fn (AuditLog $log) => [
@@ -238,6 +228,37 @@ class DashboardController extends Controller
             'hires' => (int) ($hires[$month] ?? 0),
             'terminations' => (int) ($terms[$month] ?? 0),
         ]);
+    }
+
+    /**
+     * Proximos cumpleanos limitados en SQL para no traer toda la tabla.
+     * Ordena por posicion en el ano (motor-aware); PHP sort maneja el wrap-around
+     * dic→ene. Max 10 filas traidas del DB → take(5) final.
+     */
+    private function upcomingBirthdays(int $companyId, Carbon $today): Collection
+    {
+        $orderExpr = match (DB::connection()->getDriverName()) {
+            'mysql', 'mariadb' => "DAYOFYEAR(DATE(CONCAT(YEAR(CURDATE()), '-', MONTH(birth_date), '-', DAY(birth_date))))",
+            'pgsql'            => "EXTRACT(DOY FROM make_date(EXTRACT(YEAR FROM NOW())::int, EXTRACT(MONTH FROM birth_date)::int, EXTRACT(DAY FROM birth_date)::int))",
+            default            => "strftime('%m-%d', birth_date)",
+        };
+
+        return Employee::where('company_id', $companyId)
+            ->where('employment_status', '!=', 'terminated')
+            ->whereNotNull('birth_date')
+            ->orderByRaw($orderExpr)
+            ->limit(10)
+            ->get(['id', 'first_name', 'last_name', 'birth_date'])
+            ->sortBy(function ($e) use ($today) {
+                $next = Carbon::parse($e->birth_date)->setYear($today->year)->startOfDay();
+                if ($next->lt($today)) {
+                    $next->addYear();
+                }
+
+                return $today->diffInDays($next);
+            })
+            ->take(5)
+            ->values();
     }
 
     private function requestsMonthly(int $companyId, Carbon $from): Collection

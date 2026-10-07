@@ -582,6 +582,7 @@ function DocsList({ docs, nowMs }: { docs: DashboardData["upcoming_events"]["doc
                 Vence {new Date(doc.expiration_date).toLocaleDateString("es-CO")}
               </p>
             </div>
+            {/* ponytail: color dinámico por tone — no migrar a badgeVariant */}
             <Badge className="ml-auto shrink-0" style={{ backgroundColor: `${tone}1f`, color: tone }}>
               {left <= 0 ? "Vencido" : `${left} d`}
             </Badge>

@@ -84,6 +84,16 @@ Las consultas siempre hacen scope por `company_id` del usuario autenticado.
 | `stock_movements`, `product_stock` | Se escriben solo vía StockService |
 | `personal_access_tokens` | Sanctum, no tocar |
 
+### Índices obligatorios para tablas nuevas
+
+Toda migración que crea una tabla con columna `company_id` debe incluir:
+
+- `index(['company_id', 'status'])` si tiene columna `status`
+- `index(['company_id', 'created_at'])` en tablas de listado de alta frecuencia (>10k filas esperadas)
+
+Patrón de paginación estándar en controladores: `->paginate(min($perPage, TableQueryService::MAX_PER_PAGE))`
+con company_id scope siempre presente. Ver `BaseCrudController::index()` como referencia.
+
 ### Ganchos de integración (ya en producción, no modificar estructura)
 ```
 stock_movements.journal_entry_id   → null hasta Fase F

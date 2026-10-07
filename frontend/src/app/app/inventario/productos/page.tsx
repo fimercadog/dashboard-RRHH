@@ -2,7 +2,7 @@
 
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { AppColumnDef } from "@/lib/table-types";
 import { Product } from "@/lib/types";
@@ -22,7 +22,7 @@ const columns: AppColumnDef<Product>[] = [
   { header: "Unidad", cell: ({ row }) => row.original.unit?.abbreviation ?? "—" },
   { header: "Costo", cell: ({ row }) => fmt.format(row.original.cost_price) },
   { header: "Precio", cell: ({ row }) => fmt.format(row.original.sale_price) },
-  { header: "Estado", cell: ({ row }) => <Badge>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
 ];
 
 const fields: CrudField[] = [

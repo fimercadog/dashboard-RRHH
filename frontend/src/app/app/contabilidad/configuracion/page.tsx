@@ -107,7 +107,7 @@ export default function ConfiguracionContabilidadPage() {
                 </tr>
               )}
               {configs.map((c) => (
-                <tr key={c.id} className="border-b last:border-0 hover:bg-muted/20">
+                <tr key={c.id} className="border-b last:border-0 odd:bg-background even:bg-muted/30 hover:bg-muted/50">
                   <td className="px-4 py-2 font-mono text-xs">{c.config_key}</td>
                   <td className="px-4 py-2 text-muted-foreground">{KEY_LABELS[c.config_key] ?? "—"}</td>
                   <td className="px-4 py-2">

@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
@@ -12,7 +12,7 @@ const columns: AppColumnDef<RequestRow>[] = [
   dateColumn<RequestRow>("start_date", "Inicio"),
   dateColumn<RequestRow>("end_date", "Fin"),
   { accessorKey: "days", header: "Dias" },
-  { header: "Estado", cell: ({ row }) => <Badge>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
 ];
 
 const fields: CrudField[] = [

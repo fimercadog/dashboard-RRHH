@@ -3,7 +3,7 @@
 import * as React from "react";
 import { CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,11 +29,6 @@ const COP = (v: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
 
 const STATUS_LABELS: Record<string, string> = { draft: "Borrador", posted: "Posteada", cancelled: "Cancelada" };
-const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  posted: "bg-green-100 text-green-800",
-  cancelled: "bg-red-100 text-red-800",
-};
 
 type ApiErrors = Record<string, string[]>;
 
@@ -316,7 +311,7 @@ export default function RecepcionesPage() {
     {
       header: "Estado",
       cell: ({ row }) => (
-        <Badge className={STATUS_COLOR[row.original.status] ?? ""}>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
+        <Badge variant={badgeVariant(row.original.status)}>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
       ),
     },
     {

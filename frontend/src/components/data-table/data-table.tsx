@@ -132,7 +132,7 @@ export function DataTable<TData extends object>({
                 </tr>
               ) : rows.length ? (
                 rows.map((row, rowIndex) => (
-                  <tr key={row.id} className="border-t border-border">
+                  <tr key={row.id} className="border-t border-border odd:bg-background even:bg-muted">
                     <td className="px-3 py-3 align-middle text-xs tabular-nums text-muted-foreground">{offset + rowIndex + 1}</td>
                     {columns.map((column, index) => (
                       <td key={`${row.id}-${columnKey(column, index)}`} className="px-4 py-3 align-middle">

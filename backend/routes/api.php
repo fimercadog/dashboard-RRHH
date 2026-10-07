@@ -53,6 +53,10 @@ use App\Http\Controllers\Api\JournalEntryController;
 use App\Http\Controllers\Api\AccountingAccountConfigController;
 use App\Http\Controllers\Api\PendingController;
 use App\Http\Controllers\Api\CampaignController;
+use App\Http\Controllers\Api\JobVacancyController;
+use App\Http\Controllers\Api\JobCandidateController;
+use App\Http\Controllers\Api\JobApplicationController;
+use App\Http\Controllers\Api\JobInterviewController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -175,7 +179,18 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/accounting-configs', [AccountingAccountConfigController::class, 'index'])->middleware('can:accounting.view');
     Route::apiResource('accounting-configs', AccountingAccountConfigController::class)->except(['index'])->middleware('can:accounting.manage');
 
-    // CORE — Pendientes (cualquier usuario autenticado ve los que tiene permiso).
+    // Reclutamiento — Fase G.
+    Route::apiResource('job-vacancies', JobVacancyController::class)->except(['destroy'])->middleware('can:recruitment.view');
+    Route::delete('/job-vacancies/{job_vacancy}', [JobVacancyController::class, 'destroy'])->middleware('can:recruitment.delete');
+    Route::apiResource('job-candidates', JobCandidateController::class)->except(['destroy'])->middleware('can:recruitment.view');
+    Route::delete('/job-candidates/{job_candidate}', [JobCandidateController::class, 'destroy'])->middleware('can:recruitment.delete');
+    Route::apiResource('job-applications', JobApplicationController::class)->except(['destroy'])->middleware('can:recruitment.view');
+    Route::delete('/job-applications/{job_application}', [JobApplicationController::class, 'destroy'])->middleware('can:recruitment.delete');
+    Route::post('/job-applications/{id}/hire', [JobApplicationController::class, 'hire'])->middleware('can:recruitment.update');
+    Route::apiResource('job-interviews', JobInterviewController::class)->except(['destroy'])->middleware('can:recruitment.view');
+    Route::delete('/job-interviews/{job_interview}', [JobInterviewController::class, 'destroy'])->middleware('can:recruitment.delete');
+
+        // CORE — Pendientes (cualquier usuario autenticado ve los que tiene permiso).
     Route::get('/pending', PendingController::class);
 
     // CORE — Comunicaciones/Campañas.
@@ -188,3 +203,4 @@ Route::middleware('auth:sanctum')->group(function (): void {
         ->whereIn('resource', ['employees', 'attendances', 'vacation-requests', 'permission-requests', 'sick-leaves', 'employee-documents', 'audit-logs', 'clients', 'contacts', 'deals', 'activities', 'segments', 'products', 'stock-movements'])
         ->whereIn('format', ['csv', 'pdf']);
 });
+

@@ -41,7 +41,7 @@ class StockMovementController extends Controller
         $query->latest();
 
         return StockMovementResource::collection(
-            $query->paginate(min((int) $request->input('per_page', 25), 200))
+            $query->paginate(min((int) $request->input('per_page', 25), TableQueryService::MAX_PER_PAGE))
         );
     }
 

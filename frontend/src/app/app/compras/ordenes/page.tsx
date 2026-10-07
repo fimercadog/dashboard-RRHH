@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,13 +35,6 @@ const STATUS_LABELS: Record<string, string> = {
   draft: "Borrador", sent: "Enviada", partial: "Parcial", received: "Recibida", cancelled: "Cancelada",
 };
 
-const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  sent: "bg-blue-100 text-blue-800",
-  partial: "bg-amber-100 text-amber-800",
-  received: "bg-green-100 text-green-800",
-  cancelled: "bg-red-100 text-red-800",
-};
 
 const columns: AppColumnDef<PurchaseOrder>[] = [
   { accessorKey: "number", header: "Número" },
@@ -52,7 +45,7 @@ const columns: AppColumnDef<PurchaseOrder>[] = [
   {
     header: "Estado",
     cell: ({ row }) => (
-      <Badge className={STATUS_COLOR[row.original.status] ?? ""}>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
+      <Badge variant={badgeVariant(row.original.status)}>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
     ),
   },
 ];
@@ -222,7 +215,7 @@ function CreateOCModal({ open, onOpenChange, onSaved }: CreateOCModalProps) {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                className="min-h-[4rem] w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-primary"
+                className="min-h-16 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-primary"
               />
             </label>
           </div>

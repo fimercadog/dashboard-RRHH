@@ -2,7 +2,7 @@
 
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
 import { Activity } from "@/lib/types";
 
@@ -15,8 +15,8 @@ const STATUS_LABEL: Record<Activity["status"], string> = {
 
 const columns: AppColumnDef<Activity>[] = [
   { accessorKey: "title", header: "Titulo" },
-  { header: "Tipo", cell: ({ row }) => <Badge>{TYPE_LABEL[row.original.type]}</Badge> },
-  { header: "Estado", cell: ({ row }) => <Badge>{STATUS_LABEL[row.original.status]}</Badge> },
+  { header: "Tipo", cell: ({ row }) => <Badge variant={badgeVariant(row.original.type)}>{TYPE_LABEL[row.original.type]}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{STATUS_LABEL[row.original.status]}</Badge> },
   { header: "Oportunidad", cell: ({ row }) => row.original.deal?.title ?? "—" },
   { header: "Cliente", cell: ({ row }) => row.original.client?.company_name ?? row.original.client?.first_name ?? "—" },
   { header: "Vence", cell: ({ row }) => row.original.due_at ? new Date(row.original.due_at).toLocaleDateString("es-CO") : "—" },

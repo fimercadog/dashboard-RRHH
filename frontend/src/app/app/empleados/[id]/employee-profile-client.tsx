@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant, badgeLabel } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { Employee } from "@/lib/types";
@@ -78,7 +78,7 @@ export function EmployeeProfileClient() {
           <h1 className="text-2xl font-bold">{fullName}</h1>
           <p className="text-muted-foreground text-sm">{employee.employee_code}</p>
         </div>
-        <Badge>{employee.employment_status}</Badge>
+        <Badge variant={badgeVariant(employee.employment_status)}>{badgeLabel(employee.employment_status)}</Badge>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

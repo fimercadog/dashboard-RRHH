@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -227,7 +227,7 @@ export default function PagosPage() {
             </thead>
             <tbody>
               {payments.map((p, i) => (
-                <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30">
+                <tr key={p.id} className="border-b last:border-0 odd:bg-background even:bg-muted hover:bg-muted/70">
                   <td className="px-3 py-3 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
                   <td className="px-4 py-3">{p.date as unknown as string}</td>
                   <td className="px-4 py-3 text-xs">{PAYABLE_LABELS[p.payable_type] ?? p.payable_type}</td>
@@ -237,7 +237,7 @@ export default function PagosPage() {
                   <td className="px-4 py-3">{p.cash_account?.name ?? "-"}</td>
                   <td className="px-4 py-3">{p.reference ?? "-"}</td>
                   <td className="px-4 py-3">
-                    <Badge className={p.status === "active" ? "" : "bg-muted text-muted-foreground"}>
+                    <Badge variant={badgeVariant(p.status)}>
                       {p.status === "active" ? "Activo" : "Cancelado"}
                     </Badge>
                   </td>

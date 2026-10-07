@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -210,7 +210,7 @@ export default function TransferenciasPage() {
             </thead>
             <tbody>
               {transfers.map((t, i) => (
-                <tr key={t.id} className="border-b last:border-0 hover:bg-muted/30">
+                <tr key={t.id} className="border-b last:border-0 odd:bg-background even:bg-muted hover:bg-muted/70">
                   <td className="px-3 py-3 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
                   <td className="px-4 py-3">{t.date as unknown as string}</td>
                   <td className="px-4 py-3">{t.from_account?.name ?? `#${t.id}`}</td>
@@ -219,7 +219,7 @@ export default function TransferenciasPage() {
                   <td className="px-4 py-3">{t.reference ?? "-"}</td>
                   <td className="px-4 py-3">{t.notes ?? "-"}</td>
                   <td className="px-4 py-3">
-                    <Badge className={t.status === "active" ? "" : "bg-muted text-muted-foreground"}>
+                    <Badge variant={badgeVariant(t.status)}>
                       {t.status === "active" ? "Activa" : "Cancelada"}
                     </Badge>
                   </td>

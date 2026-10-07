@@ -56,7 +56,7 @@ abstract class BaseCrudController extends Controller
 
         $tables->apply($request, $query, $this->searchable, $this->filterable);
 
-        return ($this->resource)::collection($query->paginate(min((int) $request->input('per_page', 10), 100)));
+        return ($this->resource)::collection($query->paginate(min((int) $request->input('per_page', TableQueryService::DEFAULT_PER_PAGE), TableQueryService::MAX_PER_PAGE)));
     }
 
     public function store(Request $request, AuditService $audit)

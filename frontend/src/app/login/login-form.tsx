@@ -9,7 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { AuthUser, storeAuthSession } from "@/lib/auth";
-import { DEMO_USERS, DEMO_PASSWORD } from "@/lib/demo-users";
+import { DEMO_USERS } from "@/lib/demo-users";
+import { demoLogin } from "@/app/actions/demo-login";
+
+// 4 agentes de prueba (Supervisor excluido del selector demo)
+const DEMO_AGENTS = DEMO_USERS.filter((u) =>
+  ["Super Admin", "Administrador de empresa", "Recursos Humanos", "Empleado"].includes(u.role),
+);
 
 type LoginResponse = {
   token: string;
@@ -27,10 +33,11 @@ export function LoginForm({
 }) {
   const router = useRouter();
   const [email, setEmail] = useState(initialEmail);
-  const [password, setPassword] = useState(demoMode ? DEMO_PASSWORD : "");
+  // password solo existe en modo real — en demo nunca toca el cliente
+  const [password, setPassword] = useState("");
   const [selectedDemo, setSelectedDemo] = useState<number | null>(() => {
     if (!demoMode || !initialEmail) return null;
-    const idx = DEMO_USERS.findIndex((u) => u.email === initialEmail);
+    const idx = DEMO_AGENTS.findIndex((u) => u.email === initialEmail);
     return idx !== -1 ? idx : null;
   });
   const [loading, setLoading] = useState(false);
@@ -39,17 +46,24 @@ export function LoginForm({
   const autoLoginStarted = useRef(false);
 
   const login = useCallback(
-    async (loginEmail = email, loginPassword = password) => {
+    async (loginEmail = email) => {
       setLoading(true);
       setError("");
       setSuccess("");
       try {
-        const response = await api.post<LoginResponse>("/auth/login", {
-          email: loginEmail,
-          password: loginPassword,
-        });
-        storeAuthSession(response.data.user, response.data.token);
-        setSuccess(`Sesion iniciada como ${response.data.user.roles.join(", ")}`);
+        let result: LoginResponse;
+        if (demoMode) {
+          // Server Action: la contraseña nunca llega al bundle del cliente
+          result = await demoLogin(loginEmail);
+        } else {
+          const response = await api.post<LoginResponse>("/auth/login", {
+            email: loginEmail,
+            password,
+          });
+          result = response.data;
+        }
+        storeAuthSession(result.user, result.token);
+        setSuccess(`Sesion iniciada como ${result.user.roles.join(", ")}`);
         router.push("/app/dashboard");
       } catch (err) {
         if (isAxiosError(err) && err.response?.status === 429) {
@@ -62,19 +76,18 @@ export function LoginForm({
         setLoading(false);
       }
     },
-    [email, password, router],
+    [email, password, router, demoMode],
   );
 
   useEffect(() => {
     if (!autoLogin || autoLoginStarted.current) return;
     autoLoginStarted.current = true;
-    void login(initialEmail, DEMO_PASSWORD);
+    void login(initialEmail);
   }, [autoLogin, initialEmail, login]);
 
   function selectDemoUser(index: number) {
     setSelectedDemo(index);
-    setEmail(DEMO_USERS[index].email);
-    setPassword(DEMO_PASSWORD);
+    setEmail(DEMO_AGENTS[index].email);
     setError("");
   }
 
@@ -86,49 +99,52 @@ export function LoginForm({
   return (
     <form className="mt-6 space-y-4" onSubmit={submit}>
       {demoMode ? (
-        <div className="space-y-2">
-          {DEMO_USERS.map((user, index) => (
-            <button
-              key={user.email}
-              type="button"
-              onClick={() => selectDemoUser(index)}
-              className={`w-full rounded-xl border px-4 py-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                selectedDemo === index
-                  ? "border-primary bg-primary/10 ring-1 ring-primary"
-                  : "border-border bg-card hover:border-primary/40 hover:bg-accent"
-              }`}
-            >
-              <p className={`text-sm font-semibold ${selectedDemo === index ? "text-primary" : "text-foreground"}`}>
-                {user.name}
-              </p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                {user.role} · {user.email}
-              </p>
-            </button>
-          ))}
-        </div>
+        <>
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            🧪 Usuarios de prueba
+          </p>
+          <div className="space-y-2">
+            {DEMO_AGENTS.map((user, index) => (
+              <button
+                key={user.email}
+                type="button"
+                onClick={() => selectDemoUser(index)}
+                className={`w-full rounded-xl border px-4 py-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                  selectedDemo === index
+                    ? "border-primary bg-primary/10 ring-1 ring-primary"
+                    : "border-border bg-card hover:border-primary/40 hover:bg-accent"
+                }`}
+              >
+                <p className={`text-sm font-semibold ${selectedDemo === index ? "text-primary" : "text-foreground"}`}>
+                  {user.name}
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {user.role} · {user.email}
+                </p>
+              </button>
+            ))}
+          </div>
+        </>
       ) : (
-        <Input
-          placeholder="Email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
-      )}
-      <Input
-        placeholder="Contraseña"
-        type="password"
-        value={password}
-        readOnly={demoMode}
-        onChange={demoMode ? undefined : (event) => setPassword(event.target.value)}
-        className={demoMode ? "cursor-not-allowed opacity-60" : ""}
-      />
-      {!demoMode && (
-        <div className="text-right">
-          <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
-            ¿Olvidaste tu contraseña?
-          </Link>
-        </div>
+        <>
+          <Input
+            placeholder="Email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+          <Input
+            placeholder="Contraseña"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+          <div className="text-right">
+            <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
+        </>
       )}
       {error ? (
         <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">

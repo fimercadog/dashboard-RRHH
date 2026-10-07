@@ -3,6 +3,7 @@
 import * as React from "react";
 import { MessageSquare, Plus, Users, AlertCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -29,13 +30,6 @@ type NewCampaign = {
   audience_source: string;
   message_subject: string;
   message_body: string;
-};
-
-const STATUS_COLOR: Record<string, string> = {
-  draft:     "bg-muted text-muted-foreground",
-  scheduled: "bg-primary/10 text-primary",
-  sent:      "bg-success/10 text-success",
-  cancelled: "bg-destructive/10 text-destructive",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -208,9 +202,9 @@ export function CommunicationsButton() {
                         <p className="truncate text-sm font-medium text-foreground">{c.name}</p>
                         <p className="text-xs text-muted-foreground">{c.audience_source.replace(/_/g, " ")}</p>
                       </div>
-                      <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", STATUS_COLOR[c.status] ?? "")}>
+                      <Badge variant={badgeVariant(c.status)} className="text-[10px]">
                         {STATUS_LABEL[c.status] ?? c.status}
-                      </span>
+                      </Badge>
                       <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40" />
                     </li>
                   ))}

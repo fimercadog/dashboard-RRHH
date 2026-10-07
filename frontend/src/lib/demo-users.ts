@@ -1,7 +1,5 @@
-// Single source of truth for demo credentials.
-// Mirrors backend/database/seeders/DatabaseSeeder.php $demoUsers array.
-export const DEMO_PASSWORD = "password";
-
+// Usuarios para el selector de agentes demo — sin contraseñas.
+// La contraseña vive solo en process.env.DEMO_PASSWORD (server-only).
 export type DemoUser = {
   name: string;
   role: string;

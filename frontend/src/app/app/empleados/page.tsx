@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CrudField } from "@/components/crud/crud-modal";
 import { ToggleStatusAction } from "@/components/crud/toggle-status-action";
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant, badgeLabel } from "@/components/ui/badge";
 import { EMPLOYEE_IDENTIFICATION_TYPE_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
 import { AppColumnDef } from "@/lib/table-types";
 import { Employee } from "@/lib/types";
@@ -16,7 +16,7 @@ const columns: AppColumnDef<Employee>[] = [
   { accessorKey: "email", header: "Correo" },
   { header: "Area", cell: ({ row }) => row.original.department?.name ?? "Sin area" },
   { header: "Cargo", cell: ({ row }) => row.original.position?.name ?? "Sin cargo" },
-  { header: "Estado", cell: ({ row }) => <Badge>{row.original.employment_status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.employment_status)}>{badgeLabel(row.original.employment_status)}</Badge> },
 ];
 
 const NAME_PATTERN = "[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ '.\\-]*";

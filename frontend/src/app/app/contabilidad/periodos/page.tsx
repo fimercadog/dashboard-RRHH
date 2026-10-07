@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { api } from "@/lib/api";
 import { AccountingPeriod } from "@/lib/types";
@@ -91,14 +91,14 @@ export default function PeriodosPage() {
                 </tr>
               )}
               {periods.map((p, i) => (
-                <tr key={p.id} className="border-b last:border-0 hover:bg-muted/20">
+                <tr key={p.id} className="border-b last:border-0 odd:bg-background even:bg-muted/30 hover:bg-muted/50">
                   <td className="px-3 py-2 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
                   <td className="px-4 py-2 font-medium">{p.name}</td>
                   <td className="px-4 py-2">{p.start_date}</td>
                   <td className="px-4 py-2">{p.end_date}</td>
                   <td className="px-4 py-2">{p.entries_count ?? "—"}</td>
                   <td className="px-4 py-2">
-                    <Badge className={p.status === "open" ? "bg-green-100 text-green-800" : "bg-muted text-muted-foreground"}>
+                    <Badge variant={badgeVariant(p.status)}>
                       {p.status === "open" ? "Abierto" : "Cerrado"}
                     </Badge>
                   </td>

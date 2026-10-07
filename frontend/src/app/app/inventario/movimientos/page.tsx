@@ -1,7 +1,7 @@
 "use client";
 
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
 import { StockMovement } from "@/lib/types";
 
@@ -14,7 +14,7 @@ const TYPE_LABEL: Record<StockMovement["type"], string> = {
 const fmt = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
 
 const columns: AppColumnDef<StockMovement>[] = [
-  { header: "Tipo", cell: ({ row }) => <Badge>{TYPE_LABEL[row.original.type]}</Badge> },
+  { header: "Tipo", cell: ({ row }) => <Badge variant={badgeVariant(row.original.type)}>{TYPE_LABEL[row.original.type]}</Badge> },
   { header: "Producto", cell: ({ row }) => row.original.product?.name ?? "—" },
   { header: "Bodega", cell: ({ row }) => row.original.warehouse?.name ?? "—" },
   { header: "Cantidad", cell: ({ row }) => row.original.quantity },

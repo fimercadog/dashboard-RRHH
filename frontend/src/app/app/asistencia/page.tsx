@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
@@ -9,7 +9,7 @@ import { Attendance } from "@/lib/types";
 const columns: AppColumnDef<Attendance>[] = [
   { header: "Empleado", cell: ({ row }) => row.original.employee?.full_name ?? row.original.employee?.first_name ?? "Empleado" },
   dateColumn<Attendance>("date", "Fecha"),
-  { header: "Estado", cell: ({ row }) => <Badge>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
   { accessorKey: "check_in", header: "Entrada" },
   { accessorKey: "check_out", header: "Salida" },
   { accessorKey: "late_minutes", header: "Min. tarde" },

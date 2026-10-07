@@ -3,9 +3,14 @@
 namespace Database\Seeders;
 
 use App\Models\AccountingAccountConfig;
+use App\Models\AccountingPeriod;
 use App\Models\ChartOfAccount;
 use App\Models\Company;
+use App\Models\JournalEntry;
+use App\Models\JournalEntryLine;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 /**
  * Siembra un plan de cuentas básico funcional para Colombia.
@@ -17,6 +22,60 @@ class AccountingSeeder extends Seeder
     public function run(): void
     {
         Company::all()->each(fn ($company) => $this->seedForCompany($company->id));
+    }
+
+    private function seedPeriodAndEntries(int $companyId, array $codeToId): void
+    {
+        $admin = User::where('email', 'admin@andespeople.co')->first();
+
+        if (! $admin) {
+            return;
+        }
+
+        $period = AccountingPeriod::firstOrCreate(
+            ['company_id' => $companyId, 'name' => 'Ejercicio 2025'],
+            [
+                'start_date' => Carbon::create(2025, 1, 1),
+                'end_date'   => Carbon::create(2025, 12, 31),
+                'status'     => 'closed',
+            ]
+        );
+
+        $entry = JournalEntry::firstOrCreate(
+            ['company_id' => $companyId, 'number' => 'CE-2025-0001'],
+            [
+                'accounting_period_id' => $period->id,
+                'date'                 => Carbon::create(2025, 1, 1),
+                'description'          => 'Comprobante de apertura — saldos iniciales demo.',
+                'status'               => 'posted',
+                'user_id'              => $admin->id,
+            ]
+        );
+
+        if ($entry->wasRecentlyCreated) {
+            $lines = [
+                // Debitos (activos)
+                [$codeToId['1105'] ?? null, 'Saldo inicial caja',          5_500_000,         0, 1],
+                [$codeToId['1110'] ?? null, 'Saldo inicial bancos',      142_350_000,         0, 2],
+                [$codeToId['1115'] ?? null, 'Saldo inicial ahorro',       38_000_000,         0, 3],
+                [$codeToId['1435'] ?? null, 'Inventario inicial mercancia', 32_105_000,        0, 4],
+                // Credito (patrimonio)
+                [$codeToId['3105'] ?? null, 'Capital suscrito apertura',  0, 218_955_000, 5],
+            ];
+
+            foreach ($lines as [$accountId, $desc, $debit, $credit, $seq]) {
+                if ($accountId) {
+                    JournalEntryLine::create([
+                        'journal_entry_id' => $entry->id,
+                        'account_id'       => $accountId,
+                        'description'      => $desc,
+                        'debit'            => $debit,
+                        'credit'           => $credit,
+                        'sequence'         => $seq,
+                    ]);
+                }
+            }
+        }
     }
 
     private function seedForCompany(int $companyId): void
@@ -109,5 +168,7 @@ class AccountingSeeder extends Seeder
                 );
             }
         }
+
+        $this->seedPeriodAndEntries($companyId, $codeToId);
     }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
 import { FinancialTransaction } from "@/lib/types";
 
@@ -15,20 +15,13 @@ const TYPE_LABELS: Record<string, string> = {
   transfer_out: "Transferencia salida",
 };
 
-const TYPE_CLASS: Record<string, string> = {
-  income:       "",
-  expense:      "bg-destructive/10 text-destructive",
-  transfer_in:  "bg-muted text-muted-foreground",
-  transfer_out: "border border-input bg-transparent text-foreground",
-};
-
 const columns: AppColumnDef<FinancialTransaction>[] = [
   { accessorKey: "date", header: "Fecha" },
   { header: "Cuenta", cell: ({ row }) => row.original.cash_account?.name ?? "-" },
   {
     header: "Tipo",
     cell: ({ row }) => (
-      <Badge className={TYPE_CLASS[row.original.type] ?? ""}>
+      <Badge variant={badgeVariant(row.original.type)}>
         {TYPE_LABELS[row.original.type] ?? row.original.type}
       </Badge>
     ),

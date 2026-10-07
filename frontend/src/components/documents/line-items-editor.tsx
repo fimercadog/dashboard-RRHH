@@ -91,7 +91,7 @@ export function PurchaseLineItemsEditor({ items, products, onChange, errors = {}
             {items.map((line, idx) => {
               const errPfx = `items.${idx}`;
               return (
-                <tr key={line._key} className="group">
+                <tr key={line._key} className="group odd:bg-background even:bg-muted/30">
                   <td className={tdClass}>
                     <select
                       value={line.product_id}
@@ -217,7 +217,7 @@ export function SaleLineItemsEditor({ items, products, onChange, errors = {} }: 
             {items.map((line, idx) => {
               const errPfx = `items.${idx}`;
               return (
-                <tr key={line._key} className="group">
+                <tr key={line._key} className="group odd:bg-background even:bg-muted/30">
                   <td className={tdClass}>
                     <select
                       value={line.product_id}

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant, type BadgeVariant } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { api } from "@/lib/api";
 import { ChartOfAccount } from "@/lib/types";
@@ -13,13 +13,13 @@ const TYPE_LABEL: Record<string, string> = {
   revenue: "Ingreso", expense: "Gasto", cost: "Costo",
 };
 
-const TYPE_CLASS: Record<string, string> = {
-  asset:     "bg-blue-100 text-blue-800",
-  liability: "bg-orange-100 text-orange-800",
-  equity:    "bg-purple-100 text-purple-800",
-  revenue:   "bg-green-100 text-green-800",
-  expense:   "bg-red-100 text-red-800",
-  cost:      "bg-yellow-100 text-yellow-800",
+const TYPE_VARIANT: Record<string, BadgeVariant> = {
+  asset:     "info",
+  liability: "warning",
+  equity:    "primary",
+  revenue:   "success",
+  expense:   "danger",
+  cost:      "muted",
 };
 
 const ACCOUNT_TYPES = ["asset","liability","equity","revenue","expense","cost"] as const;
@@ -124,19 +124,19 @@ export default function PlanCuentasPage() {
                 </tr>
               )}
               {filtered.map((a, i) => (
-                <tr key={a.id} className="border-b last:border-0 hover:bg-muted/20">
+                <tr key={a.id} className="border-b last:border-0 odd:bg-background even:bg-muted/30 hover:bg-muted/50">
                   <td className="px-3 py-2 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
                   <td className="px-4 py-2 font-mono font-medium" style={{ paddingLeft: `${(a.level - 1) * 1.5 + 1}rem` }}>
                     {a.code}
                   </td>
                   <td className="px-4 py-2">{a.name}</td>
                   <td className="px-4 py-2">
-                    <Badge className={TYPE_CLASS[a.type]}>{TYPE_LABEL[a.type]}</Badge>
+                    <Badge variant={TYPE_VARIANT[a.type] ?? "default"}>{TYPE_LABEL[a.type]}</Badge>
                   </td>
                   <td className="px-4 py-2 capitalize">{a.nature === "debit" ? "Débito" : "Crédito"}</td>
                   <td className="px-4 py-2">{a.allows_movements ? "✓" : "—"}</td>
                   <td className="px-4 py-2">
-                    <Badge className={a.status === "active" ? "" : "bg-muted text-muted-foreground"}>
+                    <Badge variant={badgeVariant(a.status)}>
                       {a.status === "active" ? "Activa" : "Inactiva"}
                     </Badge>
                   </td>

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Attendance;
+use App\Models\Lead;
 use App\Models\AuditLog;
 use App\Models\Company;
 use App\Models\Department;
@@ -413,6 +414,32 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $this->call(AccountingSeeder::class);
+        // Leads: vienen del formulario público; los demo se insertan directo aquí.
+        $leadsDemo = [
+            ['Ricardo Peña',    'Constructora Peña Ltda',      'rpeña@constpena.co',    '+57 300 111 2233', '51-200',  'Nomina',      'demo'],
+            ['Marcela Rios',    'Clínica Santa Lucia S.A.S',   'mrios@clinicalucia.co', '+57 310 222 3344', '201-500', 'RRHH',        'demo'],
+            ['Andres Zapata',   null,                           'azapata@gmail.com',     null,               '11-50',   'Inventario',  'contact'],
+            ['Patricia Gomez',  'Servicios Industriales PG',   'pgomez@sigpg.co',       '+57 312 555 6677', '11-50',   'Ventas',      'contact'],
+            ['Hector Valencia', 'Distribuidora Café del Sur',  'hvalencia@cafsur.co',   '+57 315 888 9900', '1-10',    'CRM',         'demo'],
+            ['Diana Cuervo',    'Grupo Educativo Horizonte',   'dcuervo@gehorizonte.co','+57 301 777 0011', '51-200',  'Contabilidad','contact'],
+        ];
+        foreach ($leadsDemo as [$name, $company, $email, $phone, $employees, $module, $source]) {
+            Lead::firstOrCreate(['email' => $email], [
+                'name' => $name, 'company_name' => $company, 'phone' => $phone,
+                'employee_count' => $employees, 'priority_module' => $module,
+                'source' => $source, 'status' => 'new', 'ip_address' => '127.0.0.1',
+            ]);
+        }
+
+        $this->call([
+            AccountingSeeder::class,
+            CrmSeeder::class,
+            InventorySeeder::class,
+            PurchasesSeeder::class,
+            SalesSeeder::class,
+            FinanceSeeder::class,
+            RecruitmentSeeder::class,
+        ]);
     }
 }
+

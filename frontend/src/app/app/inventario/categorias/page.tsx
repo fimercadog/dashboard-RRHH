@@ -2,7 +2,7 @@
 
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { AppColumnDef } from "@/lib/table-types";
 import { Category } from "@/lib/types";
@@ -10,7 +10,7 @@ import { Category } from "@/lib/types";
 const columns: AppColumnDef<Category>[] = [
   { accessorKey: "name", header: "Nombre" },
   { header: "Categoria padre", cell: ({ row }) => row.original.parent?.name ?? "—" },
-  { header: "Estado", cell: ({ row }) => <Badge>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
 ];
 
 const fields: CrudField[] = [

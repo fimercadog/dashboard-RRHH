@@ -3,7 +3,7 @@
 import { CrudField } from "@/components/crud/crud-modal";
 import { ToggleStatusAction } from "@/components/crud/toggle-status-action";
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { AppColumnDef } from "@/lib/table-types";
 import { Role } from "@/lib/types";
@@ -11,7 +11,7 @@ import { Role } from "@/lib/types";
 const columns: AppColumnDef<Role>[] = [
   { accessorKey: "name", header: "Rol" },
   { header: "Permisos", cell: ({ row }) => row.original.permissions_count ?? 0 },
-  { header: "Estado", cell: ({ row }) => <Badge>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
 ];
 
 const fields: CrudField[] = [

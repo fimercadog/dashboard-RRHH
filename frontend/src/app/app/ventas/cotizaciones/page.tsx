@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,13 +31,6 @@ const COP = (v: number) =>
 
 const STATUS_LABELS: Record<string, string> = {
   draft: "Borrador", sent: "Enviada", accepted: "Aceptada", expired: "Vencida", cancelled: "Cancelada",
-};
-const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  sent: "bg-blue-100 text-blue-800",
-  accepted: "bg-green-100 text-green-800",
-  expired: "bg-amber-100 text-amber-800",
-  cancelled: "bg-red-100 text-red-800",
 };
 
 type ApiErrors = Record<string, string[]>;
@@ -231,7 +224,7 @@ const columns: AppColumnDef<Quote>[] = [
   {
     header: "Estado",
     cell: ({ row }) => (
-      <Badge className={STATUS_COLOR[row.original.status] ?? ""}>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
+      <Badge variant={badgeVariant(row.original.status)}>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
     ),
   },
 ];

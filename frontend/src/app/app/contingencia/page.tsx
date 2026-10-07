@@ -4,7 +4,7 @@ import * as React from "react";
 import { toast } from "sonner";
 import { AlertTriangle, RefreshCw, Trash2, WifiOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useContingency } from "@/lib/contingency/context";
 import { getStoredUser, hasAnyPermission } from "@/lib/auth";
@@ -122,7 +122,7 @@ export default function ContingencyPage() {
       <Card>
         <CardHeader className="flex-row items-center justify-between">
           <CardTitle>Estado</CardTitle>
-          <Badge className={isActive ? "bg-warning/15 text-warning" : undefined}>
+          <Badge variant={isActive ? "warning" : "secondary"}>
             {isActive ? "Activo" : "Inactivo"}
           </Badge>
         </CardHeader>
@@ -206,7 +206,7 @@ export default function ContingencyPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge className={tx.status === "failed" ? "bg-destructive/15 text-destructive" : undefined}>
+                  <Badge variant={badgeVariant(tx.status)}>
                     {statusBadge[tx.status]}
                   </Badge>
                   <Button variant="outline" size="sm" onClick={() => handleSync(tx.id)}>

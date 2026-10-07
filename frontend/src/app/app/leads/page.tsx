@@ -2,7 +2,7 @@
 
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
 
 type Lead = {
@@ -28,7 +28,7 @@ const columns: AppColumnDef<Lead>[] = [
   { accessorKey: "email", header: "Correo" },
   { header: "Telefono", cell: ({ row }) => row.original.phone ?? "—" },
   { header: "Origen", cell: ({ row }) => <Badge>{SOURCE_LABEL[row.original.source]}</Badge> },
-  { header: "Estado", cell: ({ row }) => <Badge>{STATUS_LABEL[row.original.status]}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{STATUS_LABEL[row.original.status]}</Badge> },
   {
     header: "Recibido",
     cell: ({ row }) => new Date(row.original.created_at).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" }),

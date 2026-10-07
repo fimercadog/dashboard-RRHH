@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { VoiceInputWrapper } from "@/components/ui/voice-input-wrapper";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +24,7 @@ type FieldOption = {
 export type CrudField = {
   name: string;
   label: string;
-  type?: "text" | "email" | "password" | "date" | "time" | "number" | "select" | "textarea" | "relation-select" | "file";
+  type?: "text" | "email" | "password" | "date" | "time" | "datetime-local" | "number" | "select" | "textarea" | "relation-select" | "file";
   required?: boolean;
   placeholder?: string;
   options?: FieldOption[];
@@ -44,6 +45,8 @@ export type CrudField = {
   min?: number;
   max?: number;
   step?: number;
+  /** Habilita el botón de dictado por voz en este campo (text / textarea). */
+  voice?: boolean;
 };
 
 type CrudRow = Record<string, unknown> & { id?: number | string };
@@ -150,6 +153,14 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
   const [saving, setSaving] = React.useState(false);
   const [errors, setErrors] = React.useState<ApiErrors>({});
   const formId = React.useId();
+
+  const fieldRefs = React.useRef<Record<string, React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>>>({});
+  function getFieldRef(name: string): React.RefObject<HTMLInputElement | HTMLTextAreaElement | null> {
+    if (!fieldRefs.current[name]) {
+      fieldRefs.current[name] = React.createRef<HTMLInputElement | HTMLTextAreaElement>();
+    }
+    return fieldRefs.current[name];
+  }
 
   // Cierra limpiando errores (sin efecto: el cierre siempre pasa por aqui).
   const handleOpenChange = React.useCallback(
@@ -285,32 +296,36 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
                     ))}
                   </select>
                 ) : field.type === "textarea" ? (
-                  <textarea
-                    name={field.name}
-                    required={field.required}
-                    placeholder={field.placeholder}
-                    defaultValue={fieldDefault(row, field)}
-                    onInput={() => clearError(field.name)}
-                    className={cn(
-                      "min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition placeholder:text-muted-foreground focus-visible:border-primary",
-                      invalid,
-                    )}
-                  />
+                  <VoiceInputWrapper fieldRef={getFieldRef(field.name)} voice={field.voice}>
+                    <textarea
+                      name={field.name}
+                      required={field.required}
+                      placeholder={field.placeholder}
+                      defaultValue={fieldDefault(row, field)}
+                      onInput={() => clearError(field.name)}
+                      className={cn(
+                        "min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition placeholder:text-muted-foreground focus-visible:border-primary",
+                        invalid,
+                      )}
+                    />
+                  </VoiceInputWrapper>
                 ) : (
-                  <Input
-                    name={field.name}
-                    type={field.type ?? "text"}
-                    required={field.required}
-                    placeholder={field.placeholder}
-                    defaultValue={fieldDefault(row, field)}
-                    pattern={field.pattern}
-                    title={field.hint}
-                    min={field.min}
-                    max={field.max}
-                    step={field.step}
-                    onInput={() => clearError(field.name)}
-                    className={invalid || undefined}
-                  />
+                  <VoiceInputWrapper fieldRef={getFieldRef(field.name)} voice={field.voice}>
+                    <Input
+                      name={field.name}
+                      type={field.type ?? "text"}
+                      required={field.required}
+                      placeholder={field.placeholder}
+                      defaultValue={fieldDefault(row, field)}
+                      pattern={field.pattern}
+                      title={field.hint}
+                      min={field.min}
+                      max={field.max}
+                      step={field.step}
+                      onInput={() => clearError(field.name)}
+                      className={invalid || undefined}
+                    />
+                  </VoiceInputWrapper>
                 )}
                 {err ? (
                   <span className="block text-xs text-destructive">{err}</span>

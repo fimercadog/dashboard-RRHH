@@ -20,7 +20,7 @@ class SaleInvoiceResource extends JsonResource
             'tax'             => $this->tax,
             'total'           => $this->total,
             'notes'           => $this->notes,
-            'client'          => $this->whenLoaded('client', fn() => ['id' => $this->client->id, 'name' => $this->client->full_name]),
+            'client'          => $this->whenLoaded('client', fn() => ['id' => $this->client->id, 'company_name' => $this->client->company_name, 'first_name' => $this->client->first_name, 'last_name' => $this->client->last_name]),
             'sale_order'      => $this->whenLoaded('saleOrder', fn() => ['id' => $this->saleOrder->id, 'number' => $this->saleOrder->number]),
             'items'           => $this->whenLoaded('items'),
             'account_receivable' => $this->whenLoaded('accountReceivable'),

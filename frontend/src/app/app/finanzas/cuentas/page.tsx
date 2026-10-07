@@ -2,7 +2,7 @@
 
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
 import { CashAccount } from "@/lib/types";
 
@@ -30,7 +30,7 @@ const columns: AppColumnDef<CashAccount>[] = [
   {
     header: "Estado",
     cell: ({ row }) => (
-      <Badge className={row.original.status === "active" ? "" : "bg-muted text-muted-foreground"}>
+      <Badge variant={badgeVariant(row.original.status)}>
         {row.original.status === "active" ? "Activa" : "Inactiva"}
       </Badge>
     ),

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,12 +25,8 @@ const COP = (v: number) =>
 const STATUS_LABELS: Record<string, string> = {
   draft: "Borrador", posted: "Posteada", partially_paid: "Pago parcial", paid: "Pagada", cancelled: "Cancelada",
 };
-const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  posted: "bg-blue-100 text-blue-800",
-  partially_paid: "bg-amber-100 text-amber-800",
-  paid: "bg-green-100 text-green-800",
-  cancelled: "bg-red-100 text-red-800",
+const INVOICE_STATUS_VARIANT: Record<string, "muted" | "info" | "warning" | "success" | "danger"> = {
+  draft: "muted", posted: "info", partially_paid: "warning", paid: "success", cancelled: "danger",
 };
 
 type ApiErrors = Record<string, string[]>;
@@ -323,7 +319,7 @@ const columns: AppColumnDef<PurchaseInvoice>[] = [
   {
     header: "Estado",
     cell: ({ row }) => (
-      <Badge className={STATUS_COLOR[row.original.status] ?? ""}>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
+      <Badge variant={INVOICE_STATUS_VARIANT[row.original.status] ?? badgeVariant(row.original.status)}>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
     ),
   },
 ];

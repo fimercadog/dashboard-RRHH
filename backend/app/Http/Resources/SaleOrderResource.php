@@ -18,7 +18,7 @@ class SaleOrderResource extends JsonResource
             'tax'            => $this->tax,
             'total'          => $this->total,
             'notes'          => $this->notes,
-            'client'         => $this->whenLoaded('client', fn() => ['id' => $this->client->id, 'name' => $this->client->full_name]),
+            'client'         => $this->whenLoaded('client', fn() => ['id' => $this->client->id, 'company_name' => $this->client->company_name, 'first_name' => $this->client->first_name, 'last_name' => $this->client->last_name]),
             'warehouse'      => $this->whenLoaded('warehouse', fn() => ['id' => $this->warehouse->id, 'name' => $this->warehouse->name]),
             'quote'          => $this->whenLoaded('quote', fn() => ['id' => $this->quote->id, 'number' => $this->quote->number]),
             'items'          => $this->whenLoaded('items'),

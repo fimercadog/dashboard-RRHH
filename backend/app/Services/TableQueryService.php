@@ -7,9 +7,13 @@ use Illuminate\Http\Request;
 
 class TableQueryService
 {
+    const DEFAULT_PER_PAGE = 10;
+    const MAX_PER_PAGE = 100;
+
     public function apply(Request $request, Builder $query, array $searchable = [], array $filterable = []): Builder
     {
         if ($search = $request->string('search')->trim()->toString()) {
+            // ponytail: LIKE con leading wildcard, migrar a FULLTEXT cuando search sea lento en empresas >500k registros/tabla
             $query->where(function (Builder $builder) use ($searchable, $search): void {
                 foreach ($searchable as $field) {
                     $builder->orWhere($field, 'like', "%{$search}%");

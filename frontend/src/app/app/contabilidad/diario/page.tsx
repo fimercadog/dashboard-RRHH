@@ -3,16 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { api } from "@/lib/api";
 import { JournalEntry, JournalEntryLine } from "@/lib/types";
 
-const STATUS_CLASS: Record<string, string> = {
-  draft:    "bg-yellow-100 text-yellow-800",
-  posted:   "bg-green-100 text-green-800",
-  reversed: "bg-muted text-muted-foreground",
-};
 const STATUS_LABEL: Record<string, string> = {
   draft: "Borrador", posted: "Publicado", reversed: "Revertido",
 };
@@ -112,7 +107,7 @@ export default function DiarioPage() {
                 </tr>
               )}
               {filtered.map((e, i) => (
-                <tr key={e.id} className="border-b last:border-0 hover:bg-muted/20">
+                <tr key={e.id} className="border-b last:border-0 odd:bg-background even:bg-muted/30 hover:bg-muted/50">
                   <td className="px-3 py-2 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
                   <td className="px-4 py-2 font-mono font-medium">{e.number}</td>
                   <td className="px-4 py-2">{e.date}</td>
@@ -121,7 +116,7 @@ export default function DiarioPage() {
                     {e.reference_type ? `${e.reference_type} #${e.reference_id}` : "—"}
                   </td>
                   <td className="px-4 py-2">
-                    <Badge className={STATUS_CLASS[e.status]}>{STATUS_LABEL[e.status]}</Badge>
+                    <Badge variant={badgeVariant(e.status)}>{STATUS_LABEL[e.status]}</Badge>
                   </td>
                   <td className="px-4 py-2">
                     <Button variant="ghost" size="sm" onClick={() => openDetail(e)}>Ver</Button>
@@ -139,7 +134,7 @@ export default function DiarioPage() {
             <DialogTitle>
               Asiento {detail?.number}
               {detail && (
-                <Badge className={`ml-2 ${STATUS_CLASS[detail.status]}`}>{STATUS_LABEL[detail.status]}</Badge>
+                <Badge className="ml-2" variant={badgeVariant(detail.status)}>{STATUS_LABEL[detail.status]}</Badge>
               )}
             </DialogTitle>
           </DialogHeader>
@@ -175,7 +170,7 @@ export default function DiarioPage() {
                     </thead>
                     <tbody>
                       {lines.map((l) => (
-                        <tr key={l.id} className="border-b last:border-0">
+                        <tr key={l.id} className="border-b last:border-0 odd:bg-background even:bg-muted/30">
                           <td className="px-3 py-1.5 font-mono text-xs">
                             {l.account_code} {l.account_name}
                           </td>

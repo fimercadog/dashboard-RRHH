@@ -46,6 +46,9 @@ import {
   CalendarRange,
   BookText,
   SlidersHorizontal,
+  UserSearch,
+  CalendarClock,
+  ClipboardCheck,
   type LucideIcon,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
@@ -176,6 +179,15 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    label: "Reclutamiento",
+    items: [
+      { href: "/app/reclutamiento/vacantes",     label: "Vacantes",     icon: BriefcaseBusiness, permissions: ["recruitment.view"] },
+      { href: "/app/reclutamiento/candidatos",   label: "Candidatos",   icon: UserSearch,        permissions: ["recruitment.view"] },
+      { href: "/app/reclutamiento/postulaciones", label: "Postulaciones", icon: ClipboardCheck,   permissions: ["recruitment.view"] },
+      { href: "/app/reclutamiento/entrevistas",  label: "Entrevistas",  icon: CalendarClock,     permissions: ["recruitment.view"] },
+    ],
+  },
+  {
     label: "Reportes",
     items: [
       { href: "/app/reportes", label: "Reportes", icon: BarChart3, permissions: ["reports.view"] },
@@ -184,7 +196,7 @@ const navGroups: NavGroup[] = [
   {
     label: "Herramientas",
     items: [
-      { href: "/app/contingencia", label: "Modo contingencia", icon: WifiOff, alert: true },
+      { href: "/app/contingencia", label: "Modo contingencia", icon: WifiOff, premium: true },
       { href: "/app/ia", label: "IA para RRHH", icon: Bot, premium: true },
     ],
   },
@@ -192,7 +204,6 @@ const navGroups: NavGroup[] = [
     label: "Administracion",
     items: [
       { href: "/app/organizacion", label: "Organizacion", icon: Building2, permissions: ["settings.manage"] },
-      { href: "/app/reclutamiento", label: "Reclutamiento", icon: BriefcaseBusiness, permissions: ["employees.manage"] },
       { href: "/app/auditoria", label: "Auditoria", icon: ClipboardList, permissions: ["audit.view"] },
       { href: "/app/usuarios", label: "Usuarios", icon: UserCircle, permissions: ["users.manage"] },
       { href: "/app/roles", label: "Roles", icon: Shield, permissions: ["roles.manage"] },
@@ -218,13 +229,13 @@ function NavLink({ item }: { item: NavItem }) {
   const { isActive: contingencyActive, pendingCount } = useContingency();
 
   if (item.alert) {
-    const active = pathname === item.href;
+    const active = pathname.replace(/\/$/, "") === item.href.replace(/\/$/, "");
     return (
       <Link
         href={item.href}
         className={cn(
-          "flex h-9 items-center gap-3 rounded-md px-3 text-sm font-medium text-warning transition-colors hover:bg-warning/10",
-          active && "bg-warning/10",
+          "flex h-9 items-center gap-3 rounded-md px-3 text-sm font-medium text-warning transition-colors hover:bg-warning/15",
+          active && "bg-warning/15 border-l-2 border-warning pl-[10px]",
         )}
       >
         <Icon className="h-4 w-4" />
@@ -286,14 +297,14 @@ function NavLink({ item }: { item: NavItem }) {
     );
   }
 
-  const active = pathname === item.href;
+  const active = pathname.replace(/\/$/, "") === item.href.replace(/\/$/, "");
 
   return (
     <Link
       href={item.href}
       className={cn(
-        "flex h-9 items-center gap-3 rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-        active && "bg-accent text-foreground",
+        "flex h-9 items-center gap-3 rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-primary/8 hover:text-foreground",
+        active && "bg-primary/12 text-primary font-medium border-l-2 border-primary pl-[10px]",
       )}
     >
       <Icon className="h-4 w-4" />
@@ -430,14 +441,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   );
 
   const navBody = (
-    <nav className="flex-1 space-y-6 overflow-y-auto p-4">
+    <nav className="flex-1 space-y-1 overflow-y-auto p-4">
       {navGroups.map((group, i) => {
         const visible = group.items.filter((item) => hasAnyPermission(user, item.permissions));
         if (!visible.length) return null;
+        const isFirst = navGroups.findIndex(g => g.items.some(item => hasAnyPermission(user, item.permissions))) === i;
         return (
-          <div key={i}>
+          <div key={i} className={cn("pb-2", !isFirst && "border-t border-border/50 pt-3")}>
             {group.label ? (
-              <p className="mb-2 px-3 text-xs font-medium uppercase text-muted-foreground">{group.label}</p>
+              <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">{group.label}</p>
             ) : null}
             <div className="space-y-1">
               {visible.map((item) => <NavLink key={item.href} item={item} />)}

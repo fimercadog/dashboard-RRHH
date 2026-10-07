@@ -4,7 +4,7 @@ import * as React from "react";
 import { CrudField } from "@/components/crud/crud-modal";
 import { ToggleStatusAction } from "@/components/crud/toggle-status-action";
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { STATUS_OPTIONS } from "@/lib/constants";
@@ -142,7 +142,7 @@ const columns: AppColumnDef<AppUser>[] = [
   { accessorKey: "email", header: "Correo" },
   { header: "Empleado", cell: ({ row }) => row.original.employee?.full_name ?? "Sin vincular" },
   { header: "Roles", cell: ({ row }) => row.original.roles?.join(", ") || "Sin rol" },
-  { header: "Estado", cell: ({ row }) => <Badge>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
 ];
 
 const baseFields: CrudField[] = [

@@ -1,7 +1,7 @@
 "use client";
 
 import { ModuleTablePage } from "@/components/module-table-page";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariant } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
 import { AccountPayable } from "@/lib/types";
 
@@ -29,7 +29,7 @@ const columns: AppColumnDef<AccountPayable>[] = [
   {
     header: "Estado",
     cell: ({ row }) => (
-      <Badge>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
+      <Badge variant={badgeVariant(row.original.status)}>{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
     ),
   },
 ];
