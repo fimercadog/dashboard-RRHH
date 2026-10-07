@@ -17,8 +17,15 @@ class SickLeaveFactory extends Factory
      */
     public function definition(): array
     {
+        $start = $this->faker->dateTimeBetween('-30 days', 'now');
+        $end   = (clone $start)->modify('+3 days');
         return [
-            //
+            'start_date'  => $start->format('Y-m-d'),
+            'end_date'    => $end->format('Y-m-d'),
+            'days'        => 3,
+            'type'        => 'illness',
+            'description' => $this->faker->sentence(),
+            'status'      => 'pending',
         ];
     }
 }

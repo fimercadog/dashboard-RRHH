@@ -18,7 +18,9 @@ class AttendanceFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'date'     => $this->faker->dateTimeBetween('-30 days', 'now')->format('Y-m-d'),
+            'check_in' => '08:00:00',
+            'status'   => 'present',
         ];
     }
 }

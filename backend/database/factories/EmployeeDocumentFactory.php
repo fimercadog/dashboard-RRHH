@@ -18,7 +18,10 @@ class EmployeeDocumentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'document_type' => 'contract',
+            'name'          => $this->faker->words(3, true),
+            'file_path'     => 'documents/test-' . $this->faker->uuid() . '.pdf',
+            'status'        => 'active',
         ];
     }
 }
