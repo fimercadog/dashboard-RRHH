@@ -63,6 +63,7 @@ use App\Http\Controllers\Api\WhatsappWebhookController;
 use App\Http\Controllers\Api\AiSettingController;
 use App\Http\Controllers\Api\DevMockController;
 use App\Http\Controllers\Api\IntegrationStatusController;
+use App\Http\Controllers\Api\ImportController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -233,6 +234,11 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/campaigns/sources', [CampaignController::class, 'sources'])->middleware('can:communications.view');
     Route::apiResource('campaigns', CampaignController::class)->middleware('can:communications.manage');
     Route::get('/campaigns/{campaign}/preview-audience', [CampaignController::class, 'previewAudience'])->middleware('can:communications.view');
+
+    // Importación masiva — SPEC-015.
+    Route::post('/import/{entity}', [ImportController::class, 'upload'])
+        ->whereIn('entity', ['employees', 'clients', 'products']);
+    Route::get('/import/{importJob}/status', [ImportController::class, 'status']);
 
     // El permiso por recurso se valida dentro del controlador.
     Route::get('/exports/{resource}.{format}', ExportController::class)
