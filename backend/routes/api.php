@@ -62,6 +62,7 @@ use App\Http\Controllers\Api\WhatsappSettingController;
 use App\Http\Controllers\Api\WhatsappWebhookController;
 use App\Http\Controllers\Api\AiSettingController;
 use App\Http\Controllers\Api\DevMockController;
+use App\Http\Controllers\Api\IntegrationStatusController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -223,6 +224,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::put('/settings/ai', [AiSettingController::class, 'update'])->middleware('can:ai.manage');
     Route::post('/settings/ai/test', [AiSettingController::class, 'test'])->middleware('can:ai.manage');
     Route::get('/settings/ai/models', [AiSettingController::class, 'models'])->middleware('can:ai.manage');
+
+    // Estado de integraciones — solo booleanos, sin credenciales.
+    Route::get('/settings/integration-status', IntegrationStatusController::class)
+        ->middleware('can:integrations.view');
 
     // CORE — Comunicaciones/Campañas.
     Route::get('/campaigns/sources', [CampaignController::class, 'sources'])->middleware('can:communications.view');

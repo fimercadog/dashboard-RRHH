@@ -49,6 +49,7 @@ import {
   UserSearch,
   CalendarClock,
   ClipboardCheck,
+  Link2,
   MessageCircle,
   MessageSquare,
   type LucideIcon,
@@ -205,9 +206,10 @@ const navGroups: NavGroup[] = [
   {
     label: "Integraciones",
     items: [
-      { href: "/app/whatsapp/conversaciones", label: "Conversaciones WA", icon: MessageSquare, permissions: ["conversations.view"] },
-      { href: "/app/configuracion/whatsapp",  label: "WhatsApp Config",   icon: MessageCircle, permissions: ["whatsapp.manage"] },
-      { href: "/app/configuracion/ia",        label: "Proveedor IA",      icon: Bot,           permissions: ["ai.manage"] },
+      { href: "/app/whatsapp/conversaciones", label: "Conversaciones WA",  icon: MessageSquare, permissions: ["conversations.view"] },
+      { href: "/app/integraciones",           label: "Integraciones",       icon: Link2,         permissions: ["integrations.view"] },
+      { href: "/app/configuracion/whatsapp",  label: "Config WhatsApp",     icon: MessageCircle, permissions: ["whatsapp.manage"] },
+      { href: "/app/configuracion/ia",        label: "Proveedor IA",        icon: Bot,           permissions: ["ai.manage"] },
     ],
   },
   {

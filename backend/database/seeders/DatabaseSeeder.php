@@ -49,19 +49,25 @@ class DatabaseSeeder extends Seeder
             'dashboard.view', 'employees.manage', 'attendance.manage', 'requests.approve',
             'documents.manage', 'reports.view', 'users.manage', 'roles.manage', 'audit.view', 'settings.manage',
             'leads.view',
+            'integrations.view', // estado de integraciones (sin credenciales)
         ];
 
         foreach ($hrmsPermissions as $name) {
             Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
         }
 
-        // Super Admin y Administrador reciben TODOS los permisos existentes en BD
-        // (incluyendo los que las migraciones de verticales ya crearon).
+        // Super Admin recibe TODOS los permisos existentes en BD.
+        // Administrador de empresa recibe todos EXCEPTO credenciales técnicas
+        // de integraciones (whatsapp.manage, ai.manage) — solo ve el estado.
         $allPermissions = Permission::pluck('name')->all();
+        $adminPermissions = array_values(array_filter(
+            $allPermissions,
+            fn ($p) => ! in_array($p, ['whatsapp.manage', 'ai.manage'])
+        ));
 
         $roles = [
             'Super Admin' => $allPermissions,
-            'Administrador de empresa' => $allPermissions,
+            'Administrador de empresa' => $adminPermissions,
             'Recursos Humanos' => ['dashboard.view', 'employees.manage', 'attendance.manage', 'requests.approve', 'documents.manage', 'reports.view', 'leads.view'],
             'Supervisor' => ['dashboard.view', 'attendance.manage', 'requests.approve', 'reports.view'],
             'Empleado' => ['dashboard.view'],
