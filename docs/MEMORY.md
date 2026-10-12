@@ -35,3 +35,13 @@ Solo guardar reglas reutilizables, validadas y actualmente vigentes. No usar com
 ## Operación
 - Cuando `APP_ENV=production`, los comandos Artisan que requieren confirmación deben usar `--force` cuando corresponda.
 - Para SSH directo usar OpenSSH; no usar PuTTY/Plink/PuTTYgen/PSCP en automatizaciones.
+
+
+## Integraciones externas y webhooks
+- Cifrar credenciales en reposo y ocultarlas en Resources, respuestas, logs y errores.
+- Validar HMAC sobre el cuerpo RAW antes de encolar webhooks públicos; derivar el tenant desde la configuración validada, no desde el payload.
+- Aplicar idempotencia antes de modificar estado/timestamps o producir efectos externos. Un evento duplicado no debe renovar ventanas temporales ni repetir respuestas.
+- Un system prompt es una instrucción para el modelo, no un control de autorización ni de aislamiento.
+- Los endpoints configurables requieren protección SSRF; probar destinos privados con HTTPS y considerar DNS rebinding/controles de salida.
+- No afirmar que una integración está conectada si la prueba solo guarda credenciales, usa mocks o devuelve un estado pendiente.
+- Permisos destructivos explícitos: manage no implica delete; approve no implica delete.
