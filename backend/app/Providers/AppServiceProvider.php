@@ -34,6 +34,11 @@ class AppServiceProvider extends AuthServiceProvider
         // PendingService as singleton — providers register once at boot.
         $this->app->singleton(PendingService::class);
 
+        $this->app->bind(
+            \App\Contracts\WhatsappServiceContract::class,
+            \App\Services\WhatsappService::class
+        );
+
         // CampaignController needs the sources list injected.
         $this->app->bind(CampaignController::class, function () {
             return new CampaignController([

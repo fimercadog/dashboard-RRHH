@@ -49,6 +49,8 @@ import {
   UserSearch,
   CalendarClock,
   ClipboardCheck,
+  MessageCircle,
+  MessageSquare,
   type LucideIcon,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
@@ -201,6 +203,14 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    label: "Integraciones",
+    items: [
+      { href: "/app/whatsapp/conversaciones", label: "Conversaciones WA", icon: MessageSquare, permissions: ["conversations.view"] },
+      { href: "/app/configuracion/whatsapp",  label: "WhatsApp Config",   icon: MessageCircle, permissions: ["whatsapp.manage"] },
+      { href: "/app/configuracion/ia",        label: "Proveedor IA",      icon: Bot,           permissions: ["ai.manage"] },
+    ],
+  },
+  {
     label: "Administracion",
     items: [
       { href: "/app/organizacion", label: "Organizacion", icon: Building2, permissions: ["settings.manage"] },
@@ -235,7 +245,7 @@ function NavLink({ item }: { item: NavItem }) {
         href={item.href}
         className={cn(
           "flex h-9 items-center gap-3 rounded-md px-3 text-sm font-medium text-warning transition-colors hover:bg-warning/15",
-          active && "bg-warning/15 border-l-2 border-warning pl-[10px]",
+          active && "bg-warning/15 border-l-2 border-warning pl-2.5",
         )}
       >
         <Icon className="h-4 w-4" />
@@ -304,7 +314,7 @@ function NavLink({ item }: { item: NavItem }) {
       href={item.href}
       className={cn(
         "flex h-9 items-center gap-3 rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-primary/8 hover:text-foreground",
-        active && "bg-primary/12 text-primary font-medium border-l-2 border-primary pl-[10px]",
+        active && "bg-primary/12 text-primary font-medium border-l-2 border-primary pl-2.5",
       )}
     >
       <Icon className="h-4 w-4" />
@@ -397,12 +407,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <LogoMark size="sm" />
       <div>
         <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-          DFC
+          FidelOS
           <span className="rounded bg-warning/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning">
             Beta
           </span>
         </p>
-        <p className="text-xs text-muted-foreground">Talento Humano</p>
+        <p className="text-xs text-muted-foreground">Recursos Humanos</p>
       </div>
     </div>
   );
@@ -510,7 +520,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <Menu className="h-4 w-4" />
             </Button>
             <div className="min-w-0 max-w-24 sm:max-w-none">
-              <p className="truncate text-sm font-medium">{user?.company?.name ?? "DFC Talento Humano"}</p>
+              <p className="truncate text-sm font-medium">{user?.company?.name ?? "FidelOS"}</p>
               <p className="hidden truncate text-xs text-muted-foreground sm:block">
                 Panel privado de Recursos Humanos
               </p>

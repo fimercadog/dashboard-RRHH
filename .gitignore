@@ -1,2 +1,9 @@
 graphify-out/
 .claude/scheduled_tasks.lock
+
+# Scripts de despliegue con credenciales — solo locales, nunca en repo
+docs/deploy-hostinger.md
+
+# Directorios de herramientas locales
+.archify/
+.serena/

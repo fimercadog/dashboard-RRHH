@@ -57,6 +57,11 @@ use App\Http\Controllers\Api\JobVacancyController;
 use App\Http\Controllers\Api\JobCandidateController;
 use App\Http\Controllers\Api\JobApplicationController;
 use App\Http\Controllers\Api\JobInterviewController;
+use App\Http\Controllers\Api\ConversationController;
+use App\Http\Controllers\Api\WhatsappSettingController;
+use App\Http\Controllers\Api\WhatsappWebhookController;
+use App\Http\Controllers\Api\AiSettingController;
+use App\Http\Controllers\Api\DevMockController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -69,6 +74,11 @@ Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])->m
 
 // Formularios publicos del sitio de marketing (demo / contacto).
 Route::post('/leads', [LeadController::class, 'store'])->middleware('throttle:5,1');
+
+// Webhook WhatsApp/Meta — ruta pública por diseño (verificación + recepción de mensajes).
+// El token actúa como secreto por empresa; fuera de auth:sanctum.
+Route::get('/webhooks/wa/{token}', [WhatsappWebhookController::class, 'verify'])->middleware('throttle:30,1');
+Route::post('/webhooks/wa/{token}', [WhatsappWebhookController::class, 'receive'])->middleware('throttle:120,1');
 
 Route::middleware('auth:sanctum')->group(function (): void {
     // Sin permiso: cualquier usuario autenticado.
@@ -193,6 +203,27 @@ Route::middleware('auth:sanctum')->group(function (): void {
         // CORE — Pendientes (cualquier usuario autenticado ve los que tiene permiso).
     Route::get('/pending', PendingController::class);
 
+    // WhatsApp — Conversaciones (Paso 4).
+    Route::get('/conversations', [ConversationController::class, 'index'])->middleware('can:conversations.view');
+    Route::get('/conversations/{id}', [ConversationController::class, 'show'])->middleware('can:conversations.view');
+    Route::get('/conversations/{id}/messages', [ConversationController::class, 'messages'])->middleware('can:conversations.view');
+    Route::post('/conversations/{id}/assign', [ConversationController::class, 'assign'])->middleware('can:conversations.manage');
+    Route::post('/conversations/{id}/transfer', [ConversationController::class, 'transfer'])->middleware('can:conversations.manage');
+    Route::post('/conversations/{id}/close', [ConversationController::class, 'close'])->middleware('can:conversations.close');
+    Route::post('/conversations/{id}/reopen', [ConversationController::class, 'reopen'])->middleware('can:conversations.manage');
+    Route::post('/conversations/{id}/messages', [ConversationController::class, 'sendMessage'])->middleware('can:conversations.manage');
+
+    // Integraciones — Fase 0 (WhatsApp + IA).
+    Route::get('/settings/whatsapp', [WhatsappSettingController::class, 'show'])->middleware('can:whatsapp.manage');
+    Route::put('/settings/whatsapp', [WhatsappSettingController::class, 'update'])->middleware('can:whatsapp.manage');
+    Route::post('/settings/whatsapp/generate-token', [WhatsappSettingController::class, 'generateToken'])->middleware('can:whatsapp.manage');
+    Route::post('/settings/whatsapp/test', [WhatsappSettingController::class, 'test'])->middleware('can:whatsapp.manage');
+
+    Route::get('/settings/ai', [AiSettingController::class, 'show'])->middleware('can:ai.manage');
+    Route::put('/settings/ai', [AiSettingController::class, 'update'])->middleware('can:ai.manage');
+    Route::post('/settings/ai/test', [AiSettingController::class, 'test'])->middleware('can:ai.manage');
+    Route::get('/settings/ai/models', [AiSettingController::class, 'models'])->middleware('can:ai.manage');
+
     // CORE — Comunicaciones/Campañas.
     Route::get('/campaigns/sources', [CampaignController::class, 'sources'])->middleware('can:communications.view');
     Route::apiResource('campaigns', CampaignController::class)->middleware('can:communications.manage');
@@ -203,4 +234,19 @@ Route::middleware('auth:sanctum')->group(function (): void {
         ->whereIn('resource', ['employees', 'attendances', 'vacation-requests', 'permission-requests', 'sick-leaves', 'employee-documents', 'audit-logs', 'clients', 'contacts', 'deals', 'activities', 'segments', 'products', 'stock-movements'])
         ->whereIn('format', ['csv', 'pdf']);
 });
+
+// ── Mocks de desarrollo (F40) ──────────────────────────────────────────────
+// Solo registradas cuando DEV_MOCKS_ENABLED=true y fuera de producción.
+// ponytail: guard doble — env check + APP_ENV para evitar activación accidental.
+if (config('app.dev_mocks_enabled') && ! app()->environment('production')) {
+    Route::prefix('dev/mocks')->group(function () {
+        // WhatsApp mock
+        Route::post('/wa/messages',   [DevMockController::class, 'waSend']);
+        Route::post('/wa/inbound',    [DevMockController::class, 'waInbound']);
+        Route::get('/wa/status',      [DevMockController::class, 'waStatus']);
+        // AI mock (OpenAI-compatible)
+        Route::post('/ai/chat/completions', [DevMockController::class, 'aiCompletions']);
+        Route::get('/ai/models',            [DevMockController::class, 'aiModels']);
+    });
+}
 

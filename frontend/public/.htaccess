@@ -1,0 +1,10 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# Conversation detail: internal rewrite so the real URL stays in the browser
+# while Apache serves the pre-generated static shell (id=0).
+# useParams() reads the real ID from the browser URL, not from the served file.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^app/whatsapp/conversaciones/([^/]+)/?$ /app/whatsapp/conversaciones/0/index.html [L]

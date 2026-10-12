@@ -13,22 +13,24 @@ class DashboardTest extends TestCase
 {
     use RefreshDatabase;
 
+    private Company $company;
+
     protected function setUp(): void
     {
         parent::setUp();
-        Company::factory()->create(['name' => 'Test SA']);
+        $this->company = Company::factory()->create(['name' => 'Test SA']);
         Permission::firstOrCreate(['name' => 'dashboard.view', 'guard_name' => 'web']);
     }
 
     public function test_requires_dashboard_view_permission(): void
     {
-        Sanctum::actingAs(User::factory()->create(), ['*']);
+        Sanctum::actingAs(User::factory()->create(['company_id' => $this->company->id]), ['*']);
         $this->getJson('/api/dashboard')->assertForbidden();
     }
 
     public function test_returns_the_expected_shape(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['company_id' => $this->company->id]);
         $user->givePermissionTo('dashboard.view');
         Sanctum::actingAs($user, ['*']);
 

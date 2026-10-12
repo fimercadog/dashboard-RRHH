@@ -103,6 +103,6 @@ export const blogPosts = [
 
 export const trustItems = [
   { label: "Seguro", icon: ShieldCheck },
-  { label: "WhatsApp futuro", icon: MessageCircle },
+  { label: "Acceso por roles", icon: MessageCircle },
   { label: "Flujos claros", icon: FolderKanban },
 ];

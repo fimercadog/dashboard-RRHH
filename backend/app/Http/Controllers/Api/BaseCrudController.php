@@ -62,7 +62,7 @@ abstract class BaseCrudController extends Controller
     public function store(Request $request, AuditService $audit)
     {
         $payload = $this->validatedInput($request);
-        $payload['company_id'] ??= $this->companyId($request);
+        $payload['company_id'] = $this->companyId($request);
         $model = ($this->model)::create($payload)->load($this->with);
         $audit->record('created', $model, $request);
 
@@ -81,9 +81,12 @@ abstract class BaseCrudController extends Controller
 
     public function update(Request $request, string $id, AuditService $audit)
     {
-        $model = ($this->model)::query()->where('company_id', $this->companyId($request))->findOrFail($id);
+        $cid = $this->companyId($request);
+        $model = ($this->model)::query()->where('company_id', $cid)->findOrFail($id);
         $oldValues = $model->getOriginal();
-        $model->update($this->validatedInput($request, isUpdate: true));
+        $payload = $this->validatedInput($request, isUpdate: true);
+        $payload['company_id'] = $cid;
+        $model->update($payload);
         $model->load($this->with);
         $audit->record('updated', $model, $request, $oldValues);
 

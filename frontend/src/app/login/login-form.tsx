@@ -97,7 +97,7 @@ export function LoginForm({
   }
 
   return (
-    <form className="mt-6 space-y-4" onSubmit={submit}>
+    <form className="mt-6 space-y-4" onSubmit={submit} autoComplete={demoMode ? "off" : undefined}>
       {demoMode ? (
         <>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -119,7 +119,7 @@ export function LoginForm({
                   {user.name}
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {user.role} · {user.email}
+                  {user.role}
                 </p>
               </button>
             ))}
@@ -130,12 +130,14 @@ export function LoginForm({
           <Input
             placeholder="Email"
             type="email"
+            autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
           <Input
             placeholder="Contraseña"
             type="password"
+            autoComplete="current-password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />

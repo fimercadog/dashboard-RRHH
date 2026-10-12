@@ -56,6 +56,9 @@ return [
 
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
 
+    // Activa mocks de desarrollo (WA/IA). NUNCA true en producción.
+    'dev_mocks_enabled' => env('DEV_MOCKS_ENABLED', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

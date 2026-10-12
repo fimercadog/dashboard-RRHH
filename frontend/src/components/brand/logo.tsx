@@ -21,9 +21,15 @@ export function Logo({ size = "md", className }: { size?: keyof typeof heights; 
     <span className={cn("inline-flex items-center rounded-2xl bg-white px-3 py-2", className)}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        src="/logo-mobile.png"
+        alt="FidelOS"
+        className={cn(heights[size], "w-auto object-contain sm:hidden")}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="/logo-full.png"
         alt="FidelOS"
-        className={cn(heights[size], "w-auto object-contain")}
+        className={cn(heights[size], "hidden w-auto object-contain sm:block")}
       />
     </span>
   );
