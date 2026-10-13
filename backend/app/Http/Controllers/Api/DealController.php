@@ -15,5 +15,5 @@ class DealController extends BaseCrudController
         'client_id' => 'client_id',
         'owner_id'  => 'owner_id',
     ];
-    protected array $with = ['client', 'owner:id,name'];
+    protected array $with = ['client:id,company_name,first_name,last_name', 'owner:id,name'];
 }
