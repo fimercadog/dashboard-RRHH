@@ -199,7 +199,7 @@ export default function TransferenciasPage() {
       )}
 
       {!loading && transfers.length > 0 && (
-        <div className="rounded-lg border overflow-auto">
+        <div className="rounded-lg overflow-auto">
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/50">
               <tr>
