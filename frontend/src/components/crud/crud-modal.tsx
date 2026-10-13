@@ -24,7 +24,7 @@ type FieldOption = {
 export type CrudField = {
   name: string;
   label: string;
-  type?: "text" | "email" | "password" | "date" | "time" | "datetime-local" | "number" | "select" | "textarea" | "relation-select" | "relation-search" | "file";
+  type?: "text" | "email" | "password" | "url" | "date" | "time" | "datetime-local" | "number" | "select" | "textarea" | "relation-select" | "relation-search" | "file";
   required?: boolean;
   placeholder?: string;
   options?: FieldOption[];
