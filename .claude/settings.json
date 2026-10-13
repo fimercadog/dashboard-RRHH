@@ -3,5 +3,8 @@
     "allow": [
       "ClaudeInChromeDomain(localhost:3000)"
     ]
+  },
+  "env": {
+    "GATEGUARD_EXEMPT_GLOBS": "backend/app/**,backend/database/**,backend/routes/**,backend/tests/**,backend/config/**,frontend/src/**"
   }
 }

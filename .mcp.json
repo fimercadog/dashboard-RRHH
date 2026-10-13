@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "env": {}
+    },
+    "serena": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from", "git+https://github.com/oraios/serena",
+        "serena", "start-mcp-server",
+        "--context", "ide-assistant",
+        "--project", "C:/Users/fidel/Documents/claude-obsidian/FidelOS/proyectos/dfctalentohumano"
+      ],
+      "env": {}
+    },
+    "dbhub": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y", "@bytebase/dbhub@latest",
+        "--transport", "stdio",
+        "--dsn", "sqlite:///C:/Users/fidel/Documents/claude-obsidian/FidelOS/proyectos/dfctalentohumano/backend/database/database.sqlite"
+      ],
+      "env": {}
+    }
+  }
+}

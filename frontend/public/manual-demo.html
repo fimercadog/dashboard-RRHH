@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Manual de Usuario — FidelOS (Demo)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #a3175a;
+    --bg: #ffffff;
+    --text: #26262e;
+    --muted: #7a6b71;
+    --border: #e7dce0;
+    --accent: #f7e4ec;
+    --section-bg: #fbf7f8;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 0;
+  }
+  .cover {
+    background: linear-gradient(135deg, #fbe9f0 0%, #f0c9da 100%);
+    padding: 48px 40px 40px;
+    border-bottom: 2px solid var(--border);
+    page-break-after: always;
+  }
+  .cover-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .cover h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .cover p {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 520px;
+  }
+  .cover-meta {
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .toc {
+    padding: 32px 40px;
+    background: var(--section-bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .toc h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .toc-list { list-style: none; columns: 2; gap: 32px; }
+  .toc-list li {
+    font-size: 13px;
+    color: var(--text);
+    padding: 3px 0;
+    border-bottom: 1px dotted var(--border);
+  }
+  .toc-list li span { color: var(--muted); margin-left: 4px; font-size: 11px; }
+
+  .content { padding: 0 40px 40px; }
+
+  .section {
+    margin-top: 36px;
+    page-break-inside: avoid;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--accent);
+    border-left: 3px solid var(--primary);
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 16px;
+  }
+  .section-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .section-header .module-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .module-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .module-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #fff;
+  }
+  .module-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .module-card p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .tip {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #166534;
+    margin-top: 12px;
+  }
+  .warning {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #92400e;
+    margin-top: 12px;
+  }
+
+  .steps { counter-reset: step; margin-top: 12px; }
+  .step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .step-num {
+    counter-increment: step;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step p { font-size: 13px; color: var(--text); }
+  .step strong { color: var(--primary); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 12px;
+  }
+  th {
+    background: var(--section-bg);
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  td {
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: var(--section-bg); }
+
+  .footer {
+    margin-top: 48px;
+    padding: 20px 40px;
+    background: var(--section-bg);
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  @media print {
+    .section { page-break-inside: avoid; }
+    .cover { page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="cover">
+  <span class="cover-badge">Manual de demostración</span>
+  <h1>FidelOS<br>Manual de Usuario</h1>
+  <p>Guía de referencia para la plataforma de Gestión de Talento Humano, CRM e Inventario. Este documento describe las funcionalidades disponibles en la versión actual.</p>
+  <div class="cover-meta">
+    Versión demo · Octubre 2026 · DFC Talento Humano<br>
+    <em>Este manual corresponde a un entorno de demostración. Algunas funcionalidades pueden estar en desarrollo.</em>
+  </div>
+</div>
+
+<!-- TABLA DE CONTENIDO -->
+<div class="toc">
+  <h2>Contenido</h2>
+  <ul class="toc-list">
+    <li>1. Acceso al sistema <span>p. 2</span></li>
+    <li>2. Panel principal (Dashboard) <span>p. 2</span></li>
+    <li>3. Recursos Humanos <span>p. 3</span></li>
+    <li>4. CRM <span>p. 3</span></li>
+    <li>5. Inventario <span>p. 4</span></li>
+    <li>6. Compras <span>p. 4</span></li>
+    <li>7. Ventas <span>p. 5</span></li>
+    <li>8. Finanzas <span>p. 5</span></li>
+    <li>9. Contabilidad <span>p. 5</span></li>
+    <li>10. Reclutamiento <span>p. 6</span></li>
+    <li>11. Reportes e Integraciones <span>p. 6</span></li>
+    <li>12. Administración del sistema <span>p. 7</span></li>
+    <li>13. Herramientas y modo contingencia <span>p. 7</span></li>
+    <li>14. Soporte técnico <span>p. 8</span></li>
+  </ul>
+</div>
+
+<div class="content">
+
+<!-- 1. ACCESO -->
+<div class="section">
+  <div class="section-header">
+    <h2>1. Acceso al sistema</h2>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><p>Ingresa a la URL de FidelOS proporcionada por tu administrador.</p></div>
+    <div class="step"><div class="step-num">2</div><p>Introduce tu <strong>correo electrónico</strong> y <strong>contraseña</strong>.</p></div>
+    <div class="step"><div class="step-num">3</div><p>Haz clic en <strong>Iniciar sesión</strong>. Serás redirigido al panel principal.</p></div>
+  </div>
+  <div class="tip">Si olvidaste tu contraseña, contacta al administrador del sistema para restablecerla. La contraseña no se puede recuperar de forma autónoma en la versión actual.</div>
+</div>
+
+<!-- 2. DASHBOARD -->
+<div class="section">
+  <div class="section-header">
+    <h2>2. Panel principal — Dashboard</h2>
+  </div>
+  <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">El dashboard ofrece una vista consolidada de los indicadores más importantes de la empresa.</p>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>KPIs de RRHH</h3>
+      <p>Muestra el total de empleados activos, ausencias del día, solicitudes pendientes de aprobación y documentos vencidos.</p>
+    </div>
+    <div class="module-card">
+      <h3>Actividad reciente</h3>
+      <p>Lista las últimas acciones registradas en el sistema: altas, bajas, aprobaciones y cambios de estado.</p>
+    </div>
+    <div class="module-card">
+      <h3>Alertas pendientes</h3>
+      <p>El botón de campana en la barra superior muestra aprobaciones pendientes ordenadas por prioridad (alta, media, baja).</p>
+    </div>
+    <div class="module-card">
+      <h3>Modo oscuro / claro</h3>
+      <p>Usa el botón de sol/luna en la barra superior para alternar entre el tema claro y oscuro. La preferencia se guarda automáticamente.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 3. RRHH -->
+<div class="section">
+  <div class="section-header">
+    <h2>3. Recursos Humanos</h2>
+    <span class="module-count">7 módulos</span>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Empleados</h3>
+      <p>Alta, edición y desactivación de empleados. Incluye datos personales, laborales, roles y documentos adjuntos.</p>
+    </div>
+    <div class="module-card">
+      <h3>Asistencia</h3>
+      <p>Registro de entradas y salidas. Genera reportes de puntualidad y permite correcciones manuales con justificación.</p>
+    </div>
+    <div class="module-card">
+      <h3>Vacaciones</h3>
+      <p>Solicitud y aprobación de vacaciones. Calcula días disponibles por empleado según política de la empresa.</p>
+    </div>
+    <div class="module-card">
+      <h3>Permisos</h3>
+      <p>Gestión de permisos laborales (médico, personal, remunerado). Flujo de solicitud → revisión → aprobación.</p>
+    </div>
+    <div class="module-card">
+      <h3>Incapacidades</h3>
+      <p>Registro y seguimiento de incapacidades médicas. Asocia el diagnóstico y el período de reposo.</p>
+    </div>
+    <div class="module-card">
+      <h3>Documentos</h3>
+      <p>Carga y gestión de documentos por empleado: contratos, certificados, paz y salvos, etc.</p>
+    </div>
+    <div class="module-card" style="grid-column: span 2">
+      <h3>Turnos</h3>
+      <p>Definición de turnos laborales y asignación a empleados. Integración con el módulo de asistencia para calcular las horas esperadas.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 4. CRM -->
+<div class="section">
+  <div class="section-header">
+    <h2>4. CRM — Gestión de clientes y ventas</h2>
+    <span class="module-count">6 módulos</span>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Leads</h3>
+      <p>Registro y seguimiento de prospectos comerciales. Asigna responsable y estado del proceso de conversión.</p>
+    </div>
+    <div class="module-card">
+      <h3>Clientes</h3>
+      <p>Base de datos de clientes activos. Historial de compras, contactos asociados y saldo de cuenta corriente.</p>
+    </div>
+    <div class="module-card">
+      <h3>Contactos</h3>
+      <p>Directorio de personas de contacto de clientes y prospectos, con roles y datos de comunicación.</p>
+    </div>
+    <div class="module-card">
+      <h3>Oportunidades</h3>
+      <p>Pipeline de deals en proceso. Muestra etapa, valor estimado y probabilidad de cierre.</p>
+    </div>
+    <div class="module-card">
+      <h3>Actividades</h3>
+      <p>Registro de llamadas, reuniones, tareas y seguimientos vinculados a clientes y oportunidades.</p>
+    </div>
+    <div class="module-card">
+      <h3>Segmentos</h3>
+      <p>Agrupación de clientes por criterios personalizados para campañas de comunicación segmentadas.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 5. INVENTARIO -->
+<div class="section">
+  <div class="section-header">
+    <h2>5. Inventario</h2>
+    <span class="module-count">7 módulos</span>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Productos</h3>
+      <p>Catálogo de productos con SKU, descripción, precio de costo, precio de venta, unidad de medida y estado.</p>
+    </div>
+    <div class="module-card">
+      <h3>Categorías / Marcas / Unidades</h3>
+      <p>Tablas maestras para clasificar y organizar los productos del catálogo.</p>
+    </div>
+    <div class="module-card">
+      <h3>Bodegas</h3>
+      <p>Gestión de ubicaciones físicas o lógicas donde se almacena el inventario.</p>
+    </div>
+    <div class="module-card">
+      <h3>Stock</h3>
+      <p>Vista consolidada del inventario disponible por producto y bodega en tiempo real.</p>
+    </div>
+    <div class="module-card" style="grid-column: span 2">
+      <h3>Movimientos</h3>
+      <p>Historial de entradas, salidas y traslados de inventario. Permite rastrear el origen de cada cambio de stock.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 6. COMPRAS -->
+<div class="section">
+  <div class="section-header">
+    <h2>6. Compras</h2>
+    <span class="module-count">5 módulos</span>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Proveedores</h3>
+      <p>Directorio de proveedores con datos de contacto, condiciones comerciales e historial de compras.</p>
+    </div>
+    <div class="module-card">
+      <h3>Órdenes de compra</h3>
+      <p>Generación y seguimiento de órdenes. Flujo: borrador → aprobada → recibida → cerrada.</p>
+    </div>
+    <div class="module-card">
+      <h3>Recepciones</h3>
+      <p>Registro del ingreso físico de mercancía vinculado a órdenes de compra. Actualiza el stock automáticamente.</p>
+    </div>
+    <div class="module-card">
+      <h3>Facturas de compra</h3>
+      <p>Gestión de facturas recibidas de proveedores, vinculadas a órdenes y recepciones.</p>
+    </div>
+    <div class="module-card" style="grid-column: span 2">
+      <h3>Cuentas por Pagar (CxP)</h3>
+      <p>Vista consolidada de las obligaciones pendientes con proveedores, fechas de vencimiento y saldos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 7. VENTAS -->
+<div class="section">
+  <div class="section-header">
+    <h2>7. Ventas</h2>
+    <span class="module-count">4 módulos</span>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Cotizaciones</h3>
+      <p>Generación de cotizaciones para clientes. Se pueden convertir en pedido con un clic.</p>
+    </div>
+    <div class="module-card">
+      <h3>Pedidos</h3>
+      <p>Gestión de órdenes de venta. Flujo: borrador → confirmado → entregado → cerrado.</p>
+    </div>
+    <div class="module-card">
+      <h3>Facturas de venta</h3>
+      <p>Facturación electrónica vinculada a pedidos. Genera el documento para el cliente.</p>
+    </div>
+    <div class="module-card">
+      <h3>Cuentas por Cobrar (CxC)</h3>
+      <p>Saldo de cartera de clientes, fechas de vencimiento y gestión de cobros.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 8. FINANZAS -->
+<div class="section">
+  <div class="section-header">
+    <h2>8. Finanzas</h2>
+    <span class="module-count">4 módulos</span>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Cuentas</h3>
+      <p>Gestión de cuentas bancarias y cajas. Visualiza el saldo actual y el movimiento histórico.</p>
+    </div>
+    <div class="module-card">
+      <h3>Pagos</h3>
+      <p>Registro de pagos realizados y recibidos, vinculados a CxP y CxC respectivamente.</p>
+    </div>
+    <div class="module-card">
+      <h3>Transferencias</h3>
+      <p>Movimientos entre cuentas internas de la empresa.</p>
+    </div>
+    <div class="module-card">
+      <h3>Movimientos</h3>
+      <p>Historial consolidado de todas las transacciones financieras, filtrable por período y cuenta.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 9. CONTABILIDAD -->
+<div class="section">
+  <div class="section-header">
+    <h2>9. Contabilidad</h2>
+    <span class="module-count">4 módulos</span>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Plan de Cuentas</h3>
+      <p>Estructura contable de la empresa según el PUC colombiano. Administra cuentas, subcuentas y auxiliares.</p>
+    </div>
+    <div class="module-card">
+      <h3>Períodos contables</h3>
+      <p>Gestión de períodos mensuales. Un período cerrado bloquea nuevos asientos para ese mes.</p>
+    </div>
+    <div class="module-card">
+      <h3>Libro Diario</h3>
+      <p>Registro de asientos contables manuales y automáticos generados por otros módulos.</p>
+    </div>
+    <div class="module-card">
+      <h3>Configuración contable</h3>
+      <p>Parámetros del módulo: cuentas predeterminadas por tipo de transacción, moneda base y opciones de redondeo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 10. RECLUTAMIENTO -->
+<div class="section">
+  <div class="section-header">
+    <h2>10. Reclutamiento</h2>
+    <span class="module-count">4 módulos</span>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Vacantes</h3>
+      <p>Publicación de cargos disponibles con descripción del perfil, requisitos y responsable del proceso.</p>
+    </div>
+    <div class="module-card">
+      <h3>Candidatos</h3>
+      <p>Base de datos de candidatos. Incluye hoja de vida, estado en el proceso y notas de evaluación.</p>
+    </div>
+    <div class="module-card">
+      <h3>Postulaciones</h3>
+      <p>Vincula candidatos con vacantes y registra el avance por cada etapa del proceso.</p>
+    </div>
+    <div class="module-card">
+      <h3>Entrevistas</h3>
+      <p>Programación y seguimiento de entrevistas. Registra observaciones y resultado de cada encuentro.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 11. REPORTES E INTEGRACIONES -->
+<div class="section">
+  <div class="section-header">
+    <h2>11. Reportes e Integraciones</h2>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Reportes</h3>
+      <p>Generación de informes exportables por módulo: asistencia, nómina, inventario, CRM y más. Permite filtros por período, área y estado.</p>
+    </div>
+    <div class="module-card">
+      <h3>Conversaciones WhatsApp</h3>
+      <p>Visualización de conversaciones entrantes de clientes y leads a través del canal de WhatsApp Business configurado.</p>
+    </div>
+    <div class="module-card">
+      <h3>Integraciones</h3>
+      <p>Gestión de las conexiones con servicios externos habilitados. Solo visible para usuarios con permiso de administración de integraciones.</p>
+    </div>
+    <div class="module-card">
+      <h3>Importación masiva</h3>
+      <p>Permite cargar datos en volumen (empleados, clientes, productos) desde archivos CSV o Excel, con validación previa y reporte de errores.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 12. ADMINISTRACIÓN -->
+<div class="section">
+  <div class="section-header">
+    <h2>12. Administración del sistema</h2>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Organización</h3>
+      <p>Datos generales de la empresa: razón social, NIT, dirección, logo y configuración de horarios laborales.</p>
+    </div>
+    <div class="module-card">
+      <h3>Usuarios</h3>
+      <p>Alta, edición y desactivación de usuarios del sistema. Asigna roles y correo de acceso.</p>
+    </div>
+    <div class="module-card">
+      <h3>Roles y permisos</h3>
+      <p>Creación de roles personalizados con permisos granulares por módulo. FidelOS incluye el rol Super Admin y Administrador de empresa predeterminados.</p>
+    </div>
+    <div class="module-card">
+      <h3>Auditoría</h3>
+      <p>Registro inmutable de las acciones realizadas por los usuarios: creaciones, ediciones, eliminaciones y accesos.</p>
+    </div>
+  </div>
+  <div class="warning">El módulo de Administración solo está disponible para usuarios con el permiso correspondiente. Las acciones de administración quedan registradas en la auditoría.</div>
+</div>
+
+<!-- 13. HERRAMIENTAS -->
+<div class="section">
+  <div class="section-header">
+    <h2>13. Herramientas</h2>
+  </div>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Modo contingencia</h3>
+      <p>Permite operar sin conexión a internet. Las acciones se encolan localmente y se sincronizan cuando se restaura la conectividad. Activar desde el menú lateral bajo "Herramientas".</p>
+    </div>
+    <div class="module-card">
+      <h3>IA para RRHH <span style="font-size:10px; background:#fce7f3; color:#be185d; padding:1px 6px; border-radius:10px; vertical-align:middle;">Premium</span></h3>
+      <p>Asistente de inteligencia artificial para análisis de información de RRHH. Disponible en el plan Premium. Consultar con el administrador del sistema para activarla.</p>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;">
+    <h3 style="font-size:13px; font-weight:700; margin-bottom:10px;">Barra superior — controles rápidos</h3>
+    <table>
+      <tr><th>Ícono</th><th>Función</th></tr>
+      <tr><td>🔔 Campana</td><td>Procesos pendientes de aprobación por módulo</td></tr>
+      <tr><td>💬 Mensajes</td><td>Centro de comunicaciones masivas hacia empleados (campañas)</td></tr>
+      <tr><td>❓ Soporte</td><td>Enviar comentario, contactar soporte por WhatsApp y acceder a este manual</td></tr>
+      <tr><td>☀️/🌙 Tema</td><td>Alternar entre modo claro y oscuro</td></tr>
+      <tr><td>↩ Salir</td><td>Cerrar sesión de forma segura</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- 14. SOPORTE -->
+<div class="section">
+  <div class="section-header">
+    <h2>14. Soporte técnico</h2>
+  </div>
+  <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Para obtener ayuda o reportar un problema, usa el botón <strong>❓</strong> en la barra superior del sistema. Tienes tres opciones:</p>
+  <div class="module-grid">
+    <div class="module-card">
+      <h3>Enviar comentario o sugerencia</h3>
+      <p>Abre un formulario web donde puedes describir el problema o la mejora que deseas solicitar. El equipo de desarrollo lo recibe directamente.</p>
+    </div>
+    <div class="module-card">
+      <h3>Contactar soporte por WhatsApp</h3>
+      <p>Abre una conversación directa con el equipo de soporte técnico. Disponible en horario laboral. Describe el problema con el mayor detalle posible.</p>
+    </div>
+    <div class="module-card" style="grid-column: span 2">
+      <h3>Manual de usuario</h3>
+      <p>Este documento. Puedes leerlo dentro del sistema o descargarlo para consultarlo sin conexión.</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- PIE DE PÁGINA -->
+<div class="footer">
+  <span>FidelOS · Manual de Usuario · Versión Demo · Octubre 2026</span>
+  <span>DFC Talento Humano · Documento de demostración</span>
+</div>
+
+</body>
+</html>
