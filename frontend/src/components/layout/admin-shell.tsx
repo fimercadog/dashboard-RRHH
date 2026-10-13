@@ -21,7 +21,6 @@ import {
   Lock,
   LogOut,
   Menu,
-  MessageSquarePlus,
   Moon,
   Package,
   Settings,
@@ -58,9 +57,9 @@ import { LogoMark } from "@/components/brand/logo";
 import { BetaNotice } from "@/components/layout/beta-notice";
 import { PendingButton } from "@/components/layout/pending-button";
 import { CommunicationsButton } from "@/components/layout/communications-button";
+import { SupportDialog } from "@/components/layout/support-dialog";
 import { ContingencyBanner } from "@/components/layout/contingency-banner";
 import { useContingency } from "@/lib/contingency/context";
-import { openFeedbackForm } from "@/lib/feedback";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useTheme } from "@/components/theme-provider";
@@ -532,16 +531,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <BetaNotice />
             <PendingButton />
             <CommunicationsButton />
-            <Button
-              variant="outline"
-              size="icon"
-              aria-label="Enviar un comentario"
-              title="Enviar un comentario"
-              onClick={openFeedbackForm}
-              className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
-            >
-              <MessageSquarePlus className="h-4 w-4" />
-            </Button>
+            <SupportDialog />
             <Button
               variant="outline"
               size="icon"

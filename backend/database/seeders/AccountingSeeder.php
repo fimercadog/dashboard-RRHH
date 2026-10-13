@@ -19,14 +19,18 @@ use Illuminate\Support\Carbon;
  */
 class AccountingSeeder extends Seeder
 {
-    public function run(): void
+    public function run(?int $forCompanyId = null, ?int $forAdminId = null): void
     {
-        Company::all()->each(fn ($company) => $this->seedForCompany($company->id));
+        if ($forCompanyId !== null) {
+            $this->seedForCompany($forCompanyId, $forAdminId);
+        } else {
+            Company::all()->each(fn ($c) => $this->seedForCompany($c->id));
+        }
     }
 
-    private function seedPeriodAndEntries(int $companyId, array $codeToId): void
+    private function seedPeriodAndEntries(int $companyId, array $codeToId, ?int $forAdminId = null): void
     {
-        $admin = User::where('email', 'admin@andespeople.co')->first();
+        $admin = $forAdminId !== null ? User::find($forAdminId) : User::where('email', 'admin@andespeople.co')->first();
 
         if (! $admin) {
             return;
@@ -78,7 +82,7 @@ class AccountingSeeder extends Seeder
         }
     }
 
-    private function seedForCompany(int $companyId): void
+    private function seedForCompany(int $companyId, ?int $forAdminId = null): void
     {
         $tree = [
             // ACTIVOS
@@ -169,6 +173,6 @@ class AccountingSeeder extends Seeder
             }
         }
 
-        $this->seedPeriodAndEntries($companyId, $codeToId);
+        $this->seedPeriodAndEntries($companyId, $codeToId, $forAdminId);
     }
 }

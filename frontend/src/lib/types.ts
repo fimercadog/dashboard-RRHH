@@ -126,6 +126,7 @@ export type Product = {
   sku?: string;
   name: string;
   description?: string;
+  image_url?: string;
   type: "storable" | "service" | "consumable";
   cost_price: number;
   sale_price: number;

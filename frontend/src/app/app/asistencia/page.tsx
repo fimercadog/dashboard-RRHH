@@ -16,7 +16,7 @@ const columns: AppColumnDef<Attendance>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "employee_id", label: "Empleado", type: "relation-select", endpoint: "/employees/selector", required: true },
+  { name: "employee_id", label: "Empleado", type: "relation-search", endpoint: "/employees/selector", required: true },
   { name: "date", label: "Fecha", type: "date", required: true },
   {
     name: "status",

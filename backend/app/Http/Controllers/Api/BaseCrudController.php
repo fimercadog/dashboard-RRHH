@@ -22,6 +22,8 @@ abstract class BaseCrudController extends Controller
 
     protected array $filterable = [];
 
+    protected array $sortable = [];
+
     /**
      * Payload validado. Si existe App\Http\Requests\Store{Modelo}Request se
      * aplican sus reglas (mismo FormRequest para crear y actualizar; en update
@@ -54,7 +56,7 @@ abstract class BaseCrudController extends Controller
             ->where('company_id', $this->companyId($request))
             ->with($this->with);
 
-        $tables->apply($request, $query, $this->searchable, $this->filterable);
+        $tables->apply($request, $query, $this->searchable, $this->filterable, $this->sortable);
 
         return ($this->resource)::collection($query->paginate(min((int) $request->input('per_page', TableQueryService::DEFAULT_PER_PAGE), TableQueryService::MAX_PER_PAGE)));
     }

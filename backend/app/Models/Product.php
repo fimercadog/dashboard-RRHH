@@ -16,7 +16,7 @@ class Product extends Model
         'category_id', 'brand_id', 'unit_id',
         'type', 'cost_price', 'sale_price', 'min_stock',
         'inventory_account_code', 'cogs_account_code', 'sale_account_code',
-        'status',
+        'image_url', 'status',
     ];
 
     protected function casts(): array

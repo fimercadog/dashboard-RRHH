@@ -149,7 +149,7 @@ const baseFields: CrudField[] = [
   { name: "name", label: "Nombre", required: true },
   { name: "email", label: "Correo", type: "email", required: true },
   { name: "password", label: "Contrasena", type: "password", placeholder: "Dejar en blanco para generar una automatica", omitWhenEmpty: true },
-  { name: "employee_id", label: "Empleado", type: "relation-select", endpoint: "/employees/selector" },
+  { name: "employee_id", label: "Empleado", type: "relation-search", endpoint: "/employees/selector" },
   { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
   { name: "avatar", label: "Foto de perfil", type: "file", accept: "image/jpeg,image/png,image/webp", colSpan: "full" },
 ];

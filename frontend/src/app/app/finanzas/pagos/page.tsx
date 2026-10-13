@@ -21,7 +21,12 @@ const COP = (v: number) =>
 const PAYABLE_LABELS: Record<string, string> = {
   accounts_receivable: "CxC (cobro cliente)",
   accounts_payable: "CxP (pago proveedor)",
+  "App\\Models\\AccountsReceivable": "CxC (cobro cliente)",
+  "App\\Models\\AccountPayable": "CxP (pago proveedor)",
 };
+
+const fmtDate = (d: string) =>
+  new Date(d).toLocaleDateString("es-CO", { day: "2-digit", month: "2-digit", year: "numeric" });
 
 const METHOD_LABELS: Record<string, string> = {
   cash: "Efectivo",
@@ -229,7 +234,7 @@ export default function PagosPage() {
               {payments.map((p, i) => (
                 <tr key={p.id} className="border-b last:border-0 odd:bg-background even:bg-muted hover:bg-muted/70">
                   <td className="px-3 py-3 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
-                  <td className="px-4 py-3">{p.date as unknown as string}</td>
+                  <td className="px-4 py-3">{fmtDate(p.date as unknown as string)}</td>
                   <td className="px-4 py-3 text-xs">{PAYABLE_LABELS[p.payable_type] ?? p.payable_type}</td>
                   <td className="px-4 py-3">#{p.payable_id}</td>
                   <td className="px-4 py-3 font-medium">{COP(p.amount)}</td>
@@ -243,7 +248,7 @@ export default function PagosPage() {
                   </td>
                   <td className="px-4 py-3">
                     {p.status === "active" && (
-                      <Button size="sm" variant="destructive" onClick={() => setCancelTarget(p)}>Cancelar</Button>
+                      <Button size="sm" variant="outline" className="text-destructive hover:text-destructive hover:border-destructive" onClick={() => setCancelTarget(p)}>Cancelar</Button>
                     )}
                   </td>
                 </tr>

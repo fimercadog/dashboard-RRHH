@@ -59,6 +59,9 @@ return [
     // Activa mocks de desarrollo (WA/IA). NUNCA true en producción.
     'dev_mocks_enabled' => env('DEV_MOCKS_ENABLED', false),
 
+    // Contraseña para los usuarios de la empresa demo. Configurable via .env.
+    'demo_password' => env('DEMO_PASSWORD', 'DFC-Demo-2026!'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

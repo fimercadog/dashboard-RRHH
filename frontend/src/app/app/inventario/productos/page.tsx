@@ -14,6 +14,15 @@ const TYPE_LABEL: Record<Product["type"], string> = {
 const fmt = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
 
 const columns: AppColumnDef<Product>[] = [
+  {
+    header: "Foto",
+    cell: ({ row }) => {
+      const { image_url, name } = row.original;
+      return image_url
+        ? <img src={image_url} alt={name} className="h-10 w-10 rounded object-cover border" />
+        : <div className="h-10 w-10 rounded border bg-muted flex items-center justify-center text-xs text-muted-foreground">—</div>;
+    },
+  },
   { header: "SKU", cell: ({ row }) => row.original.sku ?? "—" },
   { accessorKey: "name", header: "Nombre" },
   { header: "Tipo", cell: ({ row }) => <Badge>{TYPE_LABEL[row.original.type]}</Badge> },
@@ -46,6 +55,7 @@ const fields: CrudField[] = [
     name: "status", label: "Estado", type: "select", required: true, defaultValue: "active",
     options: STATUS_OPTIONS,
   },
+  { name: "image_url", label: "URL de imagen", type: "url", colSpan: "full" },
   { name: "description", label: "Descripcion", type: "textarea", colSpan: "full" },
 ];
 

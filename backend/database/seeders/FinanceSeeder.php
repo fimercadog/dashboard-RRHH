@@ -15,10 +15,10 @@ use Illuminate\Support\Carbon;
 
 class FinanceSeeder extends Seeder
 {
-    public function run(): void
+    public function run(?int $forCompanyId = null, ?int $forAdminId = null): void
     {
-        $company = Company::first();
-        $admin   = User::where('email', 'admin@andespeople.co')->first();
+        $company = $forCompanyId !== null ? Company::find($forCompanyId) : Company::first();
+        $admin   = $forAdminId !== null   ? User::find($forAdminId) : User::where('email', 'admin@andespeople.co')->first();
 
         if (! $company || ! $admin) {
             return;

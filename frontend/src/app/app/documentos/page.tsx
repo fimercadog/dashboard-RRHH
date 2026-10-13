@@ -15,7 +15,7 @@ const columns: AppColumnDef<DocumentRow>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "employee_id", label: "Empleado", type: "relation-select", endpoint: "/employees/selector", required: true },
+  { name: "employee_id", label: "Empleado", type: "relation-search", endpoint: "/employees/selector", required: true },
   {
     name: "document_type", label: "Tipo de documento", type: "select", required: true,
     options: [

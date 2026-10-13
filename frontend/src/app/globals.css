@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
+/* Tailwind v4: configura el variant dark para responder a la clase .dark en lugar de media query.
+   Sin esto, dark: utilities no funcionan con el toggle de ThemeProvider. */
+@variant dark (.dark &);
+
 :root {
+  color-scheme: light;
   --background: #fbf7f8;
   --foreground: #26262e;
   --card: #ffffff;
@@ -106,6 +111,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: #17151a;
   --foreground: #edeaec;
   --card: #211f26;

@@ -1,7 +1,7 @@
 import { AdminShell } from "@/components/layout/admin-shell";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ContingencyProvider } from "@/lib/contingency/context";
-import { Toaster } from "sonner";
+import { ThemedToaster } from "@/components/layout/themed-toaster";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <ContingencyProvider>
         <AdminShell>{children}</AdminShell>
       </ContingencyProvider>
-      <Toaster richColors position="top-right" />
+      <ThemedToaster />
     </ThemeProvider>
   );
 }

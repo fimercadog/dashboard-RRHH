@@ -10,7 +10,7 @@ class TableQueryService
     const DEFAULT_PER_PAGE = 10;
     const MAX_PER_PAGE = 100;
 
-    public function apply(Request $request, Builder $query, array $searchable = [], array $filterable = []): Builder
+    public function apply(Request $request, Builder $query, array $searchable = [], array $filterable = [], array $sortable = []): Builder
     {
         if ($search = $request->string('search')->trim()->toString()) {
             // ponytail: LIKE con leading wildcard, migrar a FULLTEXT cuando search sea lento en empresas >500k registros/tabla
@@ -27,15 +27,23 @@ class TableQueryService
             }
         }
 
+        $allowedDates = ['created_at', 'updated_at'];
+        $dateField = in_array($request->input('date_field', 'created_at'), $allowedDates, true)
+            ? $request->input('date_field', 'created_at')
+            : 'created_at';
+
         if ($request->filled('date_from')) {
-            $query->whereDate($request->input('date_field', 'created_at'), '>=', $request->date('date_from'));
+            $query->whereDate($dateField, '>=', $request->date('date_from'));
         }
 
         if ($request->filled('date_to')) {
-            $query->whereDate($request->input('date_field', 'created_at'), '<=', $request->date('date_to'));
+            $query->whereDate($dateField, '<=', $request->date('date_to'));
         }
 
-        $sort = $request->input('sort', 'created_at');
+        $allowed = array_merge(['created_at', 'updated_at', 'id'], $sortable);
+        $sort = in_array($request->input('sort', 'created_at'), $allowed, true)
+            ? $request->input('sort', 'created_at')
+            : 'created_at';
         $direction = $request->input('direction') === 'asc' ? 'asc' : 'desc';
 
         return $query->orderBy($sort, $direction);

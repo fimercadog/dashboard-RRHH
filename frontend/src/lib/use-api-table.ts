@@ -6,16 +6,25 @@ import { api, PaginatedResponse } from "@/lib/api";
 export function useApiTable<T>(resource: string, extraParams?: Record<string, string>) {
   const [data, setData] = React.useState<PaginatedResponse<T>>();
   const [search, setSearch] = React.useState("");
+  const [debouncedSearch, setDebouncedSearch] = React.useState("");
   const [page, setPage] = React.useState(1);
   const [refreshKey, setRefreshKey] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  React.useEffect(() => {
     const controller = new AbortController();
     queueMicrotask(() => setLoading(true));
     api
-      .get<PaginatedResponse<T>>(resource, { params: { page, search, per_page: 10, ...extraParams }, signal: controller.signal })
+      .get<PaginatedResponse<T>>(resource, { params: { page, search: debouncedSearch, per_page: 10, ...extraParams }, signal: controller.signal })
       .then((response) => {
         setData(response.data);
         setError(null);
@@ -30,7 +39,7 @@ export function useApiTable<T>(resource: string, extraParams?: Record<string, st
     return () => controller.abort();
   // ponytail: extraParams is stable when passed as a literal object at call site (Agenda).
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resource, page, search, refreshKey, JSON.stringify(extraParams)]);
+  }, [resource, page, debouncedSearch, refreshKey, JSON.stringify(extraParams)]);
 
   return { data, search, setSearch, page, setPage, loading, error, refresh: () => setRefreshKey((key) => key + 1) };
 }

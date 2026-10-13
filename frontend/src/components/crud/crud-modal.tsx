@@ -24,7 +24,7 @@ type FieldOption = {
 export type CrudField = {
   name: string;
   label: string;
-  type?: "text" | "email" | "password" | "date" | "time" | "datetime-local" | "number" | "select" | "textarea" | "relation-select" | "file";
+  type?: "text" | "email" | "password" | "date" | "time" | "datetime-local" | "number" | "select" | "textarea" | "relation-select" | "relation-search" | "file";
   required?: boolean;
   placeholder?: string;
   options?: FieldOption[];
@@ -70,7 +70,7 @@ type CrudModalProps = {
 
 function normalizeValue(value: FormDataEntryValue | null, field: CrudField) {
   if (value == null || value === "" || field.type === "file") return null;
-  if (field.type === "number" || field.type === "relation-select") return Number(value);
+  if (field.type === "number" || field.type === "relation-select" || field.type === "relation-search") return Number(value);
   return String(value);
 }
 
@@ -141,6 +141,151 @@ function RelationSelectField({
   );
 }
 
+function RelationSearchField({
+  field,
+  defaultVal,
+}: {
+  field: CrudField;
+  defaultVal: string | number;
+}) {
+  const [query, setQuery]                 = React.useState("");
+  const [results, setResults]             = React.useState<RelationOption[]>([]);
+  const [selectedId, setSelectedId]       = React.useState<number | null>(
+    defaultVal && Number(defaultVal) ? Number(defaultVal) : null,
+  );
+  const [selectedLabel, setSelectedLabel] = React.useState("");
+  const [loading, setLoading]             = React.useState(false);
+  const [open, setOpen]                   = React.useState(false);
+  const [focusedIndex, setFocusedIndex]   = React.useState(-1);
+  const abortRef                          = React.useRef<AbortController | null>(null);
+  const debounceRef                       = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Resolver label en modo edición
+  React.useEffect(() => {
+    if (defaultVal && Number(defaultVal)) {
+      api.get(`${field.endpoint}?id=${defaultVal}`)
+        .then((res) => {
+          const raw: RelationOption[] = Array.isArray(res.data) ? (res.data as RelationOption[])
+            : Array.isArray((res.data as { data?: unknown })?.data) ? (res.data as { data: RelationOption[] }).data
+            : [];
+          if (raw[0]) {
+            setSelectedId(raw[0].id);
+            setSelectedLabel(raw[0].label);
+          }
+        })
+        .catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const search = (term: string) => {
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+    setLoading(true);
+    const url =
+      term.length >= 2
+        ? `${field.endpoint}?search=${encodeURIComponent(term)}&limit=30`
+        : `${field.endpoint}?limit=30`;
+    api.get(url, { signal: abortRef.current.signal })
+      .then((res) => {
+        const data: RelationOption[] = Array.isArray(res.data) ? (res.data as RelationOption[])
+          : Array.isArray((res.data as { data?: unknown })?.data) ? (res.data as { data: RelationOption[] }).data
+          : [];
+        setResults(data);
+        setFocusedIndex(-1);
+        setLoading(false);
+        setOpen(true);
+      })
+      .catch((e: unknown) => {
+        const err = e as { code?: string; name?: string };
+        if (err.code === "ERR_CANCELED" || err.name === "CanceledError") return;
+        setResults([]);
+        setLoading(false);
+      });
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+    if (!val) {
+      setSelectedId(null);
+      setSelectedLabel("");
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => search(val), 300);
+  };
+
+  const select = (opt: RelationOption) => {
+    setSelectedId(opt.id);
+    setSelectedLabel(opt.label);
+    setQuery("");
+    setOpen(false);
+    setFocusedIndex(-1);
+  };
+
+  const displayValue = open ? query : selectedLabel || query;
+
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        placeholder={selectedLabel || "Buscar empleado…"}
+        value={displayValue}
+        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        onChange={handleInput}
+        onFocus={() => { if (!open) search(query); }}
+        onBlur={() => setTimeout(() => { setOpen(false); setFocusedIndex(-1); }, 150)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") { setOpen(false); setQuery(""); setFocusedIndex(-1); }
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setFocusedIndex(i => Math.min(i + 1, results.length - 1));
+            setOpen(true);
+          }
+          if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setFocusedIndex(i => Math.max(i - 1, 0));
+          }
+          if (e.key === "Enter" && open && focusedIndex >= 0 && results[focusedIndex]) {
+            e.preventDefault();
+            select(results[focusedIndex]);
+          }
+        }}
+      />
+      <input type="hidden" name={field.name} value={selectedId ?? ""} />
+      {loading && (
+        <span className="absolute right-2 top-2 text-muted-foreground text-xs">…</span>
+      )}
+      {open && (
+        <ul
+          role="listbox"
+          className="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-md border border-input bg-background shadow-md text-sm"
+        >
+          {results.length === 0 ? (
+            <li className="px-3 py-2 text-muted-foreground">Sin resultados</li>
+          ) : (
+            results.map((opt, idx) => (
+              <li
+                key={opt.id}
+                role="option"
+                aria-selected={opt.id === selectedId}
+                className={`cursor-pointer px-3 py-2 hover:bg-muted${idx === focusedIndex ? " bg-muted" : ""}`}
+                onMouseDown={() => select(opt)}
+              >
+                {opt.label}
+              </li>
+            ))
+          )}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function fieldDefault(row: CrudRow | null | undefined, field: CrudField) {
   const value = row?.[field.name];
   if (value == null) return field.defaultValue ?? "";
@@ -193,6 +338,16 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
 
     // Remove empty file inputs so FormData only carries the actual file.
     if (fileField && !hasFile) formData.delete(fileField.name);
+
+    // CA-13: validar campos relation-search requeridos antes de enviar
+    const missingRelationSearch = fields.filter(
+      (f) => f.type === "relation-search" && f.required && !formData.get(f.name),
+    );
+    if (missingRelationSearch.length > 0) {
+      setErrors(Object.fromEntries(missingRelationSearch.map((f) => [f.name, ["Este campo es requerido"]])));
+      toast.error("Hay campos por corregir. Revisa lo marcado en rojo.");
+      return;
+    }
 
     setSaving(true);
     setErrors({});
@@ -276,6 +431,11 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
                     defaultVal={fieldDefault(row, field)}
                     onClearError={() => clearError(field.name)}
                     errorClass={invalid}
+                  />
+                ) : field.type === "relation-search" ? (
+                  <RelationSearchField
+                    field={field}
+                    defaultVal={row?.[field.name] as string | number ?? ""}
                   />
                 ) : field.type === "select" ? (
                   <select

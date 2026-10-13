@@ -28,7 +28,7 @@ class UserController extends BaseCrudController
             $query->whereHas('roles', fn ($q) => $q->where('name', $request->input('role')));
         }
 
-        $tables->apply($request, $query, $this->searchable, $this->filterable);
+        $tables->apply($request, $query, $this->searchable, $this->filterable, $this->sortable);
 
         return UserResource::collection($query->paginate(min((int) $request->input('per_page', 10), 100)));
     }

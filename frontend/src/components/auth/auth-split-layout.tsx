@@ -7,11 +7,11 @@ export function AuthSplitLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
       <main className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
-        <section className="relative hidden overflow-hidden bg-[linear-gradient(160deg,#fbe9f0_0%,#f0c9da_100%)] px-12 py-16 lg:flex lg:flex-col lg:justify-center">
+        <section className="relative hidden overflow-hidden bg-[linear-gradient(160deg,#fbe9f0_0%,#f0c9da_100%)] dark:[background:var(--muted)] px-12 py-16 lg:flex lg:flex-col lg:justify-center">
           <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
           <div className="absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
           <div className="relative max-w-lg">
-            <h2 className="text-4xl font-semibold leading-tight tracking-tight text-navy">Gestiona tu equipo desde un solo lugar</h2>
+            <h2 className="text-4xl font-semibold leading-tight tracking-tight text-foreground">Gestiona tu equipo desde un solo lugar</h2>
             <p className="mt-4 text-lg leading-8 text-muted-foreground">
               Empleados, asistencia, documentos, vacaciones, permisos y reclutamiento en una sola plataforma.
             </p>
@@ -19,7 +19,7 @@ export function AuthSplitLayout({ children }: { children: React.ReactNode }) {
               {trustItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="flex items-center gap-3 rounded-2xl bg-white/70 p-4 text-sm font-medium text-navy shadow-sm">
+                  <div key={item.label} className="flex items-center gap-3 rounded-2xl bg-white/70 dark:bg-card p-4 text-sm font-medium text-foreground shadow-sm">
                     <Icon className="h-5 w-5 text-primary" /> {item.label}
                   </div>
                 );

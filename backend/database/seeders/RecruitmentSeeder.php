@@ -13,15 +13,15 @@ use Illuminate\Database\Seeder;
 
 class RecruitmentSeeder extends Seeder
 {
-    public function run(): void
+    public function run(?int $forCompanyId = null, ?int $forAdminId = null): void
     {
-        $company = Company::first();
+        $company = $forCompanyId !== null ? Company::find($forCompanyId) : Company::first();
         if (! $company) {
             return;
         }
 
         $dept = Department::where('company_id', $company->id)->first();
-        $interviewer = User::where('company_id', $company->id)->first();
+        $interviewer = $forAdminId !== null ? User::find($forAdminId) : User::where('company_id', $company->id)->first();
 
         // 3 vacantes
         $v1 = JobVacancy::firstOrCreate(

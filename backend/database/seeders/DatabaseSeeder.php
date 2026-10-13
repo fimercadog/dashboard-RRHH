@@ -57,12 +57,12 @@ class DatabaseSeeder extends Seeder
         }
 
         // Super Admin recibe TODOS los permisos existentes en BD.
-        // Administrador de empresa recibe todos EXCEPTO credenciales técnicas
-        // de integraciones (whatsapp.manage, ai.manage) — solo ve el estado.
+        // Administrador de empresa recibe todos EXCEPTO los permisos de configuración
+        // técnica de integraciones: credenciales WA/IA y el estado general de integraciones.
         $allPermissions = Permission::pluck('name')->all();
         $adminPermissions = array_values(array_filter(
             $allPermissions,
-            fn ($p) => ! in_array($p, ['whatsapp.manage', 'ai.manage'])
+            fn ($p) => ! in_array($p, ['whatsapp.manage', 'ai.manage', 'integrations.view'])
         ));
 
         $roles = [
