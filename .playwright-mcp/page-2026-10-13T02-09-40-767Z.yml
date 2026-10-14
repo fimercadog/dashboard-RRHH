@@ -1,0 +1,32 @@
+- generic [ref=f20e1]:
+  - main [ref=f20e2]:
+    - generic [ref=f20e6]:
+      - heading "Gestiona tu equipo desde un solo lugar" [level=2] [ref=f20e7]
+      - paragraph [ref=f20e8]: Empleados, asistencia, documentos, vacaciones, permisos y reclutamiento en una sola plataforma.
+      - generic [ref=f20e9]:
+        - generic [ref=f20e10]: Seguro
+        - generic [ref=f20e14]: Acceso por roles
+        - generic [ref=f20e17]: Flujos claros
+    - generic [ref=f20e21]:
+      - link [ref=f20e22] [cursor=pointer]:
+        - /url: /
+        - img "FidelOS" [ref=f20e24]
+      - heading "Iniciar sesion" [level=1] [ref=f20e25]
+      - paragraph [ref=f20e27]: Selecciona un usuario demo — entra al panel y prueba cada rol sin escribir credenciales.
+      - generic [ref=f20e28]:
+        - paragraph [ref=f20e29]: 🧪 Usuarios de prueba
+        - generic [ref=f20e30]:
+          - button [active] [ref=f20e31]:
+            - paragraph [ref=f20e32]: Sofia Mercado
+            - paragraph [ref=f20e33]: Super Admin
+          - button [ref=f20e34]:
+            - paragraph [ref=f20e35]: Camila Rojas
+            - paragraph [ref=f20e36]: Administrador de empresa
+          - button [ref=f20e37]:
+            - paragraph [ref=f20e38]: Sebastian Moreno
+            - paragraph [ref=f20e39]: Recursos Humanos
+          - button [ref=f20e40]:
+            - paragraph [ref=f20e41]: Laura Medina
+            - paragraph [ref=f20e42]: Empleado
+        - button "Entrar al panel" [ref=f20e44]
+  - alert [ref=f20e43]

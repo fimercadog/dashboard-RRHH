@@ -1,0 +1,581 @@
+- generic:
+  - alert
+  - generic [aria-hidden]:
+    - complementary:
+      - generic:
+        - generic:
+          - paragraph:
+            - text: FidelOS
+            - generic: Beta
+          - paragraph: Recursos Humanos
+      - generic:
+        - generic:
+          - generic: SM
+          - generic:
+            - paragraph: Sofia Mercado
+            - generic: Online
+            - paragraph: Super Admin
+      - navigation:
+        - generic:
+          - generic:
+            - link:
+              - /url: /app/dashboard/
+              - generic: Dashboard
+        - generic:
+          - paragraph: Recursos Humanos
+          - generic:
+            - link:
+              - /url: /app/empleados/
+              - generic: Empleados
+            - link:
+              - /url: /app/asistencia/
+              - generic: Asistencia
+            - link:
+              - /url: /app/vacaciones/
+              - generic: Vacaciones
+            - link:
+              - /url: /app/permisos/
+              - generic: Permisos
+            - link:
+              - /url: /app/incapacidades/
+              - generic: Incapacidades
+            - link:
+              - /url: /app/documentos/
+              - generic: Documentos
+            - link:
+              - /url: /app/turnos/
+              - generic: Turnos
+        - generic:
+          - paragraph: CRM
+          - generic:
+            - link:
+              - /url: /app/leads/
+              - generic: Leads
+            - link:
+              - /url: /app/clientes/
+              - generic: Clientes
+            - link:
+              - /url: /app/crm/contactos/
+              - generic: Contactos
+            - link:
+              - /url: /app/crm/deals/
+              - generic: Oportunidades
+            - link:
+              - /url: /app/crm/actividades/
+              - generic: Actividades
+            - link:
+              - /url: /app/crm/segmentos/
+              - generic: Segmentos
+        - generic:
+          - paragraph: Inventario
+          - generic:
+            - link:
+              - /url: /app/inventario/productos/
+              - generic: Productos
+            - link:
+              - /url: /app/inventario/categorias/
+              - generic: Categorías
+            - link:
+              - /url: /app/inventario/marcas/
+              - generic: Marcas
+            - link:
+              - /url: /app/inventario/unidades/
+              - generic: Unidades
+            - link:
+              - /url: /app/inventario/bodegas/
+              - generic: Bodegas
+            - link:
+              - /url: /app/inventario/stock/
+              - generic: Stock
+            - link:
+              - /url: /app/inventario/movimientos/
+              - generic: Movimientos
+        - generic:
+          - paragraph: Compras
+          - generic:
+            - link:
+              - /url: /app/compras/proveedores/
+              - generic: Proveedores
+            - link:
+              - /url: /app/compras/ordenes/
+              - generic: Órdenes
+            - link:
+              - /url: /app/compras/recepciones/
+              - generic: Recepciones
+            - link:
+              - /url: /app/compras/facturas/
+              - generic: Facturas
+            - link:
+              - /url: /app/compras/cxp/
+              - generic: CxP
+        - generic:
+          - paragraph: Ventas
+          - generic:
+            - link:
+              - /url: /app/ventas/cotizaciones/
+              - generic: Cotizaciones
+            - link:
+              - /url: /app/ventas/pedidos/
+              - generic: Pedidos
+            - link:
+              - /url: /app/ventas/facturas/
+              - generic: Facturas
+            - link:
+              - /url: /app/ventas/cxc/
+              - generic: CxC
+        - generic:
+          - paragraph: Finanzas
+          - generic:
+            - link:
+              - /url: /app/finanzas/cuentas/
+              - generic: Cuentas
+            - link:
+              - /url: /app/finanzas/pagos/
+              - generic: Pagos
+            - link:
+              - /url: /app/finanzas/transferencias/
+              - generic: Transferencias
+            - link:
+              - /url: /app/finanzas/movimientos/
+              - generic: Movimientos
+        - generic:
+          - paragraph: Contabilidad
+          - generic:
+            - link:
+              - /url: /app/contabilidad/plan-cuentas/
+              - generic: Plan de Cuentas
+            - link:
+              - /url: /app/contabilidad/periodos/
+              - generic: Períodos
+            - link:
+              - /url: /app/contabilidad/diario/
+              - generic: Libro Diario
+            - link:
+              - /url: /app/contabilidad/configuracion/
+              - generic: Configuración
+        - generic:
+          - paragraph: Reclutamiento
+          - generic:
+            - link:
+              - /url: /app/reclutamiento/vacantes/
+              - generic: Vacantes
+            - link:
+              - /url: /app/reclutamiento/candidatos/
+              - generic: Candidatos
+            - link:
+              - /url: /app/reclutamiento/postulaciones/
+              - generic: Postulaciones
+            - link:
+              - /url: /app/reclutamiento/entrevistas/
+              - generic: Entrevistas
+        - generic:
+          - paragraph: Reportes
+          - generic:
+            - link:
+              - /url: /app/reportes/
+              - generic: Reportes
+        - generic:
+          - paragraph: Herramientas
+          - generic:
+            - button:
+              - generic: Modo contingencia
+              - generic: Premium
+            - button:
+              - generic: IA para RRHH
+              - generic: Premium
+        - generic:
+          - paragraph: Integraciones
+          - generic:
+            - link:
+              - /url: /app/whatsapp/conversaciones/
+              - generic: Conversaciones WA
+            - link:
+              - /url: /app/configuracion/whatsapp/
+              - generic: Config WhatsApp
+            - link:
+              - /url: /app/configuracion/ia/
+              - generic: Proveedor IA
+        - generic:
+          - paragraph: Administracion
+          - generic:
+            - link:
+              - /url: /app/organizacion/
+              - generic: Organizacion
+            - link:
+              - /url: /app/auditoria/
+              - generic: Auditoria
+            - link:
+              - /url: /app/usuarios/
+              - generic: Usuarios
+            - link:
+              - /url: /app/roles/
+              - generic: Roles
+            - link:
+              - /url: /app/configuracion/
+              - generic: Configuracion
+    - generic:
+      - banner:
+        - generic:
+          - generic:
+            - paragraph: Andes People Solutions
+            - paragraph: Panel privado de Recursos Humanos
+        - generic:
+          - button
+          - generic:
+            - button:
+              - generic [aria-hidden]: "13"
+          - generic:
+            - button
+          - button [expanded]
+          - button
+          - button
+      - main:
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=1]: Dashboard
+              - paragraph: Vista general de Recursos Humanos.
+            - generic:
+              - combobox
+              - button: Actualizar
+              - generic: Actualizado hace 30s
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Tasa de asistencia · 30 dias
+                    - paragraph:
+                      - generic: 92%
+                    - generic: +3.6%
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Empleados activos
+                    - paragraph: "18"
+                    - generic: 22 en total
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Presentes hoy
+                    - paragraph: "0"
+                    - generic: 0 tarde
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Solicitudes pendientes
+                    - paragraph: "7"
+                    - generic: +133.3%
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Contrataciones (30d)
+                    - paragraph: "2"
+                    - generic: +100%
+          - generic:
+            - heading [level=2]: Detalle operativo
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Ausentes hoy
+                    - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Llegadas tarde
+                    - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Incapacidades activas
+                    - paragraph: "2"
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Vacaciones proximas
+                    - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: En licencia
+                    - paragraph: "1"
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Docs. por vencer
+                    - paragraph: "4"
+          - generic:
+            - heading [level=2]: CRM · pipeline
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Deals abiertos
+                    - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Actividades hoy
+                    - paragraph: "0"
+          - generic:
+            - heading [level=2]: Analitica
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Rendimiento de asistencia
+                      - paragraph: Tasa mensual de asistencia a tiempo — ultimos 6 meses.
+                  - generic:
+                    - generic:
+                      - generic:
+                        - application:
+                          - generic:
+                            - generic:
+                              - generic: abr
+                              - generic: may
+                              - generic: jun
+                              - generic: jul
+                              - generic: ago
+                              - generic: sept
+                            - generic:
+                              - generic: 80%
+                              - generic: 85%
+                              - generic: 90%
+                              - generic: 95%
+                              - generic: 100%
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Plantilla por estado
+                      - paragraph: Distribucion actual de colaboradores.
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - application:
+                            - generic:
+                              - generic:
+                                - generic:
+                                  - generic: 82%
+                                  - generic: "18"
+                              - generic:
+                                - generic:
+                                  - generic: 14%
+                                  - generic: "3"
+                      - generic:
+                        - generic: "22"
+                        - generic: Total
+                    - list:
+                      - listitem:
+                        - generic: "18"
+                        - generic: 82%
+                      - listitem:
+                        - generic: "3"
+                        - generic: 14%
+                      - listitem:
+                        - generic: "1"
+                        - generic: 5%
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Embudo de asistencia (hoy)
+                      - paragraph: Plantilla activa que registra entrada y llega a tiempo.
+                  - generic:
+                    - generic:
+                      - generic: Plantilla activa
+                      - generic: "18"
+                    - generic:
+                      - generic: Con marca de entrada
+                      - generic: "0"
+                      - generic: 0%
+                    - generic:
+                      - generic: A tiempo
+                      - generic: "0"
+                    - paragraph:
+                      - text: "Conversion total:"
+                      - generic: 0%
+                      - text: de la plantilla activa llega a tiempo.
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Contrataciones vs retiros
+                      - paragraph: Movimiento de plantilla — ultimos 6 meses.
+                  - generic:
+                    - generic: Contrataciones
+                    - generic: Retiros
+                  - generic:
+                    - generic:
+                      - generic:
+                        - application:
+                          - generic:
+                            - generic:
+                              - generic: may
+                              - generic: jun
+                              - generic: jul
+                              - generic: ago
+                              - generic: sept
+                              - generic: oct
+                            - generic:
+                              - generic: "0"
+                              - generic: "1"
+                              - generic: "2"
+                              - generic: "3"
+                              - generic: "4"
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Plantilla por area
+                      - paragraph: Colaboradores por departamento.
+                  - generic:
+                    - generic:
+                      - generic:
+                        - application:
+                          - generic:
+                            - generic:
+                              - generic: "0"
+                              - generic: "2"
+                              - generic: "4"
+                              - generic: "6"
+                              - generic: "8"
+                            - generic:
+                              - generic: TalentoHumano
+                              - generic: Operaciones
+                              - generic: Tecnologia
+                              - generic: Finanzas
+                            - generic:
+                              - generic: "7"
+                              - generic: "7"
+                              - generic: "4"
+                              - generic: "4"
+          - generic:
+            - heading [level=2]: Actividad
+            - generic:
+              - generic:
+                - heading [level=3]: Actividad reciente
+                - list:
+                  - listitem:
+                    - generic:
+                      - paragraph: Deleted
+                      - paragraph: Sebastian Moreno · employee · 6 de oct, 03:54 p. m.
+                  - listitem:
+                    - generic:
+                      - paragraph: Created
+                      - paragraph: Sofia Mercado · attendance · 6 de oct, 03:52 p. m.
+                  - listitem:
+                    - generic:
+                      - paragraph: Login
+                      - paragraph: Camila Rojas · auth · 5 de oct, 07:27 p. m.
+                  - listitem:
+                    - generic:
+                      - paragraph: Attendance exported
+                      - paragraph: Camila Rojas · reportes · 4 de oct, 06:27 p. m.
+                  - listitem:
+                    - generic:
+                      - paragraph: Sick leave created
+                      - paragraph: Camila Rojas · incapacidades · 3 de oct, 07:27 p. m.
+                  - listitem:
+                    - generic:
+                      - paragraph: Employee created
+                      - paragraph: Camila Rojas · empleados · 2 de oct, 06:27 p. m.
+                  - listitem:
+                    - generic:
+                      - paragraph: Document uploaded
+                      - paragraph: Camila Rojas · documentos · 1 de oct, 05:27 p. m.
+                  - listitem:
+                    - generic:
+                      - paragraph: Employee updated
+                      - paragraph: Camila Rojas · empleados · 30 de sept, 03:27 p. m.
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Proximos cumpleanos
+                  - list:
+                    - listitem:
+                      - generic: SR
+                      - generic:
+                        - paragraph: Santiago Reyes
+                        - paragraph: 1 de enero
+                      - generic: 81 d
+                    - listitem:
+                      - generic: FC
+                      - generic:
+                        - paragraph: Felipe Cortes
+                        - paragraph: 13 de enero
+                      - generic: 93 d
+                    - listitem:
+                      - generic: MA
+                      - generic:
+                        - paragraph: Mariana Acosta
+                        - paragraph: 23 de febrero
+                      - generic: 134 d
+                    - listitem:
+                      - generic: LM
+                      - generic:
+                        - paragraph: Laura Medina
+                        - paragraph: 11 de marzo
+                      - generic: 150 d
+                    - listitem:
+                      - generic: MS
+                      - generic:
+                        - paragraph: Manuela Suarez
+                        - paragraph: 13 de abril
+                      - generic: 183 d
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Documentos por vencer
+                  - list:
+                    - listitem:
+                      - generic:
+                        - paragraph: Contrato laboral
+                        - paragraph: Vence 25/10/2026
+                      - generic: 13 d
+                    - listitem:
+                      - generic:
+                        - paragraph: Contrato laboral
+                        - paragraph: Vence 3/11/2026
+                      - generic: 22 d
+                    - listitem:
+                      - generic:
+                        - paragraph: Contrato laboral
+                        - paragraph: Vence 12/11/2026
+                      - generic: 31 d
+                    - listitem:
+                      - generic:
+                        - paragraph: Contrato laboral
+                        - paragraph: Vence 21/11/2026
+                      - generic: 40 d
+  - region "Notifications alt+T"
+  - generic [aria-hidden]: Talento Humano
+  - dialog [active] [ref=f20e431]:
+    - heading "Centro de soporte" [level=2] [ref=f20e433]
+    - generic [ref=f20e434]:
+      - button [ref=f20e493]:
+        - generic [ref=f20e497]:
+          - paragraph [ref=f20e498]: Enviar comentario o sugerencia
+          - paragraph [ref=f20e499]: Reporta un problema o comparte una mejora
+      - link [ref=f20e504] [cursor=pointer]:
+        - /url: https://wa.me/573027029498
+        - generic [ref=f20e508]:
+          - paragraph [ref=f20e509]: Contactar soporte por WhatsApp
+          - paragraph [ref=f20e510]: Atención técnica en horario laboral
+      - generic [ref=f20e515]:
+        - generic [ref=f20e521]:
+          - paragraph [ref=f20e522]: Manual de usuario
+          - paragraph [ref=f20e523]: Guía completa de FidelOS · Demo
+        - generic [ref=f20e524]:
+          - button "Ver manual" [ref=f20e525]
+          - link [ref=f20e529] [cursor=pointer]:
+            - /url: /manual-demo.pdf
+            - button "Descargar" [ref=f20e530]
+    - button "Cerrar" [ref=f20e476]

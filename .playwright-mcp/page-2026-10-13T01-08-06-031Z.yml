@@ -1,0 +1,25 @@
+- generic [ref=f2e1]:
+  - main [ref=f2e2]:
+    - generic [ref=f2e4]:
+      - link [ref=f2e5] [cursor=pointer]:
+        - /url: /
+        - img "FidelOS" [ref=f2e7]
+      - heading "Iniciar sesion" [level=1] [ref=f2e8]
+      - paragraph [ref=f2e10]: Selecciona un usuario demo — entra al panel y prueba cada rol sin escribir credenciales.
+      - generic [ref=f2e11]:
+        - paragraph [ref=f2e12]: 🧪 Usuarios de prueba
+        - generic [ref=f2e13]:
+          - button [ref=f2e14]:
+            - paragraph [ref=f2e15]: Sofia Mercado
+            - paragraph [ref=f2e16]: Super Admin
+          - button [active] [ref=f2e17]:
+            - paragraph [ref=f2e18]: Camila Rojas
+            - paragraph [ref=f2e19]: Administrador de empresa
+          - button [ref=f2e20]:
+            - paragraph [ref=f2e21]: Sebastian Moreno
+            - paragraph [ref=f2e22]: Recursos Humanos
+          - button [ref=f2e23]:
+            - paragraph [ref=f2e24]: Laura Medina
+            - paragraph [ref=f2e25]: Empleado
+        - button "Entrar al panel" [ref=f2e27]
+  - alert [ref=f2e26]

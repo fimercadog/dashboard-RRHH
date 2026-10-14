@@ -1,0 +1,61 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e2]:
+    - complementary [ref=f10e3]:
+      - generic [ref=f10e4]:
+        - img "FidelOS" [ref=f10e6]
+        - generic [ref=f10e7]:
+          - paragraph [ref=f10e8]:
+            - text: FidelOS
+            - generic [ref=f10e9]: Beta
+          - paragraph [ref=f10e10]: Recursos Humanos
+      - generic [ref=f10e12]:
+        - generic [ref=f10e13]: TU
+        - generic [ref=f10e14]:
+          - paragraph [ref=f10e15]: Test User
+          - generic "Usuario conectado" [ref=f10e16]: Online
+          - paragraph [ref=f10e21]: Super Admin
+      - navigation [ref=f10e22]:
+        - generic [ref=f10e23]:
+          - paragraph [ref=f10e24]: Recursos Humanos
+          - link "Empleados" [ref=f10e26] [cursor=pointer]:
+            - /url: /app/empleados/
+        - generic [ref=f10e33]:
+          - paragraph [ref=f10e34]: CRM
+          - link "Clientes" [ref=f10e36] [cursor=pointer]:
+            - /url: /app/clientes/
+        - generic [ref=f10e43]:
+          - paragraph [ref=f10e44]: Herramientas
+          - generic [ref=f10e45]:
+            - button "Modo contingencia Premium" [ref=f10e46]:
+              - generic [ref=f10e54]: Modo contingencia
+              - generic [ref=f10e55]: Premium
+            - button "IA para RRHH Premium" [ref=f10e59]:
+              - generic [ref=f10e63]: IA para RRHH
+              - generic [ref=f10e64]: Premium
+        - generic [ref=f10e68]:
+          - paragraph [ref=f10e69]: Administracion
+          - generic [ref=f10e70]:
+            - link "Organizacion" [ref=f10e71] [cursor=pointer]:
+              - /url: /app/organizacion/
+            - link "Configuracion" [ref=f10e77] [cursor=pointer]:
+              - /url: /app/configuracion/
+    - generic [ref=f10e82]:
+      - banner [ref=f10e83]:
+        - generic [ref=f10e85]:
+          - paragraph [ref=f10e86]: Test Company
+          - paragraph [ref=f10e87]: Panel privado de Recursos Humanos
+        - generic [ref=f10e88]:
+          - button "Acerca de la version beta" [ref=f10e89]
+          - button "Sin procesos pendientes" [ref=f10e93]
+          - button "Centro de comunicaciones" [ref=f10e98]
+          - button "Enviar un comentario" [ref=f10e101]
+          - button "Cambiar tema" [ref=f10e104]
+          - button "Cerrar sesion" [ref=f10e107]
+      - main [ref=f10e111]:
+        - generic [ref=f10e112]:
+          - heading "No tienes acceso a esta seccion" [level=1] [ref=f10e115]
+          - paragraph [ref=f10e116]: Tu rol no incluye los permisos necesarios. Si crees que es un error, contacta a un administrador.
+          - link "Ir al dashboard" [ref=f10e117] [cursor=pointer]:
+            - /url: /app/dashboard/
+  - region "Notifications alt+T"
+  - alert [ref=f10e118]

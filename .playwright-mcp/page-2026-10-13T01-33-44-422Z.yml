@@ -1,0 +1,346 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e2]:
+    - complementary [ref=f13e6]:
+      - generic [ref=f13e7]:
+        - img "FidelOS" [ref=f13e9]
+        - generic [ref=f13e10]:
+          - paragraph [ref=f13e11]:
+            - text: FidelOS
+            - generic [ref=f13e12]: Beta
+          - paragraph [ref=f13e13]: Recursos Humanos
+      - generic [ref=f13e15]:
+        - generic [ref=f13e16]: SM
+        - generic [ref=f13e17]:
+          - paragraph [ref=f13e18]: Sofia Mercado
+          - generic "Usuario conectado" [ref=f13e19]: Online
+          - paragraph [ref=f13e24]: Super Admin
+      - navigation [ref=f13e25]:
+        - link "Dashboard" [ref=f13e28] [cursor=pointer]:
+          - /url: /app/dashboard/
+        - generic [ref=f13e35]:
+          - paragraph [ref=f13e36]: Recursos Humanos
+          - generic [ref=f13e37]:
+            - link "Empleados" [ref=f13e38] [cursor=pointer]:
+              - /url: /app/empleados/
+            - link "Asistencia" [ref=f13e45] [cursor=pointer]:
+              - /url: /app/asistencia/
+            - link "Vacaciones" [ref=f13e50] [cursor=pointer]:
+              - /url: /app/vacaciones/
+            - link "Permisos" [ref=f13e54] [cursor=pointer]:
+              - /url: /app/permisos/
+            - link "Incapacidades" [ref=f13e59] [cursor=pointer]:
+              - /url: /app/incapacidades/
+            - link "Documentos" [ref=f13e65] [cursor=pointer]:
+              - /url: /app/documentos/
+            - link "Turnos" [ref=f13e70] [cursor=pointer]:
+              - /url: /app/turnos/
+        - generic [ref=f13e74]:
+          - paragraph [ref=f13e75]: CRM
+          - generic [ref=f13e76]:
+            - link "Leads" [ref=f13e77] [cursor=pointer]:
+              - /url: /app/leads/
+            - link "Clientes" [ref=f13e82] [cursor=pointer]:
+              - /url: /app/clientes/
+            - link "Contactos" [ref=f13e89] [cursor=pointer]:
+              - /url: /app/crm/contactos/
+            - link "Oportunidades" [ref=f13e94] [cursor=pointer]:
+              - /url: /app/crm/deals/
+            - link "Actividades" [ref=f13e101] [cursor=pointer]:
+              - /url: /app/crm/actividades/
+            - link "Segmentos" [ref=f13e105] [cursor=pointer]:
+              - /url: /app/crm/segmentos/
+        - generic [ref=f13e110]:
+          - paragraph [ref=f13e111]: Inventario
+          - generic [ref=f13e112]:
+            - link "Productos" [ref=f13e113] [cursor=pointer]:
+              - /url: /app/inventario/productos/
+            - link "Categorías" [ref=f13e119] [cursor=pointer]:
+              - /url: /app/inventario/categorias/
+            - link "Marcas" [ref=f13e125] [cursor=pointer]:
+              - /url: /app/inventario/marcas/
+            - link "Unidades" [ref=f13e130] [cursor=pointer]:
+              - /url: /app/inventario/unidades/
+            - link "Bodegas" [ref=f13e135] [cursor=pointer]:
+              - /url: /app/inventario/bodegas/
+            - link "Stock" [ref=f13e140] [cursor=pointer]:
+              - /url: /app/inventario/stock/
+            - link "Movimientos" [ref=f13e144] [cursor=pointer]:
+              - /url: /app/inventario/movimientos/
+        - generic [ref=f13e148]:
+          - paragraph [ref=f13e149]: Compras
+          - generic [ref=f13e150]:
+            - link "Proveedores" [ref=f13e151] [cursor=pointer]:
+              - /url: /app/compras/proveedores/
+            - link "Órdenes" [ref=f13e158] [cursor=pointer]:
+              - /url: /app/compras/ordenes/
+            - link "Recepciones" [ref=f13e163] [cursor=pointer]:
+              - /url: /app/compras/recepciones/
+            - link "Facturas" [ref=f13e169] [cursor=pointer]:
+              - /url: /app/compras/facturas/
+            - link "CxP" [ref=f13e174] [cursor=pointer]:
+              - /url: /app/compras/cxp/
+        - generic [ref=f13e178]:
+          - paragraph [ref=f13e179]: Ventas
+          - generic [ref=f13e180]:
+            - link "Cotizaciones" [ref=f13e181] [cursor=pointer]:
+              - /url: /app/ventas/cotizaciones/
+            - link "Pedidos" [ref=f13e186] [cursor=pointer]:
+              - /url: /app/ventas/pedidos/
+            - link "Facturas" [ref=f13e192] [cursor=pointer]:
+              - /url: /app/ventas/facturas/
+            - link "CxC" [ref=f13e197] [cursor=pointer]:
+              - /url: /app/ventas/cxc/
+        - generic [ref=f13e201]:
+          - paragraph [ref=f13e202]: Finanzas
+          - generic [ref=f13e203]:
+            - link "Cuentas" [ref=f13e204] [cursor=pointer]:
+              - /url: /app/finanzas/cuentas/
+            - link "Pagos" [ref=f13e209] [cursor=pointer]:
+              - /url: /app/finanzas/pagos/
+            - link "Transferencias" [ref=f13e214] [cursor=pointer]:
+              - /url: /app/finanzas/transferencias/
+            - link "Movimientos" [ref=f13e219] [cursor=pointer]:
+              - /url: /app/finanzas/movimientos/
+        - generic [ref=f13e224]:
+          - paragraph [ref=f13e225]: Contabilidad
+          - generic [ref=f13e226]:
+            - link "Plan de Cuentas" [ref=f13e227] [cursor=pointer]:
+              - /url: /app/contabilidad/plan-cuentas/
+            - link "Períodos" [ref=f13e231] [cursor=pointer]:
+              - /url: /app/contabilidad/periodos/
+            - link "Libro Diario" [ref=f13e235] [cursor=pointer]:
+              - /url: /app/contabilidad/diario/
+            - link "Configuración" [ref=f13e239] [cursor=pointer]:
+              - /url: /app/contabilidad/configuracion/
+        - generic [ref=f13e242]:
+          - paragraph [ref=f13e243]: Reclutamiento
+          - generic [ref=f13e244]:
+            - link "Vacantes" [ref=f13e245] [cursor=pointer]:
+              - /url: /app/reclutamiento/vacantes/
+            - link "Candidatos" [ref=f13e251] [cursor=pointer]:
+              - /url: /app/reclutamiento/candidatos/
+            - link "Postulaciones" [ref=f13e258] [cursor=pointer]:
+              - /url: /app/reclutamiento/postulaciones/
+            - link "Entrevistas" [ref=f13e264] [cursor=pointer]:
+              - /url: /app/reclutamiento/entrevistas/
+        - generic [ref=f13e270]:
+          - paragraph [ref=f13e271]: Reportes
+          - link "Reportes" [ref=f13e273] [cursor=pointer]:
+            - /url: /app/reportes/
+        - generic [ref=f13e277]:
+          - paragraph [ref=f13e278]: Herramientas
+          - generic [ref=f13e279]:
+            - button "Modo contingencia Premium" [ref=f13e280]:
+              - generic [ref=f13e288]: Modo contingencia
+              - generic [ref=f13e289]: Premium
+            - button "IA para RRHH Premium" [ref=f13e293]:
+              - generic [ref=f13e297]: IA para RRHH
+              - generic [ref=f13e298]: Premium
+        - generic [ref=f13e302]:
+          - paragraph [ref=f13e303]: Integraciones
+          - generic [ref=f13e304]:
+            - link "Conversaciones WA" [ref=f13e305] [cursor=pointer]:
+              - /url: /app/whatsapp/conversaciones/
+            - link "Config WhatsApp" [ref=f13e309] [cursor=pointer]:
+              - /url: /app/configuracion/whatsapp/
+            - link "Proveedor IA" [ref=f13e313] [cursor=pointer]:
+              - /url: /app/configuracion/ia/
+        - generic [ref=f13e318]:
+          - paragraph [ref=f13e319]: Administracion
+          - generic [ref=f13e320]:
+            - link "Organizacion" [ref=f13e321] [cursor=pointer]:
+              - /url: /app/organizacion/
+            - link "Auditoria" [ref=f13e327] [cursor=pointer]:
+              - /url: /app/auditoria/
+            - link "Usuarios" [ref=f13e332] [cursor=pointer]:
+              - /url: /app/usuarios/
+            - link "Roles" [ref=f13e338] [cursor=pointer]:
+              - /url: /app/roles/
+            - link "Configuracion" [ref=f13e342] [cursor=pointer]:
+              - /url: /app/configuracion/
+    - generic [ref=f13e347]:
+      - banner [ref=f13e348]:
+        - generic [ref=f13e350]:
+          - paragraph [ref=f13e351]: Andes People Solutions
+          - paragraph [ref=f13e352]: Panel privado de Recursos Humanos
+        - generic [ref=f13e353]:
+          - button "Acerca de la version beta" [ref=f13e354]
+          - button "13 procesos pendientes" [ref=f13e358]:
+            - generic [aria-hidden] [ref=f13e362]: "13"
+          - button "Centro de comunicaciones" [ref=f13e364]
+          - button "Enviar un comentario" [ref=f13e367]
+          - button "Cambiar tema" [ref=f13e370]
+          - button "Cerrar sesion" [ref=f13e373]
+      - main [ref=f13e377]:
+        - generic [ref=f13e378]:
+          - generic [ref=f13e379]:
+            - generic [ref=f13e380]:
+              - heading "Empleados" [level=1] [ref=f13e381]
+              - paragraph [ref=f13e382]: Listado central con busqueda, paginacion backend y exportaciones.
+            - button "Nuevo empleado" [ref=f13e383]
+          - generic [ref=f13e385]:
+            - generic [ref=f13e386]:
+              - textbox "Buscar..." [ref=f13e388]
+              - generic [ref=f13e389]:
+                - button "CSV" [ref=f13e390]
+                - button "PDF" [ref=f13e394]
+            - table [ref=f13e400]:
+              - rowgroup [ref=f13e401]:
+                - row [ref=f13e402]:
+                  - columnheader "N.º" [ref=f13e403]
+                  - columnheader "Codigo" [ref=f13e404]
+                  - columnheader "Nombre" [ref=f13e405]
+                  - columnheader "Correo" [ref=f13e406]
+                  - columnheader "Area" [ref=f13e407]
+                  - columnheader "Cargo" [ref=f13e408]
+                  - columnheader "Estado" [ref=f13e409]
+                  - columnheader [ref=f13e410]
+              - rowgroup [ref=f13e411]:
+                - row [ref=f13e412]:
+                  - cell "1" [ref=f13e413]
+                  - cell "EMP-0023" [ref=f13e414]
+                  - cell "Sara Quintero" [ref=f13e415]
+                  - cell "sara.quintero@andespeople.co" [ref=f13e416]
+                  - cell "Operaciones" [ref=f13e417]
+                  - cell "Coordinador de Operaciones" [ref=f13e418]
+                  - cell "Activo" [ref=f13e419]
+                  - cell [ref=f13e421]:
+                    - generic [ref=f13e422]:
+                      - link "Ver" [ref=f13e423] [cursor=pointer]:
+                        - /url: /app/empleados/23/
+                      - button "Deshabilitar" [ref=f13e427]
+                      - button "Editar" [ref=f13e430]
+                - row [ref=f13e434]:
+                  - cell "2" [ref=f13e435]
+                  - cell "EMP-0022" [ref=f13e436]
+                  - cell "Camilo Bernal" [ref=f13e437]
+                  - cell "camilo.bernal@andespeople.co" [ref=f13e438]
+                  - cell "Talento Humano" [ref=f13e439]
+                  - cell "Analista de Nomina" [ref=f13e440]
+                  - cell "Activo" [ref=f13e441]
+                  - cell [ref=f13e443]:
+                    - generic [ref=f13e444]:
+                      - link "Ver" [ref=f13e445] [cursor=pointer]:
+                        - /url: /app/empleados/22/
+                      - button "Deshabilitar" [ref=f13e449]
+                      - button "Editar" [ref=f13e452]
+                - row [ref=f13e456]:
+                  - cell "3" [ref=f13e457]
+                  - cell "EMP-0021" [ref=f13e458]
+                  - cell "Luisa Fernandez" [ref=f13e459]
+                  - cell "luisa.fernandez@andespeople.co" [ref=f13e460]
+                  - cell "Talento Humano" [ref=f13e461]
+                  - cell "Gerente de Talento" [ref=f13e462]
+                  - cell "Activo" [ref=f13e463]
+                  - cell [ref=f13e465]:
+                    - generic [ref=f13e466]:
+                      - link "Ver" [ref=f13e467] [cursor=pointer]:
+                        - /url: /app/empleados/21/
+                      - button "Deshabilitar" [ref=f13e471]
+                      - button "Editar" [ref=f13e474]
+                - row [ref=f13e478]:
+                  - cell "4" [ref=f13e479]
+                  - cell "EMP-0020" [ref=f13e480]
+                  - cell "Esteban Mejia" [ref=f13e481]
+                  - cell "esteban.mejia@andespeople.co" [ref=f13e482]
+                  - cell "Operaciones" [ref=f13e483]
+                  - cell "Asistente Operativo" [ref=f13e484]
+                  - cell "Terminado" [ref=f13e485]
+                  - cell [ref=f13e487]:
+                    - generic [ref=f13e488]:
+                      - link "Ver" [ref=f13e489] [cursor=pointer]:
+                        - /url: /app/empleados/20/
+                      - button "Habilitar" [ref=f13e493]
+                      - button "Editar" [ref=f13e496]
+                - row [ref=f13e500]:
+                  - cell "5" [ref=f13e501]
+                  - cell "EMP-0019" [ref=f13e502]
+                  - cell "Mariana Acosta" [ref=f13e503]
+                  - cell "mariana.acosta@andespeople.co" [ref=f13e504]
+                  - cell "Operaciones" [ref=f13e505]
+                  - cell "Coordinador de Operaciones" [ref=f13e506]
+                  - cell "En licencia" [ref=f13e507]
+                  - cell [ref=f13e509]:
+                    - generic [ref=f13e510]:
+                      - link "Ver" [ref=f13e511] [cursor=pointer]:
+                        - /url: /app/empleados/19/
+                      - button "Habilitar" [ref=f13e515]
+                      - button "Editar" [ref=f13e518]
+                - row [ref=f13e522]:
+                  - cell "6" [ref=f13e523]
+                  - cell "EMP-0018" [ref=f13e524]
+                  - cell "Tomas Salazar" [ref=f13e525]
+                  - cell "tomas.salazar@andespeople.co" [ref=f13e526]
+                  - cell "Talento Humano" [ref=f13e527]
+                  - cell "Analista de Nomina" [ref=f13e528]
+                  - cell "Terminado" [ref=f13e529]
+                  - cell [ref=f13e531]:
+                    - generic [ref=f13e532]:
+                      - link "Ver" [ref=f13e533] [cursor=pointer]:
+                        - /url: /app/empleados/18/
+                      - button "Habilitar" [ref=f13e537]
+                      - button "Editar" [ref=f13e540]
+                - row [ref=f13e544]:
+                  - cell "7" [ref=f13e545]
+                  - cell "EMP-0017" [ref=f13e546]
+                  - cell "Diana Navarro" [ref=f13e547]
+                  - cell "diana.navarro@andespeople.co" [ref=f13e548]
+                  - cell "Talento Humano" [ref=f13e549]
+                  - cell "Gerente de Talento" [ref=f13e550]
+                  - cell "Terminado" [ref=f13e551]
+                  - cell [ref=f13e553]:
+                    - generic [ref=f13e554]:
+                      - link "Ver" [ref=f13e555] [cursor=pointer]:
+                        - /url: /app/empleados/17/
+                      - button "Habilitar" [ref=f13e559]
+                      - button "Editar" [ref=f13e562]
+                - row [ref=f13e566]:
+                  - cell "8" [ref=f13e567]
+                  - cell "EMP-0016" [ref=f13e568]
+                  - cell "Julian Pardo" [ref=f13e569]
+                  - cell "julian.pardo@andespeople.co" [ref=f13e570]
+                  - cell "Tecnologia" [ref=f13e571]
+                  - cell "Soporte TI" [ref=f13e572]
+                  - cell "Activo" [ref=f13e573]
+                  - cell [ref=f13e575]:
+                    - generic [ref=f13e576]:
+                      - link "Ver" [ref=f13e577] [cursor=pointer]:
+                        - /url: /app/empleados/16/
+                      - button "Deshabilitar" [ref=f13e581]
+                      - button "Editar" [ref=f13e584]
+                - row [ref=f13e588]:
+                  - cell "9" [ref=f13e589]
+                  - cell "EMP-0015" [ref=f13e590]
+                  - cell "Carolina Mendoza" [ref=f13e591]
+                  - cell "carolina.mendoza@andespeople.co" [ref=f13e592]
+                  - cell "Tecnologia" [ref=f13e593]
+                  - cell "Ingeniero Full Stack" [ref=f13e594]
+                  - cell "Activo" [ref=f13e595]
+                  - cell [ref=f13e597]:
+                    - generic [ref=f13e598]:
+                      - link "Ver" [ref=f13e599] [cursor=pointer]:
+                        - /url: /app/empleados/15/
+                      - button "Deshabilitar" [ref=f13e603]
+                      - button "Editar" [ref=f13e606]
+                - row [ref=f13e610]:
+                  - cell "10" [ref=f13e611]
+                  - cell "EMP-0014" [ref=f13e612]
+                  - cell "Santiago Reyes" [ref=f13e613]
+                  - cell "santiago.reyes@andespeople.co" [ref=f13e614]
+                  - cell "Finanzas" [ref=f13e615]
+                  - cell "Analista Contable" [ref=f13e616]
+                  - cell "Activo" [ref=f13e617]
+                  - cell [ref=f13e619]:
+                    - generic [ref=f13e620]:
+                      - link "Ver" [ref=f13e621] [cursor=pointer]:
+                        - /url: /app/empleados/14/
+                      - button "Deshabilitar" [ref=f13e625]
+                      - button "Editar" [ref=f13e628]
+            - generic [ref=f13e632]:
+              - generic [ref=f13e633]: 22 registros
+              - generic [ref=f13e634]:
+                - button "Anterior" [disabled]
+                - generic [ref=f13e635]: Pagina 1 de 3
+                - button "Siguiente" [ref=f13e636]
+  - region "Notifications alt+T"
+  - alert [ref=f13e637]

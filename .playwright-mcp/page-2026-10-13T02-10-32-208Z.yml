@@ -1,0 +1,451 @@
+- generic [ref=f20e1]:
+  - alert [ref=f20e43]
+  - generic [ref=f20e45]:
+    - complementary [ref=f20e46]:
+      - generic [ref=f20e47]:
+        - img "FidelOS" [ref=f20e49]
+        - generic [ref=f20e50]:
+          - paragraph [ref=f20e51]:
+            - text: FidelOS
+            - generic [ref=f20e52]: Beta
+          - paragraph [ref=f20e53]: Recursos Humanos
+      - generic [ref=f20e55]:
+        - generic [ref=f20e56]: SM
+        - generic [ref=f20e57]:
+          - paragraph [ref=f20e58]: Sofia Mercado
+          - generic "Usuario conectado" [ref=f20e59]: Online
+          - paragraph [ref=f20e64]: Super Admin
+      - navigation [ref=f20e65]:
+        - link "Dashboard" [ref=f20e68] [cursor=pointer]:
+          - /url: /app/dashboard/
+        - generic [ref=f20e75]:
+          - paragraph [ref=f20e76]: Recursos Humanos
+          - generic [ref=f20e77]:
+            - link "Empleados" [ref=f20e78] [cursor=pointer]:
+              - /url: /app/empleados/
+            - link "Asistencia" [ref=f20e85] [cursor=pointer]:
+              - /url: /app/asistencia/
+            - link "Vacaciones" [ref=f20e90] [cursor=pointer]:
+              - /url: /app/vacaciones/
+            - link "Permisos" [ref=f20e94] [cursor=pointer]:
+              - /url: /app/permisos/
+            - link "Incapacidades" [ref=f20e99] [cursor=pointer]:
+              - /url: /app/incapacidades/
+            - link "Documentos" [ref=f20e105] [cursor=pointer]:
+              - /url: /app/documentos/
+            - link "Turnos" [ref=f20e110] [cursor=pointer]:
+              - /url: /app/turnos/
+        - generic [ref=f20e114]:
+          - paragraph [ref=f20e115]: CRM
+          - generic [ref=f20e116]:
+            - link "Leads" [ref=f20e117] [cursor=pointer]:
+              - /url: /app/leads/
+            - link "Clientes" [ref=f20e122] [cursor=pointer]:
+              - /url: /app/clientes/
+            - link "Contactos" [ref=f20e129] [cursor=pointer]:
+              - /url: /app/crm/contactos/
+            - link "Oportunidades" [ref=f20e134] [cursor=pointer]:
+              - /url: /app/crm/deals/
+            - link "Actividades" [ref=f20e141] [cursor=pointer]:
+              - /url: /app/crm/actividades/
+            - link "Segmentos" [ref=f20e145] [cursor=pointer]:
+              - /url: /app/crm/segmentos/
+        - generic [ref=f20e150]:
+          - paragraph [ref=f20e151]: Inventario
+          - generic [ref=f20e152]:
+            - link "Productos" [ref=f20e153] [cursor=pointer]:
+              - /url: /app/inventario/productos/
+            - link "Categorías" [ref=f20e159] [cursor=pointer]:
+              - /url: /app/inventario/categorias/
+            - link "Marcas" [ref=f20e165] [cursor=pointer]:
+              - /url: /app/inventario/marcas/
+            - link "Unidades" [ref=f20e170] [cursor=pointer]:
+              - /url: /app/inventario/unidades/
+            - link "Bodegas" [ref=f20e175] [cursor=pointer]:
+              - /url: /app/inventario/bodegas/
+            - link "Stock" [ref=f20e180] [cursor=pointer]:
+              - /url: /app/inventario/stock/
+            - link "Movimientos" [ref=f20e184] [cursor=pointer]:
+              - /url: /app/inventario/movimientos/
+        - generic [ref=f20e188]:
+          - paragraph [ref=f20e189]: Compras
+          - generic [ref=f20e190]:
+            - link "Proveedores" [ref=f20e191] [cursor=pointer]:
+              - /url: /app/compras/proveedores/
+            - link "Órdenes" [ref=f20e198] [cursor=pointer]:
+              - /url: /app/compras/ordenes/
+            - link "Recepciones" [ref=f20e203] [cursor=pointer]:
+              - /url: /app/compras/recepciones/
+            - link "Facturas" [ref=f20e209] [cursor=pointer]:
+              - /url: /app/compras/facturas/
+            - link "CxP" [ref=f20e214] [cursor=pointer]:
+              - /url: /app/compras/cxp/
+        - generic [ref=f20e218]:
+          - paragraph [ref=f20e219]: Ventas
+          - generic [ref=f20e220]:
+            - link "Cotizaciones" [ref=f20e221] [cursor=pointer]:
+              - /url: /app/ventas/cotizaciones/
+            - link "Pedidos" [ref=f20e226] [cursor=pointer]:
+              - /url: /app/ventas/pedidos/
+            - link "Facturas" [ref=f20e232] [cursor=pointer]:
+              - /url: /app/ventas/facturas/
+            - link "CxC" [ref=f20e237] [cursor=pointer]:
+              - /url: /app/ventas/cxc/
+        - generic [ref=f20e241]:
+          - paragraph [ref=f20e242]: Finanzas
+          - generic [ref=f20e243]:
+            - link "Cuentas" [ref=f20e244] [cursor=pointer]:
+              - /url: /app/finanzas/cuentas/
+            - link "Pagos" [ref=f20e249] [cursor=pointer]:
+              - /url: /app/finanzas/pagos/
+            - link "Transferencias" [ref=f20e254] [cursor=pointer]:
+              - /url: /app/finanzas/transferencias/
+            - link "Movimientos" [ref=f20e259] [cursor=pointer]:
+              - /url: /app/finanzas/movimientos/
+        - generic [ref=f20e264]:
+          - paragraph [ref=f20e265]: Contabilidad
+          - generic [ref=f20e266]:
+            - link "Plan de Cuentas" [ref=f20e267] [cursor=pointer]:
+              - /url: /app/contabilidad/plan-cuentas/
+            - link "Períodos" [ref=f20e271] [cursor=pointer]:
+              - /url: /app/contabilidad/periodos/
+            - link "Libro Diario" [ref=f20e275] [cursor=pointer]:
+              - /url: /app/contabilidad/diario/
+            - link "Configuración" [ref=f20e279] [cursor=pointer]:
+              - /url: /app/contabilidad/configuracion/
+        - generic [ref=f20e282]:
+          - paragraph [ref=f20e283]: Reclutamiento
+          - generic [ref=f20e284]:
+            - link "Vacantes" [ref=f20e285] [cursor=pointer]:
+              - /url: /app/reclutamiento/vacantes/
+            - link "Candidatos" [ref=f20e291] [cursor=pointer]:
+              - /url: /app/reclutamiento/candidatos/
+            - link "Postulaciones" [ref=f20e298] [cursor=pointer]:
+              - /url: /app/reclutamiento/postulaciones/
+            - link "Entrevistas" [ref=f20e304] [cursor=pointer]:
+              - /url: /app/reclutamiento/entrevistas/
+        - generic [ref=f20e310]:
+          - paragraph [ref=f20e311]: Reportes
+          - link "Reportes" [ref=f20e313] [cursor=pointer]:
+            - /url: /app/reportes/
+        - generic [ref=f20e317]:
+          - paragraph [ref=f20e318]: Herramientas
+          - generic [ref=f20e319]:
+            - button "Modo contingencia Premium" [ref=f20e320]:
+              - generic [ref=f20e328]: Modo contingencia
+              - generic [ref=f20e329]: Premium
+            - button "IA para RRHH Premium" [ref=f20e333]:
+              - generic [ref=f20e337]: IA para RRHH
+              - generic [ref=f20e338]: Premium
+        - generic [ref=f20e342]:
+          - paragraph [ref=f20e343]: Integraciones
+          - generic [ref=f20e344]:
+            - link "Conversaciones WA" [ref=f20e345] [cursor=pointer]:
+              - /url: /app/whatsapp/conversaciones/
+            - link "Config WhatsApp" [ref=f20e349] [cursor=pointer]:
+              - /url: /app/configuracion/whatsapp/
+            - link "Proveedor IA" [ref=f20e353] [cursor=pointer]:
+              - /url: /app/configuracion/ia/
+        - generic [ref=f20e358]:
+          - paragraph [ref=f20e359]: Administracion
+          - generic [ref=f20e360]:
+            - link "Organizacion" [ref=f20e361] [cursor=pointer]:
+              - /url: /app/organizacion/
+            - link "Auditoria" [ref=f20e367] [cursor=pointer]:
+              - /url: /app/auditoria/
+            - link "Usuarios" [ref=f20e372] [cursor=pointer]:
+              - /url: /app/usuarios/
+            - link "Roles" [ref=f20e378] [cursor=pointer]:
+              - /url: /app/roles/
+            - link "Configuracion" [ref=f20e382] [cursor=pointer]:
+              - /url: /app/configuracion/
+    - generic [ref=f20e387]:
+      - banner [ref=f20e388]:
+        - generic [ref=f20e390]:
+          - paragraph [ref=f20e391]: Andes People Solutions
+          - paragraph [ref=f20e392]: Panel privado de Recursos Humanos
+        - generic [ref=f20e393]:
+          - button "Acerca de la version beta" [ref=f20e394]
+          - button "13 procesos pendientes" [ref=f20e398]:
+            - generic [aria-hidden] [ref=f20e402]: "13"
+          - button "Centro de comunicaciones" [ref=f20e404]
+          - button "Centro de soporte" [active] [ref=f20e407]
+          - button "Cambiar tema" [ref=f20e411]
+          - button "Cerrar sesion" [ref=f20e414]
+      - main [ref=f20e418]:
+        - generic [ref=f20e534]:
+          - generic [ref=f20e535]:
+            - generic [ref=f20e536]:
+              - heading "Dashboard" [level=1] [ref=f20e537]
+              - paragraph [ref=f20e538]: Vista general de Recursos Humanos.
+            - generic [ref=f20e539]:
+              - combobox "Periodo" [ref=f20e540]:
+                - option "Ultimos 3 meses"
+                - option "Ultimos 6 meses" [selected]
+                - option "Ultimos 12 meses"
+              - button "Actualizar" [ref=f20e541]
+              - generic [ref=f20e547]: Actualizado hace 30s
+          - generic [ref=f20e549]:
+            - generic [ref=f20e553]:
+              - paragraph [ref=f20e554]: Tasa de asistencia · 30 dias
+              - paragraph [ref=f20e555]:
+                - generic [ref=f20e556]: 92%
+              - generic [ref=f20e557]: +3.6%
+            - generic [ref=f20e569]:
+              - paragraph [ref=f20e570]: Empleados activos
+              - paragraph [ref=f20e571]: "18"
+              - generic [ref=f20e572]: 22 en total
+            - generic [ref=f20e583]:
+              - paragraph [ref=f20e584]: Presentes hoy
+              - paragraph [ref=f20e585]: "0"
+              - generic [ref=f20e586]: 0 tarde
+            - generic [ref=f20e594]:
+              - paragraph [ref=f20e595]: Solicitudes pendientes
+              - paragraph [ref=f20e596]: "7"
+              - generic [ref=f20e597]: +133.3%
+            - generic [ref=f20e608]:
+              - paragraph [ref=f20e609]: Contrataciones (30d)
+              - paragraph [ref=f20e610]: "2"
+              - generic [ref=f20e611]: +100%
+          - generic [ref=f20e620]:
+            - heading "Detalle operativo" [level=2] [ref=f20e621]
+            - generic [ref=f20e622]:
+              - generic [ref=f20e629]:
+                - paragraph [ref=f20e630]: Ausentes hoy
+                - paragraph [ref=f20e631]: "0"
+              - generic [ref=f20e638]:
+                - paragraph [ref=f20e639]: Llegadas tarde
+                - paragraph [ref=f20e640]: "0"
+              - generic [ref=f20e647]:
+                - paragraph [ref=f20e648]: Incapacidades activas
+                - paragraph [ref=f20e649]: "2"
+              - generic [ref=f20e655]:
+                - paragraph [ref=f20e656]: Vacaciones proximas
+                - paragraph [ref=f20e657]: "0"
+              - generic [ref=f20e664]:
+                - paragraph [ref=f20e665]: En licencia
+                - paragraph [ref=f20e666]: "1"
+              - generic [ref=f20e672]:
+                - paragraph [ref=f20e673]: Docs. por vencer
+                - paragraph [ref=f20e674]: "4"
+          - generic [ref=f20e675]:
+            - heading "CRM · pipeline" [level=2] [ref=f20e676]
+            - generic [ref=f20e677]:
+              - generic [ref=f20e681]:
+                - paragraph [ref=f20e682]: Deals abiertos
+                - paragraph [ref=f20e683]: "0"
+              - generic [ref=f20e693]:
+                - paragraph [ref=f20e694]: Actividades hoy
+                - paragraph [ref=f20e695]: "0"
+          - generic [ref=f20e699]:
+            - heading "Analitica" [level=2] [ref=f20e700]
+            - generic [ref=f20e701]:
+              - generic [ref=f20e703]:
+                - generic [ref=f20e705]:
+                  - heading "Rendimiento de asistencia" [level=3] [ref=f20e706]
+                  - paragraph [ref=f20e707]: Tasa mensual de asistencia a tiempo — ultimos 6 meses.
+                - application [ref=f20e716]:
+                  - generic [ref=f20e734]:
+                    - generic [ref=f20e735]:
+                      - generic [ref=f20e736]: abr
+                      - generic [ref=f20e738]: may
+                      - generic [ref=f20e740]: jun
+                      - generic [ref=f20e742]: jul
+                      - generic [ref=f20e744]: ago
+                      - generic [ref=f20e746]: sept
+                    - generic [ref=f20e748]:
+                      - generic [ref=f20e749]: 80%
+                      - generic [ref=f20e751]: 85%
+                      - generic [ref=f20e753]: 90%
+                      - generic [ref=f20e755]: 95%
+                      - generic [ref=f20e757]: 100%
+              - generic [ref=f20e760]:
+                - generic [ref=f20e762]:
+                  - heading "Plantilla por estado" [level=3] [ref=f20e763]
+                  - paragraph [ref=f20e764]: Distribucion actual de colaboradores.
+                - generic [ref=f20e770]:
+                  - generic [ref=f20e771]:
+                    - application [ref=f20e774]:
+                      - generic [ref=f20e787]:
+                        - generic [ref=f20e789]:
+                          - generic [ref=f20e790]: 82%
+                          - generic [ref=f20e791]: "18"
+                        - generic [ref=f20e793]:
+                          - generic [ref=f20e794]: 14%
+                          - generic [ref=f20e795]: "3"
+                    - generic:
+                      - generic: "22"
+                      - generic: Total
+                  - list [ref=f20e796]:
+                    - listitem [ref=f20e797]:
+                      - generic: Activos
+                      - generic [ref=f20e799]: "18"
+                      - generic [ref=f20e800]: 82%
+                    - listitem [ref=f20e801]:
+                      - generic [ref=f20e803]: Retirados
+                      - generic [ref=f20e804]: "3"
+                      - generic [ref=f20e805]: 14%
+                    - listitem [ref=f20e806]:
+                      - generic [ref=f20e808]: En licencia
+                      - generic [ref=f20e809]: "1"
+                      - generic [ref=f20e810]: 5%
+            - generic [ref=f20e811]:
+              - generic [ref=f20e813]:
+                - generic [ref=f20e815]:
+                  - heading "Embudo de asistencia (hoy)" [level=3] [ref=f20e816]
+                  - paragraph [ref=f20e817]: Plantilla activa que registra entrada y llega a tiempo.
+                - generic [ref=f20e822]:
+                  - generic [ref=f20e823]:
+                    - generic [ref=f20e824]: Plantilla activa
+                    - generic [ref=f20e825]: "18"
+                  - generic [ref=f20e827]:
+                    - generic [ref=f20e828]: Con marca de entrada
+                    - generic [ref=f20e829]: "0"
+                    - generic "0% pasa de la etapa anterior" [ref=f20e831]: 0%
+                  - generic [ref=f20e832]:
+                    - generic [ref=f20e833]: A tiempo
+                    - generic [ref=f20e834]: "0"
+                  - paragraph [ref=f20e836]:
+                    - text: "Conversion total:"
+                    - generic [ref=f20e837]: 0%
+                    - text: de la plantilla activa llega a tiempo.
+              - generic [ref=f20e839]:
+                - generic [ref=f20e841]:
+                  - heading "Contrataciones vs retiros" [level=3] [ref=f20e842]
+                  - paragraph [ref=f20e843]: Movimiento de plantilla — ultimos 6 meses.
+                - generic [ref=f20e851]:
+                  - generic [ref=f20e852]: Contrataciones
+                  - generic [ref=f20e854]: Retiros
+                - application [ref=f20e859]:
+                  - generic [ref=f20e891]:
+                    - generic [ref=f20e892]:
+                      - generic [ref=f20e893]: may
+                      - generic [ref=f20e895]: jun
+                      - generic [ref=f20e897]: jul
+                      - generic [ref=f20e899]: ago
+                      - generic [ref=f20e901]: sept
+                      - generic [ref=f20e903]: oct
+                    - generic [ref=f20e905]:
+                      - generic [ref=f20e906]: "0"
+                      - generic [ref=f20e908]: "1"
+                      - generic [ref=f20e910]: "2"
+                      - generic [ref=f20e912]: "3"
+                      - generic [ref=f20e914]: "4"
+            - generic [ref=f20e918]:
+              - generic [ref=f20e920]:
+                - heading "Plantilla por area" [level=3] [ref=f20e921]
+                - paragraph [ref=f20e922]: Colaboradores por departamento.
+              - application [ref=f20e932]:
+                - generic [ref=f20e952]:
+                  - generic [ref=f20e953]:
+                    - generic [ref=f20e954]: "0"
+                    - generic [ref=f20e956]: "2"
+                    - generic [ref=f20e958]: "4"
+                    - generic [ref=f20e960]: "6"
+                    - generic [ref=f20e962]: "8"
+                  - generic [ref=f20e964]:
+                    - generic [ref=f20e965]: TalentoHumano
+                    - generic [ref=f20e967]: Operaciones
+                    - generic [ref=f20e969]: Tecnologia
+                    - generic [ref=f20e971]: Finanzas
+                  - generic [ref=f20e973]:
+                    - generic [ref=f20e974]: "7"
+                    - generic [ref=f20e975]: "7"
+                    - generic [ref=f20e976]: "4"
+                    - generic [ref=f20e977]: "4"
+          - generic [ref=f20e978]:
+            - heading "Actividad" [level=2] [ref=f20e979]
+            - generic [ref=f20e981]:
+              - heading "Actividad reciente" [level=3] [ref=f20e982]
+              - list [ref=f20e983]:
+                - listitem [ref=f20e984]:
+                  - generic [ref=f20e988]:
+                    - paragraph [ref=f20e989]: Deleted
+                    - paragraph [ref=f20e990]: Sebastian Moreno · employee · 6 de oct, 03:54 p. m.
+                - listitem [ref=f20e991]:
+                  - generic [ref=f20e995]:
+                    - paragraph [ref=f20e996]: Created
+                    - paragraph [ref=f20e997]: Sofia Mercado · attendance · 6 de oct, 03:52 p. m.
+                - listitem [ref=f20e998]:
+                  - generic [ref=f20e1003]:
+                    - paragraph [ref=f20e1004]: Login
+                    - paragraph [ref=f20e1005]: Camila Rojas · auth · 5 de oct, 07:27 p. m.
+                - listitem [ref=f20e1006]:
+                  - generic [ref=f20e1010]:
+                    - paragraph [ref=f20e1011]: Attendance exported
+                    - paragraph [ref=f20e1012]: Camila Rojas · reportes · 4 de oct, 06:27 p. m.
+                - listitem [ref=f20e1013]:
+                  - generic [ref=f20e1018]:
+                    - paragraph [ref=f20e1019]: Sick leave created
+                    - paragraph [ref=f20e1020]: Camila Rojas · incapacidades · 3 de oct, 07:27 p. m.
+                - listitem [ref=f20e1021]:
+                  - generic [ref=f20e1028]:
+                    - paragraph [ref=f20e1029]: Employee created
+                    - paragraph [ref=f20e1030]: Camila Rojas · empleados · 2 de oct, 06:27 p. m.
+                - listitem [ref=f20e1031]:
+                  - generic [ref=f20e1035]:
+                    - paragraph [ref=f20e1036]: Document uploaded
+                    - paragraph [ref=f20e1037]: Camila Rojas · documentos · 1 de oct, 05:27 p. m.
+                - listitem [ref=f20e1038]:
+                  - generic [ref=f20e1045]:
+                    - paragraph [ref=f20e1046]: Employee updated
+                    - paragraph [ref=f20e1047]: Camila Rojas · empleados · 30 de sept, 03:27 p. m.
+          - generic [ref=f20e1049]:
+            - generic [ref=f20e1051]:
+              - heading "Proximos cumpleanos" [level=3] [ref=f20e1053]
+              - list [ref=f20e1058]:
+                - listitem [ref=f20e1059]:
+                  - generic [ref=f20e1060]: SR
+                  - generic [ref=f20e1061]:
+                    - paragraph [ref=f20e1062]: Santiago Reyes
+                    - paragraph [ref=f20e1063]: 1 de enero
+                  - generic [ref=f20e1064]: 81 d
+                - listitem [ref=f20e1065]:
+                  - generic [ref=f20e1066]: FC
+                  - generic [ref=f20e1067]:
+                    - paragraph [ref=f20e1068]: Felipe Cortes
+                    - paragraph [ref=f20e1069]: 13 de enero
+                  - generic [ref=f20e1070]: 93 d
+                - listitem [ref=f20e1071]:
+                  - generic [ref=f20e1072]: MA
+                  - generic [ref=f20e1073]:
+                    - paragraph [ref=f20e1074]: Mariana Acosta
+                    - paragraph [ref=f20e1075]: 23 de febrero
+                  - generic [ref=f20e1076]: 134 d
+                - listitem [ref=f20e1077]:
+                  - generic [ref=f20e1078]: LM
+                  - generic [ref=f20e1079]:
+                    - paragraph [ref=f20e1080]: Laura Medina
+                    - paragraph [ref=f20e1081]: 11 de marzo
+                  - generic [ref=f20e1082]: 150 d
+                - listitem [ref=f20e1083]:
+                  - generic [ref=f20e1084]: MS
+                  - generic [ref=f20e1085]:
+                    - paragraph [ref=f20e1086]: Manuela Suarez
+                    - paragraph [ref=f20e1087]: 13 de abril
+                  - generic [ref=f20e1088]: 183 d
+            - generic [ref=f20e1090]:
+              - heading "Documentos por vencer" [level=3] [ref=f20e1092]
+              - list [ref=f20e1096]:
+                - listitem [ref=f20e1097]:
+                  - generic [ref=f20e1101]:
+                    - paragraph [ref=f20e1102]: Contrato laboral
+                    - paragraph [ref=f20e1103]: Vence 25/10/2026
+                  - generic [ref=f20e1104]: 13 d
+                - listitem [ref=f20e1105]:
+                  - generic [ref=f20e1109]:
+                    - paragraph [ref=f20e1110]: Contrato laboral
+                    - paragraph [ref=f20e1111]: Vence 3/11/2026
+                  - generic [ref=f20e1112]: 22 d
+                - listitem [ref=f20e1113]:
+                  - generic [ref=f20e1117]:
+                    - paragraph [ref=f20e1118]: Contrato laboral
+                    - paragraph [ref=f20e1119]: Vence 12/11/2026
+                  - generic [ref=f20e1120]: 31 d
+                - listitem [ref=f20e1121]:
+                  - generic [ref=f20e1125]:
+                    - paragraph [ref=f20e1126]: Contrato laboral
+                    - paragraph [ref=f20e1127]: Vence 21/11/2026
+                  - generic [ref=f20e1128]: 40 d
+  - region "Notifications alt+T"
+  - generic [aria-hidden] [ref=f20e1129]: Talento Humano

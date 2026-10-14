@@ -1,0 +1,176 @@
+- generic [active] [ref=f12e1]:
+  - alert [ref=f12e44]
+  - generic [ref=f12e45]:
+    - complementary [ref=f12e46]:
+      - generic [ref=f12e47]:
+        - img "FidelOS" [ref=f12e49]
+        - generic [ref=f12e50]:
+          - paragraph [ref=f12e51]:
+            - text: FidelOS
+            - generic [ref=f12e52]: Beta
+          - paragraph [ref=f12e53]: Recursos Humanos
+      - generic [ref=f12e55]:
+        - generic [ref=f12e56]: SM
+        - generic [ref=f12e57]:
+          - paragraph [ref=f12e58]: Sofia Mercado
+          - generic "Usuario conectado" [ref=f12e59]: Online
+          - paragraph [ref=f12e64]: Super Admin
+      - navigation [ref=f12e65]:
+        - link "Dashboard" [ref=f12e68] [cursor=pointer]:
+          - /url: /app/dashboard/
+        - generic [ref=f12e75]:
+          - paragraph [ref=f12e76]: Recursos Humanos
+          - generic [ref=f12e77]:
+            - link "Empleados" [ref=f12e78] [cursor=pointer]:
+              - /url: /app/empleados/
+            - link "Asistencia" [ref=f12e85] [cursor=pointer]:
+              - /url: /app/asistencia/
+            - link "Vacaciones" [ref=f12e90] [cursor=pointer]:
+              - /url: /app/vacaciones/
+            - link "Permisos" [ref=f12e94] [cursor=pointer]:
+              - /url: /app/permisos/
+            - link "Incapacidades" [ref=f12e99] [cursor=pointer]:
+              - /url: /app/incapacidades/
+            - link "Documentos" [ref=f12e105] [cursor=pointer]:
+              - /url: /app/documentos/
+            - link "Turnos" [ref=f12e110] [cursor=pointer]:
+              - /url: /app/turnos/
+        - generic [ref=f12e114]:
+          - paragraph [ref=f12e115]: CRM
+          - generic [ref=f12e116]:
+            - link "Leads" [ref=f12e117] [cursor=pointer]:
+              - /url: /app/leads/
+            - link "Clientes" [ref=f12e122] [cursor=pointer]:
+              - /url: /app/clientes/
+            - link "Contactos" [ref=f12e129] [cursor=pointer]:
+              - /url: /app/crm/contactos/
+            - link "Oportunidades" [ref=f12e134] [cursor=pointer]:
+              - /url: /app/crm/deals/
+            - link "Actividades" [ref=f12e141] [cursor=pointer]:
+              - /url: /app/crm/actividades/
+            - link "Segmentos" [ref=f12e145] [cursor=pointer]:
+              - /url: /app/crm/segmentos/
+        - generic [ref=f12e150]:
+          - paragraph [ref=f12e151]: Inventario
+          - generic [ref=f12e152]:
+            - link "Productos" [ref=f12e153] [cursor=pointer]:
+              - /url: /app/inventario/productos/
+            - link "Categorías" [ref=f12e159] [cursor=pointer]:
+              - /url: /app/inventario/categorias/
+            - link "Marcas" [ref=f12e165] [cursor=pointer]:
+              - /url: /app/inventario/marcas/
+            - link "Unidades" [ref=f12e170] [cursor=pointer]:
+              - /url: /app/inventario/unidades/
+            - link "Bodegas" [ref=f12e175] [cursor=pointer]:
+              - /url: /app/inventario/bodegas/
+            - link "Stock" [ref=f12e180] [cursor=pointer]:
+              - /url: /app/inventario/stock/
+            - link "Movimientos" [ref=f12e184] [cursor=pointer]:
+              - /url: /app/inventario/movimientos/
+        - generic [ref=f12e188]:
+          - paragraph [ref=f12e189]: Compras
+          - generic [ref=f12e190]:
+            - link "Proveedores" [ref=f12e191] [cursor=pointer]:
+              - /url: /app/compras/proveedores/
+            - link "Órdenes" [ref=f12e198] [cursor=pointer]:
+              - /url: /app/compras/ordenes/
+            - link "Recepciones" [ref=f12e203] [cursor=pointer]:
+              - /url: /app/compras/recepciones/
+            - link "Facturas" [ref=f12e209] [cursor=pointer]:
+              - /url: /app/compras/facturas/
+            - link "CxP" [ref=f12e214] [cursor=pointer]:
+              - /url: /app/compras/cxp/
+        - generic [ref=f12e218]:
+          - paragraph [ref=f12e219]: Ventas
+          - generic [ref=f12e220]:
+            - link "Cotizaciones" [ref=f12e221] [cursor=pointer]:
+              - /url: /app/ventas/cotizaciones/
+            - link "Pedidos" [ref=f12e226] [cursor=pointer]:
+              - /url: /app/ventas/pedidos/
+            - link "Facturas" [ref=f12e232] [cursor=pointer]:
+              - /url: /app/ventas/facturas/
+            - link "CxC" [ref=f12e237] [cursor=pointer]:
+              - /url: /app/ventas/cxc/
+        - generic [ref=f12e241]:
+          - paragraph [ref=f12e242]: Finanzas
+          - generic [ref=f12e243]:
+            - link "Cuentas" [ref=f12e244] [cursor=pointer]:
+              - /url: /app/finanzas/cuentas/
+            - link "Pagos" [ref=f12e249] [cursor=pointer]:
+              - /url: /app/finanzas/pagos/
+            - link "Transferencias" [ref=f12e254] [cursor=pointer]:
+              - /url: /app/finanzas/transferencias/
+            - link "Movimientos" [ref=f12e259] [cursor=pointer]:
+              - /url: /app/finanzas/movimientos/
+        - generic [ref=f12e264]:
+          - paragraph [ref=f12e265]: Contabilidad
+          - generic [ref=f12e266]:
+            - link "Plan de Cuentas" [ref=f12e267] [cursor=pointer]:
+              - /url: /app/contabilidad/plan-cuentas/
+            - link "Períodos" [ref=f12e271] [cursor=pointer]:
+              - /url: /app/contabilidad/periodos/
+            - link "Libro Diario" [ref=f12e275] [cursor=pointer]:
+              - /url: /app/contabilidad/diario/
+            - link "Configuración" [ref=f12e279] [cursor=pointer]:
+              - /url: /app/contabilidad/configuracion/
+        - generic [ref=f12e282]:
+          - paragraph [ref=f12e283]: Reclutamiento
+          - generic [ref=f12e284]:
+            - link "Vacantes" [ref=f12e285] [cursor=pointer]:
+              - /url: /app/reclutamiento/vacantes/
+            - link "Candidatos" [ref=f12e291] [cursor=pointer]:
+              - /url: /app/reclutamiento/candidatos/
+            - link "Postulaciones" [ref=f12e298] [cursor=pointer]:
+              - /url: /app/reclutamiento/postulaciones/
+            - link "Entrevistas" [ref=f12e304] [cursor=pointer]:
+              - /url: /app/reclutamiento/entrevistas/
+        - generic [ref=f12e310]:
+          - paragraph [ref=f12e311]: Reportes
+          - link "Reportes" [ref=f12e313] [cursor=pointer]:
+            - /url: /app/reportes/
+        - generic [ref=f12e317]:
+          - paragraph [ref=f12e318]: Herramientas
+          - generic [ref=f12e319]:
+            - button "Modo contingencia Premium" [ref=f12e320]:
+              - generic [ref=f12e328]: Modo contingencia
+              - generic [ref=f12e329]: Premium
+            - button "IA para RRHH Premium" [ref=f12e333]:
+              - generic [ref=f12e337]: IA para RRHH
+              - generic [ref=f12e338]: Premium
+        - generic [ref=f12e342]:
+          - paragraph [ref=f12e343]: Integraciones
+          - generic [ref=f12e344]:
+            - link "Conversaciones WA" [ref=f12e345] [cursor=pointer]:
+              - /url: /app/whatsapp/conversaciones/
+            - link "Config WhatsApp" [ref=f12e349] [cursor=pointer]:
+              - /url: /app/configuracion/whatsapp/
+            - link "Proveedor IA" [ref=f12e353] [cursor=pointer]:
+              - /url: /app/configuracion/ia/
+        - generic [ref=f12e358]:
+          - paragraph [ref=f12e359]: Administracion
+          - generic [ref=f12e360]:
+            - link "Organizacion" [ref=f12e361] [cursor=pointer]:
+              - /url: /app/organizacion/
+            - link "Auditoria" [ref=f12e367] [cursor=pointer]:
+              - /url: /app/auditoria/
+            - link "Usuarios" [ref=f12e372] [cursor=pointer]:
+              - /url: /app/usuarios/
+            - link "Roles" [ref=f12e378] [cursor=pointer]:
+              - /url: /app/roles/
+            - link "Configuracion" [ref=f12e382] [cursor=pointer]:
+              - /url: /app/configuracion/
+    - generic [ref=f12e387]:
+      - banner [ref=f12e388]:
+        - generic [ref=f12e390]:
+          - paragraph [ref=f12e391]: Andes People Solutions
+          - paragraph [ref=f12e392]: Panel privado de Recursos Humanos
+        - generic [ref=f12e393]:
+          - button "Acerca de la version beta" [ref=f12e394]
+          - button "13 procesos pendientes" [ref=f12e398]:
+            - generic [aria-hidden] [ref=f12e402]: "13"
+          - button "Centro de comunicaciones" [ref=f12e404]
+          - button "Enviar un comentario" [ref=f12e407]
+          - button "Cambiar tema" [ref=f12e410]
+          - button "Cerrar sesion" [ref=f12e413]
+      - main [ref=f12e417]
+  - region "Notifications alt+T"
