@@ -270,7 +270,7 @@
 
 | Capacidad | Componente | Estado | Acción | Observaciones |
 |-----------|-----------|--------|--------|---------------|
-| Índices compuestos BD | `(company_id, status)` y `(company_id, created_at)` en tablas de alta frecuencia | ✅ Implementado | 🟢 REUTILIZAR | Toda tabla nueva debe incluirlos |
+| Índices compuestos BD | `(company_id, status)` y `(company_id, created_at)` donde los patrones de consulta lo justifiquen | ⚠️ Evaluar por consulta | 🟢 REUTILIZAR el criterio | Elegir por filtros, ordenamiento, cardinalidad y plan; no añadir indiscriminadamente |
 | `DEFAULT_PER_PAGE=10`, `MAX_PER_PAGE=100` | `TableQueryService` | ✅ Implementado | 🟢 REUTILIZAR | Evita queries sin límite |
 | N+1 eliminado en birthday query | `DashboardController::upcomingBirthdays()` | ✅ Implementado | 🟢 REUTILIZAR | Patrón a seguir en queries de dashboard |
 | Paginación backend | `DataTable` + `useApiTable` + `BaseCrudController` | ✅ Implementado | 🟢 REUTILIZAR | No cargar tablas completas |
@@ -288,7 +288,7 @@
 | Ejecución en SQLite | `DB_CONNECTION=sqlite` en `.env.testing` | ✅ Implementado | 🟢 REUTILIZAR | — |
 | Compatibilidad MySQL | Ejecutar suite en MySQL antes de release | ✅ Documentado | 🟢 REUTILIZAR | Gate de calidad |
 | `RefreshDatabase` + factories | Patrón en tests existentes | ✅ Implementado | 🟢 REUTILIZAR | Factories deben incluir todos los campos NOT NULL |
-| E2E Playwright | Sin `playwright.config.ts` ni directorio `e2e/` en el repo | 🔴 No existe | 🔴 DESARROLLAR | Requiere instalar Playwright y escribir flujos críticos |
+| E2E Playwright | Configuración MCP y artefactos de sesiones; no se encontró suite repetible `playwright.config.ts`/`e2e/` | ⚠️ Artefactos no equivalen a suite | 🔴 DESARROLLAR | Crear flujos críticos reproducibles, assertions y triage de consola/red |
 | TypeScript `tsc --noEmit` | Pasa limpio (verificado) | ✅ Implementado | 🟢 REUTILIZAR | Ejecutar antes de cada build |
 | Build `npm run build` | Genera 510 archivos sin errores (verificado) | ✅ Implementado | 🟢 REUTILIZAR | Gate mínimo antes de deploy |
 
