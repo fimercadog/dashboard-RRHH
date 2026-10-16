@@ -221,7 +221,7 @@ export default function PagosPage() {
       )}
 
       {!loading && payments.length > 0 && (
-        <div className="rounded-lg overflow-auto">
+        <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/50">
               <tr>

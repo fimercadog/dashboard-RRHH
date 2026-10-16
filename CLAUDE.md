@@ -15,6 +15,7 @@ Los subagentes son:
 
 - spec-planner = planificación y especificación
 - juan = desarrollador / implementador
+- unit-tester = pruebas unitarias y detección de regresiones a nivel de función/servicio
 - centinela = auditor de seguridad independiente
 - nancy = supervisora técnica de desarrollo
 - margarita = QA funcional, E2E y regresión
@@ -71,6 +72,10 @@ Si la tarea requiere validación especializada:
 
 PEPE debe ejecutar/revisar Graphify antes de iniciar
 una tarea de desarrollo cuando corresponda.
+
+PEPE debe ejecutar /estado-fidelos antes de toda tarea
+de desarrollo no trivial para verificar el estado real
+del nucleo, las verticales e integraciones existentes.
 
 ---
 
@@ -336,9 +341,11 @@ Cuando:
 
 - JUAN terminó;
 - PEPE aprobó la implementación;
+- UNIT-TESTER aprobó las pruebas unitarias (cuando la tarea toca lógica de negocio);
 - NANCY aprobó;
 - MARGARITA aprobó;
 - las pruebas obligatorias pasaron;
+- /auditoria-prepublicacion APROBADO (cuando el cambio afecta una interfaz pública);
 - no existen bloqueadores;
 
 PEPE realiza el cierre.
@@ -387,25 +394,25 @@ cómo resolver cada solicitud con el personal disponible.
 Ejemplos:
 
 Frontend con lógica o datos:
-    PEPE → SPEC-PLANNER → JUAN → PEPE → CENTINELA → NANCY → MARGARITA
+    PEPE → SPEC-PLANNER → JUAN → PEPE → UNIT-TESTER → CENTINELA → NANCY → MARGARITA
 
 Backend / API / integración:
-    PEPE → SPEC-PLANNER → JUAN → PEPE → CENTINELA → NANCY → MARGARITA
+    PEPE → SPEC-PLANNER → JUAN → PEPE → UNIT-TESTER → CENTINELA → NANCY → MARGARITA
 
 Bug pequeño claramente definido:
     PEPE → JUAN → PEPE → CENTINELA → NANCY → MARGARITA
 
 Bug complejo:
-    PEPE → SPEC-PLANNER → JUAN → PEPE → CENTINELA → NANCY → MARGARITA
+    PEPE → SPEC-PLANNER → JUAN → PEPE → UNIT-TESTER → CENTINELA → NANCY → MARGARITA
 
 Cambio visual puro (sin lógica, sin datos):
     PEPE → JUAN → PEPE → NANCY → MARGARITA
 
 Seguridad:
-    PEPE → SPEC-PLANNER → JUAN → PEPE → CENTINELA → NANCY → MARGARITA
+    PEPE → SPEC-PLANNER → JUAN → PEPE → UNIT-TESTER → CENTINELA → NANCY → MARGARITA
 
 Vertical nueva:
-    PEPE → SPEC-PLANNER → JUAN → PEPE → CENTINELA → NANCY → MARGARITA
+    PEPE → SPEC-PLANNER → JUAN → PEPE → UNIT-TESTER → CENTINELA → NANCY → MARGARITA
 
 ---
 

@@ -7,7 +7,7 @@ import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { Attendance } from "@/lib/types";
 
 const columns: AppColumnDef<Attendance>[] = [
-  { header: "Empleado", cell: ({ row }) => row.original.employee?.full_name ?? row.original.employee?.first_name ?? "Empleado" },
+  { header: "Empleado", cell: ({ row }) => row.original.employee?.full_name ?? row.original.employee?.first_name ?? "—" },
   dateColumn<Attendance>("date", "Fecha"),
   { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
   { accessorKey: "check_in", header: "Entrada" },

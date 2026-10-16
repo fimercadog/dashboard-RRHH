@@ -47,17 +47,19 @@ export function DataTable<TData extends object>({
 
   async function downloadExport(format: "csv" | "pdf") {
     if (!exportBaseUrl) return;
-
-    const response = await api.get(`${exportBaseUrl}.${format}?${exportQuery}`, { responseType: "blob" });
-    const blobUrl = window.URL.createObjectURL(response.data);
-    const link = document.createElement("a");
-
-    link.href = blobUrl;
-    link.download = `${exportBaseUrl.split("/").pop()}.${format}`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(blobUrl);
+    try {
+      const response = await api.get(`${exportBaseUrl}.${format}?${exportQuery}`, { responseType: "blob" });
+      const blobUrl = window.URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `${exportBaseUrl.split("/").pop()}.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+    } catch {
+      alert("No se pudo generar el archivo. Verifica tu conexión o permisos.");
+    }
   }
 
   function columnKey(column: AppColumnDef<TData>, index: number) {

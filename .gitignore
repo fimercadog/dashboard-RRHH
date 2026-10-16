@@ -7,3 +7,5 @@ docs/deploy-hostinger.md
 # Directorios de herramientas locales
 .archify/
 .serena/
+.playwright-mcp/
+.claude/skills/

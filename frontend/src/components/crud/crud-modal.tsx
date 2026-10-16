@@ -160,9 +160,11 @@ function RelationSearchField({
   const abortRef                          = React.useRef<AbortController | null>(null);
   const debounceRef                       = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Resolver label en modo edición
+  // Resolver label en modo edición — se re-ejecuta cuando cambia el registro abierto
   React.useEffect(() => {
     if (defaultVal && Number(defaultVal)) {
+      setSelectedId(Number(defaultVal));
+      setSelectedLabel("");
       api.get(`${field.endpoint}?id=${defaultVal}`)
         .then((res) => {
           const raw: RelationOption[] = Array.isArray(res.data) ? (res.data as RelationOption[])
@@ -174,9 +176,11 @@ function RelationSearchField({
           }
         })
         .catch(() => {});
+    } else {
+      setSelectedId(null);
+      setSelectedLabel("");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [defaultVal, field.endpoint]);
 
   const search = (term: string) => {
     abortRef.current?.abort();
