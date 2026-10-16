@@ -13,6 +13,7 @@ use App\Models\EmployeeDocument;
 use App\Models\PermissionRequest;
 use App\Models\SickLeave;
 use App\Models\VacationRequest;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -26,94 +27,101 @@ class DashboardController extends Controller
     public function __invoke(Request $request)
     {
         $companyId = $this->companyId($request);
-        $today = Carbon::today();
-        $endOfToday = $today->copy()->endOfDay();
-        // Ventanas moviles de 30 dias para los deltas "vs periodo anterior":
-        // siempre tienen datos, a diferencia del mes calendario recien empezado.
-        $win1Start = $today->copy()->subDays(30);
-        $win2Start = $today->copy()->subDays(60);
-        $rangeStart = $today->copy()->subMonths(11)->startOfMonth();
+        $user = $request->user();
+        $version = Cache::get("company_version_{$companyId}", 0);
+        // ponytail: per-user key + version counter; version bumped by BaseCrudController on any mutation
+        $data = Cache::remember("dashboard.{$companyId}.{$user?->id}.v{$version}", 120, function () use ($companyId, $user) {
+            $today = Carbon::today();
+            $endOfToday = $today->copy()->endOfDay();
+            // Ventanas moviles de 30 dias para los deltas "vs periodo anterior":
+            // siempre tienen datos, a diferencia del mes calendario recien empezado.
+            $win1Start = $today->copy()->subDays(30);
+            $win2Start = $today->copy()->subDays(60);
+            $rangeStart = $today->copy()->subMonths(11)->startOfMonth();
 
-        $presentToday = Attendance::where('company_id', $companyId)->whereDate('date', $today)->where('status', 'present')->count();
-        $lateToday = Attendance::where('company_id', $companyId)->whereDate('date', $today)->where('status', 'late')->count();
-        $absentToday = Attendance::where('company_id', $companyId)->whereDate('date', $today)->where('status', 'absent')->count();
-        $activeEmployees = Employee::where('company_id', $companyId)->where('employment_status', 'active')->count();
+            $presentToday = Attendance::where('company_id', $companyId)->whereDate('date', $today)->where('status', 'present')->count();
+            $lateToday = Attendance::where('company_id', $companyId)->whereDate('date', $today)->where('status', 'late')->count();
+            $absentToday = Attendance::where('company_id', $companyId)->whereDate('date', $today)->where('status', 'absent')->count();
+            $activeEmployees = Employee::where('company_id', $companyId)->where('employment_status', 'active')->count();
 
-        return response()->json([
-            'generated_at' => now()->toIso8601String(),
-            'metrics' => [
-                'total_employees' => Employee::where('company_id', $companyId)->count(),
-                'active_employees' => $activeEmployees,
-                'present_today' => $presentToday,
-                'absent_today' => $absentToday,
-                'late_today' => $lateToday,
-                'active_sick_leaves' => SickLeave::where('company_id', $companyId)->where('status', 'active')->count(),
-                'pending_requests' => VacationRequest::where('company_id', $companyId)->where('status', 'pending')->count()
-                    + PermissionRequest::where('company_id', $companyId)->where('status', 'pending')->count(),
-                'upcoming_vacations' => VacationRequest::where('company_id', $companyId)->where('status', 'approved')->whereBetween('start_date', [$today, $today->copy()->addDays(30)])->count(),
-            ],
-            'deltas' => [
-                'hires' => $this->delta(
-                    Employee::where('company_id', $companyId)->whereBetween('hire_date', [$win1Start, $endOfToday])->count(),
-                    Employee::where('company_id', $companyId)->whereBetween('hire_date', [$win2Start, $win1Start])->count(),
-                ),
-                'requests' => $this->delta(
-                    $this->requestsBetween($companyId, $win1Start, $endOfToday),
-                    $this->requestsBetween($companyId, $win2Start, $win1Start),
-                ),
-                'attendance_rate' => $this->delta(
-                    $this->attendanceRate($companyId, $win1Start, $endOfToday),
-                    $this->attendanceRate($companyId, $win2Start, $win1Start),
-                ),
-            ],
-            'attendance_funnel' => [
-                ['stage' => 'Plantilla activa', 'count' => $activeEmployees],
-                ['stage' => 'Con marca de entrada', 'count' => $presentToday + $lateToday],
-                ['stage' => 'A tiempo', 'count' => $presentToday],
-            ],
-            'weekly_attendance' => Attendance::query()
-                ->selectRaw('date, status, count(*) as total')
-                ->where('company_id', $companyId)
-                ->whereBetween('date', [$today->copy()->subDays(6)->toDateString(), $today->toDateString()])
-                ->groupBy('date', 'status')
-                ->orderBy('date')
-                ->get(),
-            'headcount_by_department' => Employee::query()
-                ->selectRaw('coalesce(departments.name, ?) as department, count(*) as total', ['Sin area'])
-                ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
-                ->where('employees.company_id', $companyId)
-                ->groupBy('department')
-                ->orderByDesc('total')
-                ->get(),
-            'headcount_by_status' => Employee::query()
-                ->selectRaw('employment_status as status, count(*) as total')
-                ->where('company_id', $companyId)
-                ->groupBy('employment_status')
-                ->orderByDesc('total')
-                ->get(),
-            'trends' => [
-                'attendance_monthly' => $this->attendanceMonthly($companyId, $rangeStart),
-                'headcount_flow' => $this->headcountFlow($companyId, $rangeStart),
-                'requests_monthly' => $this->requestsMonthly($companyId, $rangeStart),
-            ],
-            'pending_requests' => [
-                'vacations' => VacationRequest::with('employee')->where('company_id', $companyId)->where('status', 'pending')->latest()->limit(5)->get(),
-                'permissions' => PermissionRequest::with('employee')->where('company_id', $companyId)->where('status', 'pending')->latest()->limit(5)->get(),
-            ],
-            'upcoming_events' => [
-                'documents' => EmployeeDocument::with('employee')->where('company_id', $companyId)->whereBetween('expiration_date', [$today, $today->copy()->addDays(45)])->orderBy('expiration_date')->limit(6)->get(),
-                'birthdays' => $this->upcomingBirthdays($companyId, $today),
-            ],
-            'recent_activity' => AuditLog::with('user:id,name')->where('company_id', $companyId)->latest()->limit(8)->get()
-                ->map(fn (AuditLog $log) => [
-                    'id' => $log->id,
-                    'action' => $log->action,
-                    'module' => $log->module,
-                    'user' => $log->user?->name,
-                    'created_at' => $log->created_at,
-                ]),
-            'crm_metrics' => $this->crmMetrics($request->user(), $companyId, $today),
-        ]);
+            return [
+                'generated_at' => now()->toIso8601String(),
+                'metrics' => [
+                    'total_employees' => Employee::where('company_id', $companyId)->count(),
+                    'active_employees' => $activeEmployees,
+                    'present_today' => $presentToday,
+                    'absent_today' => $absentToday,
+                    'late_today' => $lateToday,
+                    'active_sick_leaves' => SickLeave::where('company_id', $companyId)->where('status', 'active')->count(),
+                    'pending_requests' => VacationRequest::where('company_id', $companyId)->where('status', 'pending')->count()
+                        + PermissionRequest::where('company_id', $companyId)->where('status', 'pending')->count(),
+                    'upcoming_vacations' => VacationRequest::where('company_id', $companyId)->where('status', 'approved')->whereBetween('start_date', [$today, $today->copy()->addDays(30)])->count(),
+                ],
+                'deltas' => [
+                    'hires' => $this->delta(
+                        Employee::where('company_id', $companyId)->whereBetween('hire_date', [$win1Start, $endOfToday])->count(),
+                        Employee::where('company_id', $companyId)->whereBetween('hire_date', [$win2Start, $win1Start])->count(),
+                    ),
+                    'requests' => $this->delta(
+                        $this->requestsBetween($companyId, $win1Start, $endOfToday),
+                        $this->requestsBetween($companyId, $win2Start, $win1Start),
+                    ),
+                    'attendance_rate' => $this->delta(
+                        $this->attendanceRate($companyId, $win1Start, $endOfToday),
+                        $this->attendanceRate($companyId, $win2Start, $win1Start),
+                    ),
+                ],
+                'attendance_funnel' => [
+                    ['stage' => 'Plantilla activa', 'count' => $activeEmployees],
+                    ['stage' => 'Con marca de entrada', 'count' => $presentToday + $lateToday],
+                    ['stage' => 'A tiempo', 'count' => $presentToday],
+                ],
+                'weekly_attendance' => Attendance::query()
+                    ->selectRaw('date, status, count(*) as total')
+                    ->where('company_id', $companyId)
+                    ->whereBetween('date', [$today->copy()->subDays(6)->toDateString(), $today->toDateString()])
+                    ->groupBy('date', 'status')
+                    ->orderBy('date')
+                    ->get(),
+                'headcount_by_department' => Employee::query()
+                    ->selectRaw('coalesce(departments.name, ?) as department, count(*) as total', ['Sin area'])
+                    ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
+                    ->where('employees.company_id', $companyId)
+                    ->groupBy('department')
+                    ->orderByDesc('total')
+                    ->get(),
+                'headcount_by_status' => Employee::query()
+                    ->selectRaw('employment_status as status, count(*) as total')
+                    ->where('company_id', $companyId)
+                    ->groupBy('employment_status')
+                    ->orderByDesc('total')
+                    ->get(),
+                'trends' => [
+                    'attendance_monthly' => $this->attendanceMonthly($companyId, $rangeStart),
+                    'headcount_flow' => $this->headcountFlow($companyId, $rangeStart),
+                    'requests_monthly' => $this->requestsMonthly($companyId, $rangeStart),
+                ],
+                'pending_requests' => [
+                    'vacations' => VacationRequest::with('employee')->where('company_id', $companyId)->where('status', 'pending')->latest()->limit(5)->get(),
+                    'permissions' => PermissionRequest::with('employee')->where('company_id', $companyId)->where('status', 'pending')->latest()->limit(5)->get(),
+                ],
+                'upcoming_events' => [
+                    'documents' => EmployeeDocument::with('employee')->where('company_id', $companyId)->whereBetween('expiration_date', [$today, $today->copy()->addDays(45)])->orderBy('expiration_date')->limit(6)->get(),
+                    'birthdays' => $this->upcomingBirthdays($companyId, $today),
+                ],
+                'recent_activity' => AuditLog::with('user:id,name')->where('company_id', $companyId)->latest()->limit(8)->get()
+                    ->map(fn (AuditLog $log) => [
+                        'id' => $log->id,
+                        'action' => $log->action,
+                        'module' => $log->module,
+                        'user' => $log->user?->name,
+                        'created_at' => $log->created_at,
+                    ]),
+                'crm_metrics' => $this->crmMetrics($user, $companyId, $today),
+            ];
+        });
+
+        return response()->json($data);
     }
 
     private function crmMetrics(mixed $user, int $companyId, Carbon $today): ?array

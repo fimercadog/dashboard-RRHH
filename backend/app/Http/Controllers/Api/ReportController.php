@@ -14,6 +14,7 @@ use App\Models\SickLeave;
 use App\Models\VacationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class ReportController extends Controller
 {
@@ -22,15 +23,17 @@ class ReportController extends Controller
     public function __invoke(Request $request)
     {
         $companyId = $this->companyId($request);
-        $today = Carbon::today();
-        $monthStart = $today->copy()->startOfMonth();
-        $from30 = $today->copy()->subDays(30);
+        $version = Cache::get("company_version_{$companyId}", 0);
+        $data = Cache::remember("reports.{$companyId}.v{$version}", 600, function () use ($companyId) {
+            $today = Carbon::today();
+            $monthStart = $today->copy()->startOfMonth();
+            $from30 = $today->copy()->subDays(30);
 
-        $employees = fn () => Employee::where('company_id', $companyId);
-        $attendance30 = fn () => Attendance::where('company_id', $companyId)->whereBetween('date', [$from30, $today]);
-        $activeEmployees = fn () => ['employees' => fn ($q) => $q->where('employment_status', 'active')];
+            $employees = fn () => Employee::where('company_id', $companyId);
+            $attendance30 = fn () => Attendance::where('company_id', $companyId)->whereBetween('date', [$from30, $today]);
+            $activeEmployees = fn () => ['employees' => fn ($q) => $q->where('employment_status', 'active')];
 
-        return response()->json([
+            return [
             'generated_at' => now(),
             'headcount' => [
                 'total' => $employees()->count(),
@@ -71,6 +74,9 @@ class ReportController extends Controller
                 ->orderByDesc('employees_count')
                 ->get(['id', 'name'])
                 ->map(fn ($p) => ['name' => $p->name, 'employees' => $p->employees_count]),
-        ]);
+            ];
+        });
+
+        return response()->json($data);
     }
 }

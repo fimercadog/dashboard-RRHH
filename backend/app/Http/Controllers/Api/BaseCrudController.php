@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Services\AuditService;
 use App\Services\TableQueryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 abstract class BaseCrudController extends Controller
 {
@@ -64,9 +65,11 @@ abstract class BaseCrudController extends Controller
     public function store(Request $request, AuditService $audit)
     {
         $payload = $this->validatedInput($request);
-        $payload['company_id'] = $this->companyId($request);
+        $companyId = $this->companyId($request);
+        $payload['company_id'] = $companyId;
         $model = ($this->model)::create($payload)->load($this->with);
         $audit->record('created', $model, $request);
+        Cache::increment("company_version_{$companyId}");
 
         return (new $this->resource($model))->response()->setStatusCode(201);
     }
@@ -91,15 +94,18 @@ abstract class BaseCrudController extends Controller
         $model->update($payload);
         $model->load($this->with);
         $audit->record('updated', $model, $request, $oldValues);
+        Cache::increment("company_version_{$cid}");
 
         return new $this->resource($model);
     }
 
     public function destroy(Request $request, string $id, AuditService $audit)
     {
-        $model = ($this->model)::query()->where('company_id', $this->companyId($request))->findOrFail($id);
+        $cid = $this->companyId($request);
+        $model = ($this->model)::query()->where('company_id', $cid)->findOrFail($id);
         $audit->record('deleted', $model, $request, $model->getOriginal());
         $model->delete();
+        Cache::increment("company_version_{$cid}");
 
         return response()->noContent();
     }
