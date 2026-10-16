@@ -8,6 +8,7 @@ import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { STATUS_OPTIONS } from "@/lib/constants";
+import { statusLabel } from "@/lib/labels";
 import { api, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { AppUser, Role } from "@/lib/types";
@@ -142,7 +143,7 @@ const columns: AppColumnDef<AppUser>[] = [
   { accessorKey: "email", header: "Correo" },
   { header: "Empleado", cell: ({ row }) => row.original.employee?.full_name ?? "Sin vincular" },
   { header: "Roles", cell: ({ row }) => row.original.roles?.join(", ") || "Sin rol" },
-  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{statusLabel(row.original.status)}</Badge> },
 ];
 
 const baseFields: CrudField[] = [

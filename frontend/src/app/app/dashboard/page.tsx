@@ -45,6 +45,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useDashboard, type DashboardData, type Delta } from "@/lib/use-dashboard";
 import { useCountUp } from "@/lib/use-count-up";
+import { actionLabel } from "@/lib/labels";
 
 const TONE = {
   green: "#0e8f5c",
@@ -493,8 +494,7 @@ function activityMeta(action: string) {
   return ACTIVITY_META.find((m) => action.toLowerCase().includes(m.match)) ?? { icon: Activity, tone: TONE.slate };
 }
 function humanize(action: string) {
-  const t = action.replace(/[._]/g, " ").trim();
-  return t.charAt(0).toUpperCase() + t.slice(1);
+  return actionLabel(action);
 }
 
 function ActivityTimeline({ items }: { items: DashboardData["recent_activity"] }) {

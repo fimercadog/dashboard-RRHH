@@ -3,6 +3,7 @@
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { CLIENT_IDENTIFICATION_TYPE_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
+import { statusLabel } from "@/lib/labels";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
 import { Client } from "@/lib/types";
@@ -12,7 +13,7 @@ const columns: AppColumnDef<Client>[] = [
   { accessorKey: "identification_number", header: "Documento" },
   { accessorKey: "email", header: "Correo" },
   { accessorKey: "phone", header: "Telefono" },
-  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{statusLabel(row.original.status)}</Badge> },
 ];
 
 const fields: CrudField[] = [

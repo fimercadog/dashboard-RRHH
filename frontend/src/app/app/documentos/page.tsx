@@ -5,13 +5,14 @@ import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { DocumentRow } from "@/lib/types";
+import { statusLabel } from "@/lib/labels";
 
 const columns: AppColumnDef<DocumentRow>[] = [
   { header: "Empleado", cell: ({ row }) => row.original.employee?.full_name ?? row.original.employee?.first_name ?? "Empleado" },
   { accessorKey: "document_type", header: "Tipo" },
   { accessorKey: "name", header: "Documento" },
   dateColumn<DocumentRow>("expiration_date", "Vence"),
-  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{statusLabel(row.original.status)}</Badge> },
 ];
 
 const fields: CrudField[] = [

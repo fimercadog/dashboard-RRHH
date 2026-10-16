@@ -3,6 +3,7 @@
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
+import { statusLabel } from "@/lib/labels";
 import { AppColumnDef } from "@/lib/table-types";
 
 type JobVacancy = {
@@ -16,7 +17,7 @@ const columns: AppColumnDef<JobVacancy>[] = [
   { header: "Departamento", cell: ({ row }) => row.original.department?.name ?? "-" },
   { accessorKey: "vacancies_count", header: "Plazas" },
   { accessorKey: "opened_at", header: "Apertura" },
-  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{statusLabel(row.original.status)}</Badge> },
 ];
 
 const fields: CrudField[] = [

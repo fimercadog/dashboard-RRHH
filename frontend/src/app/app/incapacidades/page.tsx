@@ -5,6 +5,7 @@ import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { RequestRow } from "@/lib/types";
+import { statusLabel } from "@/lib/labels";
 
 const columns: AppColumnDef<RequestRow>[] = [
   { header: "Empleado", cell: ({ row }) => row.original.employee?.full_name ?? row.original.employee?.first_name ?? "Empleado" },
@@ -12,7 +13,7 @@ const columns: AppColumnDef<RequestRow>[] = [
   dateColumn<RequestRow>("start_date", "Inicio"),
   dateColumn<RequestRow>("end_date", "Fin"),
   { accessorKey: "days", header: "Dias" },
-  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{row.original.status}</Badge> },
+  { header: "Estado", cell: ({ row }) => <Badge variant={badgeVariant(row.original.status)}>{statusLabel(row.original.status)}</Badge> },
 ];
 
 const fields: CrudField[] = [
