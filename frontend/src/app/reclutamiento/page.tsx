@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { BriefcaseBusiness } from "lucide-react";
 import { CTASection } from "@/components/marketing/cta-section";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { Reveal } from "@/components/marketing/reveal";
 import { SectionHeading } from "@/components/marketing/section-heading";
+
+export const metadata: Metadata = {
+  title: "Reclutamiento",
+  description: "Gestiona vacantes, candidatos y entrevistas desde un solo lugar. Reclutamiento moderno integrado con tu sistema de RRHH.",
+  openGraph: { title: "Reclutamiento — FidelOS", description: "Módulo de reclutamiento y selección de personal para FidelOS." },
+};
 
 const stages = ["Aplicaron", "Preseleccion", "Entrevista", "Oferta", "Contratado"];
 

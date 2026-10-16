@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+
+export const metadata: Metadata = {
+  title: "Planes y precios",
+  description: "Elige el plan de FidelOS que se adapta a tu empresa. Esencial, Profesional o IA — paga solo por lo que necesitas.",
+  openGraph: { title: "Planes y precios — FidelOS", description: "Software de RRHH con planes flexibles para empresas de todos los tamaños." },
+};
 import { Reveal } from "@/components/marketing/reveal";
 import { SectionHeading } from "@/components/marketing/section-heading";
 

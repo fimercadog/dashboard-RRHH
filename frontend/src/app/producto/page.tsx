@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { CTASection } from "@/components/marketing/cta-section";
 import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 import { FeatureGrid } from "@/components/marketing/feature-grid";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { ProblemSolution } from "@/components/marketing/problem-solution";
+
+export const metadata: Metadata = {
+  title: "Producto",
+  description: "Explora todas las funcionalidades de FidelOS: empleados, asistencia, vacaciones, documentos, turnos, reclutamiento, reportes e IA.",
+  openGraph: { title: "Producto — FidelOS", description: "Software de RRHH todo-en-uno para empresas modernas." },
+};
 import { Reveal } from "@/components/marketing/reveal";
 import { SectionHeading } from "@/components/marketing/section-heading";
 

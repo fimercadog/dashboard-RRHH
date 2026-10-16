@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { Building2, CalendarClock, Users, Workflow } from "lucide-react";
 import { CTASection } from "@/components/marketing/cta-section";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { Reveal } from "@/components/marketing/reveal";
 import { SectionHeading } from "@/components/marketing/section-heading";
+
+export const metadata: Metadata = {
+  title: "Soluciones",
+  description: "FidelOS se adapta a empresas de cualquier sector. Soluciones de RRHH para manufactura, servicios, salud, retail y más.",
+  openGraph: { title: "Soluciones — FidelOS", description: "Software de RRHH adaptado a cada industria y tamaño de empresa." },
+};
 
 const solutions = [
   { id: "pymes", title: "Para pequenas empresas", description: "Centraliza RRHH sin necesitar un departamento enorme.", icon: Building2 },

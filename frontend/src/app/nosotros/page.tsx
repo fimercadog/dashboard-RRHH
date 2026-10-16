@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { CTASection } from "@/components/marketing/cta-section";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { Reveal } from "@/components/marketing/reveal";
 import { SectionHeading } from "@/components/marketing/section-heading";
+
+export const metadata: Metadata = {
+  title: "Nosotros",
+  description: "Conoce al equipo detrás de FidelOS y nuestra misión de simplificar la gestión de Recursos Humanos para empresas latinoamericanas.",
+  openGraph: { title: "Nosotros — FidelOS", description: "Quiénes somos y por qué construimos FidelOS." },
+};
 
 export default function AboutPage() {
   return (

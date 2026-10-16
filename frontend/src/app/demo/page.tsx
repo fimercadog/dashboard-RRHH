@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { ContactForm } from "@/components/marketing/contact-form";
 import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 import { FeatureGrid } from "@/components/marketing/feature-grid";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+
+export const metadata: Metadata = {
+  title: "Demo gratuita",
+  description: "Solicita una demo gratuita de FidelOS y descubre cómo simplificar la gestión de RRHH en tu empresa.",
+  openGraph: { title: "Demo gratuita — FidelOS", description: "Ve FidelOS en acción. Agenda tu demo personalizada sin compromiso." },
+};
 import { Reveal } from "@/components/marketing/reveal";
 
 export default function DemoPage() {

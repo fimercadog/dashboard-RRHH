@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { ContactWizard } from "@/components/marketing/contact-wizard";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { Reveal } from "@/components/marketing/reveal";
 import { SectionHeading } from "@/components/marketing/section-heading";
+
+export const metadata: Metadata = {
+  title: "Contacto",
+  description: "Habla con nuestro equipo. Agenda una demo, resuelve dudas o solicita información sobre FidelOS para tu empresa.",
+  openGraph: { title: "Contacto — FidelOS", description: "Ponte en contacto con el equipo de FidelOS." },
+};
 
 export default function ContactPage() {
   return (
