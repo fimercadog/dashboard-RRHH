@@ -63,6 +63,8 @@ use App\Http\Controllers\Api\WhatsappWebhookController;
 use App\Http\Controllers\Api\AiSettingController;
 use App\Http\Controllers\Api\DevMockController;
 use App\Http\Controllers\Api\IntegrationStatusController;
+use App\Http\Controllers\Api\GoogleSheetsSettingController;
+use App\Http\Controllers\Api\ZoomSettingController;
 use App\Http\Controllers\Api\ImportController;
 
 Route::get('/user', function (Request $request) {
@@ -225,6 +227,14 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::put('/settings/ai', [AiSettingController::class, 'update'])->middleware('can:ai.manage');
     Route::post('/settings/ai/test', [AiSettingController::class, 'test'])->middleware('can:ai.manage');
     Route::get('/settings/ai/models', [AiSettingController::class, 'models'])->middleware('can:ai.manage');
+
+    Route::get('/settings/google-sheets', [GoogleSheetsSettingController::class, 'show'])->middleware('can:google_sheets.manage');
+    Route::put('/settings/google-sheets', [GoogleSheetsSettingController::class, 'update'])->middleware('can:google_sheets.manage');
+    Route::post('/settings/google-sheets/test', [GoogleSheetsSettingController::class, 'test'])->middleware('can:google_sheets.manage');
+
+    Route::get('/settings/zoom', [ZoomSettingController::class, 'show'])->middleware('can:zoom.manage');
+    Route::put('/settings/zoom', [ZoomSettingController::class, 'update'])->middleware('can:zoom.manage');
+    Route::post('/settings/zoom/test', [ZoomSettingController::class, 'test'])->middleware('can:zoom.manage');
 
     // Estado de integraciones — solo booleanos, sin credenciales.
     Route::get('/settings/integration-status', IntegrationStatusController::class)

@@ -291,8 +291,19 @@ function RelationSearchField({
 }
 
 function fieldDefault(row: CrudRow | null | undefined, field: CrudField) {
-  const value = row?.[field.name];
+  let value = row?.[field.name];
+  // API may return a nested object (e.g. row.employee) instead of the FK (row.employee_id)
+  if (value == null && field.name.endsWith("_id")) {
+    const rel = row?.[field.name.slice(0, -3)];
+    if (rel && typeof rel === "object" && "id" in (rel as object)) {
+      value = (rel as Record<string, unknown>).id;
+    }
+  }
   if (value == null) return field.defaultValue ?? "";
+  // date inputs need YYYY-MM-DD; API returns ISO datetime with time component
+  if (field.type === "date" && typeof value === "string" && value.includes("T")) {
+    return value.split("T")[0];
+  }
   return String(value);
 }
 
@@ -439,7 +450,7 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
                 ) : field.type === "relation-search" ? (
                   <RelationSearchField
                     field={field}
-                    defaultVal={row?.[field.name] as string | number ?? ""}
+                    defaultVal={fieldDefault(row, field)}
                   />
                 ) : field.type === "select" ? (
                   <select

@@ -18,8 +18,10 @@ import {
   Inbox,
   Layers,
   LayoutDashboard,
+  Bell,
   Lock,
   LogOut,
+  Megaphone,
   Menu,
   Moon,
   Package,
@@ -33,7 +35,6 @@ import {
   UserRound,
   Users,
   Warehouse,
-  WifiOff,
   X,
   Receipt,
   ShoppingCart,
@@ -51,12 +52,13 @@ import {
   Link2,
   MessageCircle,
   MessageSquare,
+  Sheet,
+  Video,
   type LucideIcon,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { BetaNotice } from "@/components/layout/beta-notice";
 import { PendingButton } from "@/components/layout/pending-button";
-import { CommunicationsButton } from "@/components/layout/communications-button";
 import { SupportDialog } from "@/components/layout/support-dialog";
 import { ContingencyBanner } from "@/components/layout/contingency-banner";
 import { useContingency } from "@/lib/contingency/context";
@@ -92,6 +94,8 @@ type NavItem = {
   icon: LucideIcon;
   permissions?: string[];
   premium?: boolean;
+  premiumTitle?: string;
+  premiumBody?: string;
   /** Control critico: color de alerta fijo aunque este inactivo. */
   alert?: boolean;
 };
@@ -198,17 +202,25 @@ const navGroups: NavGroup[] = [
   {
     label: "Herramientas",
     items: [
-      { href: "/app/contingencia", label: "Modo contingencia", icon: WifiOff, premium: true },
-      { href: "/app/ia", label: "IA para RRHH", icon: Bot, premium: true },
+      {
+        href: "/app/modulo-personalizado",
+        label: "Módulo a medida",
+        icon: Megaphone,
+        premium: true,
+        premiumTitle: "Desarrollamos el módulo que tu negocio necesita",
+        premiumBody: "¿Necesitas un módulo específico para tu operación? Podemos desarrollarlo a la medida: comunicados internos, modo contingencia, inteligencia artificial para RRHH, y más. Contáctanos para contarnos tu necesidad.",
+      },
     ],
   },
   {
     label: "Integraciones",
     items: [
-      { href: "/app/whatsapp/conversaciones", label: "Conversaciones WA",  icon: MessageSquare, permissions: ["conversations.view"] },
-      { href: "/app/integraciones",           label: "Integraciones",       icon: Link2,         permissions: ["integrations.view"] },
-      { href: "/app/configuracion/whatsapp",  label: "Config WhatsApp",     icon: MessageCircle, permissions: ["whatsapp.manage"] },
-      { href: "/app/configuracion/ia",        label: "Proveedor IA",        icon: Bot,           permissions: ["ai.manage"] },
+      { href: "/app/whatsapp/conversaciones",    label: "Conversaciones WA",  icon: MessageSquare, permissions: ["conversations.view"] },
+      { href: "/app/integraciones",             label: "Integraciones",       icon: Link2,         permissions: ["integrations.view"] },
+      { href: "/app/configuracion/whatsapp",    label: "Config WhatsApp",     icon: MessageCircle, permissions: ["whatsapp.manage"] },
+      { href: "/app/configuracion/ia",          label: "Proveedor IA",        icon: Bot,           permissions: ["ai.manage"] },
+      { href: "/app/configuracion/zoom",        label: "Config Zoom",         icon: Video,         permissions: ["zoom.manage"] },
+      { href: "/app/configuracion/google-sheets", label: "Config Google Sheets", icon: Sheet,      permissions: ["google_sheets.manage"] },
     ],
   },
   {
@@ -261,6 +273,8 @@ function NavLink({ item }: { item: NavItem }) {
   }
 
   if (item.premium) {
+    const title = item.premiumTitle ?? "Inteligencia Artificial para Recursos Humanos";
+    const body  = item.premiumBody  ?? "Potenciá la gestión de Recursos Humanos con IA diseñada para apoyar tus procesos, facilitar el análisis de información y ayudarte en la toma de decisiones.";
     return (
       <Dialog>
         <DialogTrigger asChild>
@@ -275,32 +289,12 @@ function NavLink({ item }: { item: NavItem }) {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Inteligencia Artificial para Recursos Humanos</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-sm text-muted-foreground">
-            <p>
-              Potenciá la gestión de Recursos Humanos con una herramienta de inteligencia artificial diseñada
-              para{" "}
-              <strong className="font-semibold text-foreground">
-                apoyar tus procesos, facilitar el análisis de información y ayudarte en la toma de decisiones
-              </strong>
-              .
-            </p>
-            <p>
-              Podés utilizarla para analizar información del área, identificar tendencias, resumir datos
-              relevantes, generar documentos y comunicados, consultar información relacionada con los procesos
-              de RR. HH. y obtener apoyo para interpretar indicadores como ausentismo, rotación y novedades del
-              personal.
-            </p>
-            <p>
-              La inteligencia artificial funciona como un{" "}
-              <strong className="font-semibold text-foreground">asistente para el equipo de Recursos Humanos</strong>,
-              permitiendo trabajar de forma más ágil y obtener información útil a partir de los datos disponibles
-              en el sistema.
-            </p>
+            <p>{body}</p>
             <p className="font-medium text-foreground">
-              Esta funcionalidad está disponible en el plan Premium. Para activarla o conocer las opciones
-              disponibles, comunicate con el administrador de tu sistema.
+              Esta funcionalidad está disponible en el plan Premium. Para activarla, comunícate con el administrador del sistema.
             </p>
           </div>
         </DialogContent>
@@ -530,8 +524,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <BetaNotice />
             <PendingButton />
-            <CommunicationsButton />
-            <SupportDialog />
+<SupportDialog />
             <Button
               variant="outline"
               size="icon"

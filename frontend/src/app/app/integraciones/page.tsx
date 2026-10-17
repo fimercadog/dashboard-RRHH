@@ -1,21 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bot, CheckCircle, MessageCircle, XCircle } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Bot, CheckCircle, MessageCircle, Settings, Sheet, Video, XCircle } from "lucide-react";
 import { api } from "@/lib/api";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface IntegrationStatus {
-  whatsapp: {
-    is_connected: boolean;
-    is_active: boolean;
-  };
-  ai: {
-    is_connected: boolean;
-    is_active: boolean;
-    provider: string | null;
-  };
+  whatsapp: { is_connected: boolean; is_active: boolean };
+  ai: { is_connected: boolean; is_active: boolean; provider: string | null };
+  zoom: { is_connected: boolean; is_active: boolean };
+  google_sheets: { is_connected: boolean; is_active: boolean };
 }
 
 const PROVIDER_LABELS: Record<string, string> = {
@@ -46,72 +41,100 @@ export default function IntegracionesPage() {
         </p>
       </div>
 
-      {loading && (
-        <p className="text-sm text-muted-foreground">Cargando...</p>
-      )}
-
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
+      {loading && <p className="text-sm text-muted-foreground">Cargando...</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {status && (
         <div className="grid gap-4 sm:grid-cols-2">
-          {/* WhatsApp card */}
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-3 pb-2">
-              <MessageCircle className="h-5 w-5 text-green-600" />
-              <CardTitle className="text-base">WhatsApp Business</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <ConnectionBadge connected={status.whatsapp.is_connected} />
-              {!status.whatsapp.is_connected && (
-                <ContactNote />
-              )}
-            </CardContent>
-          </Card>
+          <IntegrationCard
+            icon={<MessageCircle className="h-5 w-5 text-green-600" />}
+            title="WhatsApp Business"
+            connected={status.whatsapp.is_connected}
+            configHref="/app/configuracion/whatsapp"
+          />
 
-          {/* AI card */}
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-3 pb-2">
-              <Bot className="h-5 w-5 text-blue-600" />
-              <CardTitle className="text-base">Proveedor de IA</CardTitle>
-              {status.ai.provider && (
-                <CardDescription className="ml-auto text-xs font-medium">
-                  {PROVIDER_LABELS[status.ai.provider] ?? status.ai.provider}
-                </CardDescription>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <ConnectionBadge connected={status.ai.is_connected} />
-              {!status.ai.is_connected && (
-                <ContactNote />
-              )}
-            </CardContent>
-          </Card>
+          <IntegrationCard
+            icon={<Bot className="h-5 w-5 text-blue-600" />}
+            title="Proveedor de IA"
+            connected={status.ai.is_connected}
+            subtitle={status.ai.provider ? (PROVIDER_LABELS[status.ai.provider] ?? status.ai.provider) : undefined}
+            configHref="/app/configuracion/ia"
+          />
+
+          <IntegrationCard
+            icon={<Sheet className="h-5 w-5 text-green-600" />}
+            title="Google Sheets"
+            connected={status.google_sheets.is_connected}
+            configHref="/app/configuracion/google-sheets"
+          />
+
+          <IntegrationCard
+            icon={<Video className="h-5 w-5 text-blue-500" />}
+            title="Zoom"
+            connected={status.zoom.is_connected}
+            configHref="/app/configuracion/zoom"
+          />
         </div>
       )}
     </div>
   );
 }
 
-function ConnectionBadge({ connected }: { connected: boolean }) {
-  return connected ? (
-    <Badge variant="default" className="gap-1 bg-green-600 text-white hover:bg-green-700">
-      <CheckCircle className="h-3 w-3" />
-      Conectado
-    </Badge>
-  ) : (
-    <Badge variant="secondary" className="gap-1">
-      <XCircle className="h-3 w-3" />
-      No configurado
-    </Badge>
-  );
-}
-
-function ContactNote() {
+function IntegrationCard({
+  icon,
+  title,
+  subtitle,
+  connected,
+  configHref,
+  note,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  connected: boolean;
+  configHref?: string;
+  note?: string;
+}) {
   return (
-    <p className="text-xs text-muted-foreground">
-      No configurado. Contacta al equipo FidelOS para activar esta integración.
-    </p>
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {icon}
+            <CardTitle className="text-base">{title}</CardTitle>
+          </div>
+          {subtitle && (
+            <span className="text-xs text-muted-foreground font-medium">{subtitle}</span>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex items-center gap-2">
+          {connected ? (
+            <CheckCircle className="h-4 w-4 text-green-600" />
+          ) : (
+            <XCircle className="h-4 w-4 text-muted-foreground" />
+          )}
+          <span className={`text-sm font-medium ${connected ? "text-green-600" : "text-muted-foreground"}`}>
+            {connected ? "Conectado" : "No configurado"}
+          </span>
+        </div>
+
+        {configHref && (
+          <Link
+            href={configHref}
+            className="flex items-center gap-1 text-xs text-primary hover:underline"
+          >
+            <Settings className="h-3 w-3" />
+            Configurar credenciales
+            <ArrowRight className="h-3 w-3" />
+          </Link>
+        )}
+
+        {note && !connected && (
+          <p className="text-xs text-muted-foreground">{note}</p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
