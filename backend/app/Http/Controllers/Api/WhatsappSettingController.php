@@ -21,7 +21,7 @@ class WhatsappSettingController extends Controller
     {
         $setting = $this->resolveOrCreate($request);
 
-        return response()->json(['data' => new WhatsappSettingResource($setting)]);
+        return response()->json(new WhatsappSettingResource($setting));
     }
 
     /** PUT /settings/whatsapp — guardar config. */
@@ -48,7 +48,7 @@ class WhatsappSettingController extends Controller
 
         $audit->record('updated', $setting, $request, $old);
 
-        return response()->json(['data' => new WhatsappSettingResource($setting->fresh())]);
+        return response()->json(new WhatsappSettingResource($setting->fresh()));
     }
 
     /**
@@ -70,7 +70,7 @@ class WhatsappSettingController extends Controller
         $audit->record('updated', $setting, $request, $old);
 
         // El token se devuelve UNA sola vez aquí para que el usuario lo copie en Meta.
-        return response()->json(['data' => ['webhook_verify_token' => $token]]);
+        return response()->json(['webhook_verify_token' => $token]);
     }
 
     /**
@@ -84,29 +84,23 @@ class WhatsappSettingController extends Controller
 
         if (! filled($setting->access_token) || ! filled($setting->phone_number_id)) {
             return response()->json([
-                'data' => [
-                    'status'  => 'pending_configuration',
-                    'message' => 'Configura phone_number_id y access_token antes de probar.',
-                ],
+                'status'  => 'pending_configuration',
+                'message' => 'Configura phone_number_id y access_token antes de probar.',
             ]);
         }
 
         // ponytail: mock branch — cuando APP_ENV=local y DEV_MOCKS_ENABLED, no llamamos a Meta.
         if (app()->environment('local') && config('app.dev_mocks_enabled')) {
             return response()->json([
-                'data' => [
-                    'status'       => 'mock_ok',
-                    'display_name' => 'Mock Business (dev)',
-                    'phone_number' => '+57 300 000 0000',
-                ],
+                'status'       => 'mock_ok',
+                'display_name' => 'Mock Business (dev)',
+                'phone_number' => '+57 300 000 0000',
             ]);
         }
 
         return response()->json([
-            'data' => [
-                'status'  => 'not_tested',
-                'message' => 'Test real requiere conectividad con Meta Graph API.',
-            ],
+            'status'  => 'not_tested',
+            'message' => 'Test real requiere conectividad con Meta Graph API.',
         ]);
     }
 

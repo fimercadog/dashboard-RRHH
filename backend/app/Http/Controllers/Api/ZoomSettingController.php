@@ -19,7 +19,7 @@ class ZoomSettingController extends Controller
     {
         $setting = ZoomSetting::firstOrCreate(['company_id' => $this->companyId($request)]);
 
-        return response()->json(['data' => new ZoomSettingResource($setting)]);
+        return response()->json(new ZoomSettingResource($setting));
     }
 
     public function update(Request $request, AuditService $audit): JsonResponse
@@ -42,7 +42,7 @@ class ZoomSettingController extends Controller
         $setting->fill($data + ['company_id' => $cid])->save();
         $audit->record('updated', $setting, $request, $old);
 
-        return response()->json(['data' => new ZoomSettingResource($setting->fresh())]);
+        return response()->json(new ZoomSettingResource($setting->fresh()));
     }
 
     public function test(Request $request, AuditService $audit): JsonResponse
@@ -51,7 +51,7 @@ class ZoomSettingController extends Controller
 
         if (! $setting || ! filled($setting->account_id) || ! filled($setting->client_id) || ! filled($setting->client_secret)) {
             return response()->json([
-                'data' => ['status' => 'pending_configuration', 'message' => 'Completa Account ID, Client ID y Client Secret antes de probar.'],
+                'status' => 'pending_configuration', 'message' => 'Completa Account ID, Client ID y Client Secret antes de probar.',
             ]);
         }
 
@@ -65,16 +65,16 @@ class ZoomSettingController extends Controller
                 $audit->record('updated', $setting, $request, []);
 
                 return response()->json([
-                    'data' => ['status' => 'ok', 'message' => 'Conexión exitosa con Zoom.'],
+                    'status' => 'ok', 'message' => 'Conexión exitosa con Zoom.',
                 ]);
             }
 
             return response()->json([
-                'data' => ['status' => 'error', 'message' => 'Credenciales inválidas. Verifica Account ID, Client ID y Client Secret.'],
+                'status' => 'error', 'message' => 'Credenciales inválidas. Verifica Account ID, Client ID y Client Secret.',
             ]);
         } catch (\Throwable) {
             return response()->json([
-                'data' => ['status' => 'error', 'message' => 'No se pudo conectar con Zoom. Verifica tu conexión.'],
+                'status' => 'error', 'message' => 'No se pudo conectar con Zoom. Verifica tu conexión.',
             ]);
         }
     }

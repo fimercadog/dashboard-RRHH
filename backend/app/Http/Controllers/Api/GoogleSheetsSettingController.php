@@ -19,7 +19,7 @@ class GoogleSheetsSettingController extends Controller
     {
         $setting = GoogleSheetsSetting::firstOrCreate(['company_id' => $this->companyId($request)]);
 
-        return response()->json(['data' => new GoogleSheetsSettingResource($setting)]);
+        return response()->json(new GoogleSheetsSettingResource($setting));
     }
 
     public function update(Request $request, AuditService $audit): JsonResponse
@@ -40,7 +40,7 @@ class GoogleSheetsSettingController extends Controller
         $setting->fill($data + ['company_id' => $cid])->save();
         $audit->record('updated', $setting, $request, $old);
 
-        return response()->json(['data' => new GoogleSheetsSettingResource($setting->fresh())]);
+        return response()->json(new GoogleSheetsSettingResource($setting->fresh()));
     }
 
     public function test(Request $request, AuditService $audit): JsonResponse
@@ -49,7 +49,7 @@ class GoogleSheetsSettingController extends Controller
 
         if (! $setting || ! filled($setting->api_key)) {
             return response()->json([
-                'data' => ['status' => 'pending_configuration', 'message' => 'Ingresa tu API Key antes de probar.'],
+                'status' => 'pending_configuration', 'message' => 'Ingresa tu API Key antes de probar.',
             ]);
         }
 
@@ -62,12 +62,10 @@ class GoogleSheetsSettingController extends Controller
             // 400 con "INVALID_ARGUMENT" = key válida pero falta spreadsheetId (esperado)
             // 403 con "API_KEY_INVALID" = key inválida
             $body = $response->json();
-            $isValidKey = ! ($response->status() === 400 &&
-                str_contains($body['error']['message'] ?? '', 'INVALID_ARGUMENT') === false);
 
-            if ($response->status() === 403 || isset($body['error']['status']) && $body['error']['status'] === 'PERMISSION_DENIED' && str_contains($body['error']['message'] ?? '', 'API key')) {
+            if ($response->status() === 403 || (isset($body['error']['status']) && $body['error']['status'] === 'PERMISSION_DENIED' && str_contains($body['error']['message'] ?? '', 'API key'))) {
                 return response()->json([
-                    'data' => ['status' => 'error', 'message' => 'API Key inválida. Verifica que esté activa en Google Cloud Console.'],
+                    'status' => 'error', 'message' => 'API Key inválida. Verifica que esté activa en Google Cloud Console.',
                 ]);
             }
 
@@ -76,11 +74,11 @@ class GoogleSheetsSettingController extends Controller
             $audit->record('updated', $setting, $request, []);
 
             return response()->json([
-                'data' => ['status' => 'ok', 'message' => 'API Key válida. Google Sheets listo para usar.'],
+                'status' => 'ok', 'message' => 'API Key válida. Google Sheets listo para usar.',
             ]);
         } catch (\Throwable) {
             return response()->json([
-                'data' => ['status' => 'error', 'message' => 'No se pudo conectar con Google. Verifica tu conexión.'],
+                'status' => 'error', 'message' => 'No se pudo conectar con Google. Verifica tu conexión.',
             ]);
         }
     }

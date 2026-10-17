@@ -20,7 +20,7 @@ class AiSettingController extends Controller
     {
         $setting = $this->resolveOrCreate($request);
 
-        return response()->json(['data' => new AiSettingResource($setting)]);
+        return response()->json(new AiSettingResource($setting));
     }
 
     /** PUT /settings/ai */
@@ -44,7 +44,7 @@ class AiSettingController extends Controller
 
         $audit->record('updated', $setting, $request, $old);
 
-        return response()->json(['data' => new AiSettingResource($setting->fresh())]);
+        return response()->json(new AiSettingResource($setting->fresh()));
     }
 
     /**
@@ -58,10 +58,8 @@ class AiSettingController extends Controller
 
         if (! filled($setting->api_key)) {
             return response()->json([
-                'data' => [
-                    'status'  => 'pending_configuration',
-                    'message' => 'Configura provider, model y api_key antes de probar.',
-                ],
+                'status'  => 'pending_configuration',
+                'message' => 'Configura provider, model y api_key antes de probar.',
             ]);
         }
 
@@ -71,20 +69,16 @@ class AiSettingController extends Controller
             $setting->update(['last_tested_at' => $now, 'is_active' => true]);
 
             return response()->json([
-                'data' => [
-                    'status'   => 'mock_ok',
-                    'provider' => $setting->provider,
-                    'model'    => $setting->model ?? 'mock-model',
-                    'latency'  => 120,
-                ],
+                'status'   => 'mock_ok',
+                'provider' => $setting->provider,
+                'model'    => $setting->model ?? 'mock-model',
+                'latency'  => 120,
             ]);
         }
 
         return response()->json([
-            'data' => [
-                'status'  => 'not_tested',
-                'message' => 'Test real requiere conectividad con el proveedor de IA.',
-            ],
+            'status'  => 'not_tested',
+            'message' => 'Test real requiere conectividad con el proveedor de IA.',
         ]);
     }
 
@@ -105,7 +99,7 @@ class AiSettingController extends Controller
 
         $models = $defaults[$setting->provider] ?? [];
 
-        return response()->json(['data' => $models]);
+        return response()->json($models);
     }
 
     private function resolveOrCreate(Request $request): AiSetting
