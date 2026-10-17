@@ -110,7 +110,7 @@ products.sale_account_code         → null hasta Fase F
 - **Auth:** Sanctum Bearer token. `/api/auth/login` → token. `/api/auth/me` → usuario+permisos.
 - **Permisos:** Spatie `laravel-permission`. Los permisos del usuario vienen en la respuesta de `/auth/me` y el frontend filtra navegación con ellos.
 - **Roles seed:** Super Admin · Administrador de empresa · Recursos Humanos · Supervisor · Empleado
-- **Permisos por módulo:** ver `docs/roles-permissions.md`
+- **Permisos por módulo:** ver `docs/SPEC.md`
 - **Regla:** nuevas verticales DEBEN agregar sus permisos como migración, no como seeder ad hoc.
 
 ---
@@ -222,3 +222,17 @@ BD → Backend (Alignment Pass) → Frontend/Formularios → Auth → E2E
 - "Backend Alignment Pass" = verificar que BD real ↔ Models ↔ Services ↔ API ↔ validaciones están alineados antes de tocar el frontend
 
 Ver checklist completo en `docs/VERTICAL_TEMPLATE.md` §3.
+
+## 11. Caché de agregados y etiquetas UI
+
+### Version-counter de caché
+- No incrementar una clave de caché que no se haya inicializado como entero. Con el driver database predeterminado, inicializar de forma atómica antes del primer incremento; verificarlo con pruebas de integración.
+- Todos los caminos que mutan datos usados por DashboardController/ReportController deben invalidar la versión, incluidos métodos sobrescritos y acciones de dominio.
+- Probar create/update/delete y acciones de negocio, concurrencia, aislamiento por empresa y coherencia entre TTL del contador y TTL de los datos.
+- No declarar la invalidación verificada por el mero hecho de que exista `Cache::increment`.
+
+### Etiquetas localizadas
+- Mantener los valores de base de datos/API como claves canónicas y traducirlos en la capa de presentación mediante un mapa compartido.
+- Completar el mapa contra enums/estados/acciones reales del backend; el fallback que solo capitaliza texto no garantiza español.
+- Si la etiqueta depende del sustantivo (por ejemplo, solicitud frente a documento), el mapa debe aceptar contexto de dominio o usar etiquetas específicas. Evitar discordancias gramaticales en badges.
+- Añadir pruebas de cobertura de estados y acciones para impedir regresiones entre módulos.
