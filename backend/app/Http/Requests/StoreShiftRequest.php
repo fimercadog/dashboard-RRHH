@@ -14,6 +14,11 @@ class StoreShiftRequest extends ApiFormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['break_minutes' => $this->input('break_minutes') ?? 0]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
