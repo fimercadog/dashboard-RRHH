@@ -31,7 +31,7 @@ class AiSettingTest extends TestCase
         $this->actingAs($this->admin, 'sanctum')
             ->getJson('/api/settings/ai')
             ->assertOk()
-            ->assertJsonPath('data.has_api_key', false)
+            ->assertJsonPath('has_api_key', false)
             ->assertJsonMissing(['api_key']);
     }
 
@@ -45,8 +45,8 @@ class AiSettingTest extends TestCase
             ]);
 
         $response->assertOk()
-            ->assertJsonPath('data.provider', 'openai')
-            ->assertJsonPath('data.has_api_key', true)
+            ->assertJsonPath('provider', 'openai')
+            ->assertJsonPath('has_api_key', true)
             ->assertJsonMissing(['api_key']);
 
         // api_key debe estar cifrado en BD.
@@ -69,10 +69,9 @@ class AiSettingTest extends TestCase
         $response = $this->actingAs($this->admin, 'sanctum')
             ->getJson('/api/settings/ai/models');
 
-        $response->assertOk()
-            ->assertJsonStructure(['data']);
+        $response->assertOk();
 
-        $this->assertIsArray($response->json('data'));
+        $this->assertIsArray($response->json());
     }
 
     public function test_unauthenticated_request_is_rejected(): void

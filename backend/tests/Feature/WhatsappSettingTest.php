@@ -34,8 +34,8 @@ class WhatsappSettingTest extends TestCase
             ->getJson('/api/settings/whatsapp');
 
         $response->assertOk()
-            ->assertJsonPath('data.has_access_token', false)
-            ->assertJsonPath('data.has_webhook_token', false)
+            ->assertJsonPath('has_access_token', false)
+            ->assertJsonPath('has_webhook_token', false)
             ->assertJsonMissing(['access_token'])
             ->assertJsonMissing(['webhook_verify_token']);
     }
@@ -51,9 +51,9 @@ class WhatsappSettingTest extends TestCase
             ]);
 
         $response->assertOk()
-            ->assertJsonPath('data.phone_number_id', '123456')
-            ->assertJsonPath('data.has_access_token', true)
-            ->assertJsonPath('data.has_webhook_token', true)
+            ->assertJsonPath('phone_number_id', '123456')
+            ->assertJsonPath('has_access_token', true)
+            ->assertJsonPath('has_webhook_token', true)
             ->assertJsonMissing(['access_token'])
             ->assertJsonMissing(['webhook_verify_token']);
 
@@ -79,7 +79,7 @@ class WhatsappSettingTest extends TestCase
                 'access_token'    => '',  // vacío → conservar
             ])
             ->assertOk()
-            ->assertJsonPath('data.has_access_token', true);
+            ->assertJsonPath('has_access_token', true);
     }
 
     public function test_generate_token_returns_plain_token_once(): void
@@ -88,9 +88,9 @@ class WhatsappSettingTest extends TestCase
             ->postJson('/api/settings/whatsapp/generate-token');
 
         $response->assertOk()
-            ->assertJsonStructure(['data' => ['webhook_verify_token']]);
+            ->assertJsonStructure(['webhook_verify_token']);
 
-        $token = $response->json('data.webhook_verify_token');
+        $token = $response->json('webhook_verify_token');
         $this->assertNotEmpty($token);
 
         // El token debe estar guardado en BD (plain, no cifrado).
