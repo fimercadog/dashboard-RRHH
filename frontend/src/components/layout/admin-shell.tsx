@@ -437,7 +437,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
             </span>
-            <span className="text-[10px] text-green-600 dark:text-green-400">Online</span>
+            <span className="text-[10px] text-green-600 dark:text-green-400">En línea</span>
           </span>
           <p className="truncate text-xs text-muted-foreground">{user?.roles?.[0] ?? user?.email}</p>
         </div>

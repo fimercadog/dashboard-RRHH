@@ -11,6 +11,7 @@ export const API_BASE =
 
 export const api = axios.create({
   baseURL: API_BASE,
+  timeout: 30_000,
   headers: {
     Accept: "application/json",
     "ngrok-skip-browser-warning": "true",

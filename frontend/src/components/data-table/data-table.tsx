@@ -108,56 +108,54 @@ export function DataTable<TData extends object>({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg bg-card">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-190 text-sm">
-            <thead className="bg-muted text-left text-muted-foreground">
+      <div className="overflow-x-auto rounded-lg bg-card">
+        <table className="w-full min-w-190 text-sm">
+          <thead className="bg-muted text-left text-muted-foreground">
+            <tr>
+              <th className="w-10 px-3 py-3 font-medium">N.º</th>
+              {columns.map((column, index) => (
+                <th key={columnKey(column, index)} className="px-4 py-3 font-medium">
+                  {renderHeader(column)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
               <tr>
-                <th className="w-10 px-3 py-3 font-medium">N.º</th>
-                {columns.map((column, index) => (
-                  <th key={columnKey(column, index)} className="px-4 py-3 font-medium">
-                    {renderHeader(column)}
-                  </th>
-                ))}
+                <td className="px-4 py-10 text-center text-muted-foreground" colSpan={columns.length + 1}>
+                  <RefreshCw className="mx-auto mb-2 h-5 w-5 animate-spin" /> Cargando datos...
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td className="px-4 py-10 text-center text-muted-foreground" colSpan={columns.length + 1}>
-                    <RefreshCw className="mx-auto mb-2 h-5 w-5 animate-spin" /> Cargando datos...
-                  </td>
+            ) : error ? (
+              <tr>
+                <td className="px-4 py-10 text-center text-destructive" colSpan={columns.length + 1}>{error}</td>
+              </tr>
+            ) : rows.length ? (
+              rows.map((row, rowIndex) => (
+                <tr key={row.id} className="border-t border-border odd:bg-background even:bg-muted">
+                  <td className="px-3 py-3 align-middle text-xs tabular-nums text-muted-foreground">{offset + rowIndex + 1}</td>
+                  {columns.map((column, index) => (
+                    <td key={`${row.id}-${columnKey(column, index)}`} className="px-4 py-3 align-middle">
+                      {renderCell(column, row.original)}
+                    </td>
+                  ))}
                 </tr>
-              ) : error ? (
-                <tr>
-                  <td className="px-4 py-10 text-center text-destructive" colSpan={columns.length + 1}>{error}</td>
-                </tr>
-              ) : rows.length ? (
-                rows.map((row, rowIndex) => (
-                  <tr key={row.id} className="border-t border-border odd:bg-background even:bg-muted">
-                    <td className="px-3 py-3 align-middle text-xs tabular-nums text-muted-foreground">{offset + rowIndex + 1}</td>
-                    {columns.map((column, index) => (
-                      <td key={`${row.id}-${columnKey(column, index)}`} className="px-4 py-3 align-middle">
-                        {renderCell(column, row.original)}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td className="px-4 py-10 text-center text-muted-foreground" colSpan={columns.length + 1}>No hay registros para mostrar.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td className="px-4 py-10 text-center text-muted-foreground" colSpan={columns.length + 1}>No hay registros para mostrar.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>{data?.meta?.total ?? 0} registros</span>
+        <span>{loading ? "Cargando…" : `${data?.meta?.total ?? 0} registros`}</span>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>Anterior</Button>
-          <span>Pagina {data?.meta?.current_page ?? page} de {data?.meta?.last_page ?? 1}</span>
+          <span>Página {data?.meta?.current_page ?? page} de {data?.meta?.last_page ?? 1}</span>
           <Button variant="outline" size="sm" disabled={!data?.meta || page >= data.meta.last_page} onClick={() => onPageChange(page + 1)}>Siguiente</Button>
         </div>
       </div>
