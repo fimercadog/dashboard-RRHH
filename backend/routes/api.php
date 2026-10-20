@@ -251,6 +251,30 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::apiResource('campaigns', CampaignController::class)->middleware('can:communications.manage');
     Route::get('/campaigns/{campaign}/preview-audience', [CampaignController::class, 'previewAudience'])->middleware('can:communications.view');
 
+    // Nómina y Liquidaciones — SPEC-018 Fase A.
+    Route::apiResource('employee-contracts', \App\Http\Controllers\Api\EmployeeContractController::class)->except(['destroy'])->middleware('can:payroll.manage');
+    Route::delete('employee-contracts/{employeeContract}', [\App\Http\Controllers\Api\EmployeeContractController::class, 'destroy'])->middleware('can:payroll.delete');
+
+    Route::apiResource('company-tax-profiles', \App\Http\Controllers\Api\CompanyTaxProfileController::class)->except(['destroy'])->middleware('can:payroll.params.manage');
+    Route::delete('company-tax-profiles/{companyTaxProfile}', [\App\Http\Controllers\Api\CompanyTaxProfileController::class, 'destroy'])->middleware('can:payroll.delete');
+    Route::post('company-tax-profiles/{profile}/validate', [\App\Http\Controllers\Api\CompanyTaxProfileController::class, 'validate'])->middleware('can:payroll.validate_tax_profile');
+
+    Route::prefix('payroll')->group(function () {
+        Route::apiResource('periods', \App\Http\Controllers\Api\PayrollPeriodController::class)->except(['destroy'])->middleware('can:payroll.manage');
+        Route::delete('periods/{period}', [\App\Http\Controllers\Api\PayrollPeriodController::class, 'destroy'])->middleware('can:payroll.delete');
+        Route::post('periods/{period}/close', [\App\Http\Controllers\Api\PayrollPeriodController::class, 'close'])->middleware('can:payroll.close');
+        Route::post('periods/{period}/complementary', [\App\Http\Controllers\Api\PayrollPeriodController::class, 'complementary'])->middleware('can:payroll.manage');
+
+        Route::post('periods/{period}/run', [\App\Http\Controllers\Api\PayrollRunController::class, 'run'])->middleware('can:payroll.manage');
+        Route::get('runs/{run}', [\App\Http\Controllers\Api\PayrollRunController::class, 'show'])->middleware('can:payroll.view');
+        Route::post('runs/{run}/approve', [\App\Http\Controllers\Api\PayrollRunController::class, 'approve'])->middleware('can:payroll.close');
+
+        Route::apiResource('parameters', \App\Http\Controllers\Api\PayrollParameterController::class)->except(['destroy'])->middleware('can:payroll.params.manage');
+        Route::delete('parameters/{parameter}', [\App\Http\Controllers\Api\PayrollParameterController::class, 'destroy'])->middleware('can:payroll.delete');
+        Route::post('parameters/{parameter}/values', [\App\Http\Controllers\Api\PayrollParameterController::class, 'addValue'])->middleware('can:payroll.params.manage');
+        Route::get('parameters/{parameter}/history', [\App\Http\Controllers\Api\PayrollParameterController::class, 'history'])->middleware('can:payroll.params.manage');
+    });
+
     // Importación masiva — SPEC-015.
     Route::post('/import/{entity}', [ImportController::class, 'upload'])
         ->whereIn('entity', ['employees', 'clients', 'products']);
