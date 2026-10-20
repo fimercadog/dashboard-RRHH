@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { api, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 
+const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
+
 type DataTableProps<TData extends object> = {
   columns: AppColumnDef<TData>[];
   data?: PaginatedResponse<TData>;
@@ -20,8 +22,22 @@ type DataTableProps<TData extends object> = {
   onSearchChange: (value: string) => void;
   page: number;
   onPageChange: (page: number) => void;
+  perPage?: number;
+  onPerPageChange?: (n: number) => void;
   exportBaseUrl?: string;
 };
+
+function getPageNumbers(current: number, last: number): (number | "…")[] {
+  if (last <= 7) return Array.from({ length: last }, (_, i) => i + 1);
+  const pages: (number | "…")[] = [1];
+  const left = Math.max(2, current - 1);
+  const right = Math.min(last - 1, current + 1);
+  if (left > 2) pages.push("…");
+  for (let i = left; i <= right; i++) pages.push(i);
+  if (right < last - 1) pages.push("…");
+  pages.push(last);
+  return pages;
+}
 
 export function DataTable<TData extends object>({
   columns,
@@ -32,6 +48,8 @@ export function DataTable<TData extends object>({
   onSearchChange,
   page,
   onPageChange,
+  perPage = 10,
+  onPerPageChange,
   exportBaseUrl,
 }: DataTableProps<TData>) {
   const table = useReactTable<TData>({
@@ -151,12 +169,45 @@ export function DataTable<TData extends object>({
         </table>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>{loading ? "Cargando…" : `${data?.meta?.total ?? 0} registros`}</span>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>Anterior</Button>
-          <span>Página {data?.meta?.current_page ?? page} de {data?.meta?.last_page ?? 1}</span>
-          <Button variant="outline" size="sm" disabled={!data?.meta || page >= data.meta.last_page} onClick={() => onPageChange(page + 1)}>Siguiente</Button>
+          <span>{loading ? "Cargando…" : `${data?.meta?.total ?? 0} registros`}</span>
+          {onPerPageChange ? (
+            <label className="flex items-center gap-1.5">
+              <span className="hidden sm:inline">Mostrar</span>
+              <select
+                className="rounded border border-border bg-card px-1.5 py-0.5 text-xs text-foreground"
+                value={perPage}
+                onChange={(e) => onPerPageChange(Number(e.target.value))}
+              >
+                {PAGE_SIZE_OPTIONS.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+              <span className="hidden sm:inline">por página</span>
+            </label>
+          ) : null}
+        </div>
+        <div className="flex items-center gap-1 flex-wrap">
+          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(1)} title="Primera">«</Button>
+          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)} title="Anterior">‹</Button>
+          {getPageNumbers(data?.meta?.current_page ?? page, data?.meta?.last_page ?? 1).map((p, i) =>
+            p === "…" ? (
+              <span key={`ellipsis-${i}`} className="px-1">…</span>
+            ) : (
+              <Button
+                key={p}
+                variant={p === (data?.meta?.current_page ?? page) ? "default" : "outline"}
+                size="sm"
+                className="min-w-8"
+                onClick={() => onPageChange(p)}
+              >
+                {p}
+              </Button>
+            )
+          )}
+          <Button variant="outline" size="sm" disabled={!data?.meta || page >= data.meta.last_page} onClick={() => onPageChange(page + 1)} title="Siguiente">›</Button>
+          <Button variant="outline" size="sm" disabled={!data?.meta || page >= data.meta.last_page} onClick={() => onPageChange(data?.meta?.last_page ?? 1)} title="Última">»</Button>
         </div>
       </div>
     </div>

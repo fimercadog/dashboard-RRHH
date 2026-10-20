@@ -8,6 +8,7 @@ export function useApiTable<T>(resource: string, extraParams?: Record<string, st
   const [search, setSearch] = React.useState("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
   const [page, setPage] = React.useState(1);
+  const [perPage, setPerPage] = React.useState(10);
   const [refreshKey, setRefreshKey] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -20,11 +21,14 @@ export function useApiTable<T>(resource: string, extraParams?: Record<string, st
     return () => clearTimeout(timer);
   }, [search]);
 
+  // Volver a página 1 cuando cambia el tamaño de página
+  React.useEffect(() => { setPage(1); }, [perPage]);
+
   React.useEffect(() => {
     const controller = new AbortController();
     queueMicrotask(() => setLoading(true));
     api
-      .get<PaginatedResponse<T>>(resource, { params: { page, search: debouncedSearch, per_page: 10, ...extraParams }, signal: controller.signal })
+      .get<PaginatedResponse<T>>(resource, { params: { page, search: debouncedSearch, per_page: perPage, ...extraParams }, signal: controller.signal })
       .then((response) => {
         setData(response.data);
         setError(null);
@@ -39,7 +43,7 @@ export function useApiTable<T>(resource: string, extraParams?: Record<string, st
     return () => controller.abort();
   // ponytail: extraParams is stable when passed as a literal object at call site (Agenda).
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resource, page, debouncedSearch, refreshKey, JSON.stringify(extraParams)]);
+  }, [resource, page, perPage, debouncedSearch, refreshKey, JSON.stringify(extraParams)]);
 
-  return { data, search, setSearch, page, setPage, loading, error, refresh: () => setRefreshKey((key) => key + 1) };
+  return { data, search, setSearch, page, setPage, perPage, setPerPage, loading, error, refresh: () => setRefreshKey((key) => key + 1) };
 }

@@ -47,6 +47,11 @@ export type CrudField = {
   step?: number;
   /** Habilita el botón de dictado por voz en este campo (text / textarea). */
   voice?: boolean;
+  /** El campo no puede cambiarse al editar un registro existente (campo de titularidad/ownership). */
+  editReadonly?: boolean;
+  /** Cuando el modo es "create", el campo se envía oculto con su defaultValue (ej. "active")
+   *  en lugar de mostrar un selector editable. En modo "edit" se muestra como select normal. */
+  createHidden?: boolean;
 };
 
 type CrudRow = Record<string, unknown> & { id?: number | string };
@@ -81,14 +86,17 @@ function RelationSelectField({
   defaultVal,
   onClearError,
   errorClass,
+  disabled,
 }: {
   field: CrudField;
   defaultVal: string;
   onClearError: () => void;
   errorClass?: string;
+  disabled?: boolean;
 }) {
   const [options, setOptions] = React.useState<RelationOption[]>([]);
   const [value, setValue] = React.useState(defaultVal);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     setValue(defaultVal);
@@ -96,6 +104,7 @@ function RelationSelectField({
 
   React.useEffect(() => {
     if (!field.endpoint) return;
+    setLoading(true);
     api.get(field.endpoint).then((res) => {
       const raw: unknown[] = Array.isArray(res.data)
         ? res.data
@@ -114,7 +123,8 @@ function RelationSelectField({
           return { id: Number(r.id), label };
         }),
       );
-    });
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, [field.endpoint]);
 
   return (
@@ -122,21 +132,29 @@ function RelationSelectField({
       name={field.name}
       required={field.required}
       value={value}
+      disabled={disabled || loading}
       onChange={(e) => {
         setValue(e.target.value);
         onClearError();
       }}
       className={cn(
         "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition focus-visible:border-primary",
+        (disabled || loading) && "cursor-not-allowed opacity-60",
         errorClass,
       )}
     >
-      <option value="">Seleccionar</option>
-      {options.map((opt) => (
-        <option key={opt.id} value={opt.id}>
-          {opt.label}
-        </option>
-      ))}
+      {loading ? (
+        <option value="">Cargando...</option>
+      ) : (
+        <>
+          <option value="">Seleccionar</option>
+          {options.map((opt) => (
+            <option key={opt.id} value={opt.id}>
+              {opt.label}
+            </option>
+          ))}
+        </>
+      )}
     </select>
   );
 }
@@ -144,9 +162,11 @@ function RelationSelectField({
 function RelationSearchField({
   field,
   defaultVal,
+  disabled,
 }: {
   field: CrudField;
   defaultVal: string | number;
+  disabled?: boolean;
 }) {
   const [query, setQuery]                 = React.useState("");
   const [results, setResults]             = React.useState<RelationOption[]>([]);
@@ -235,14 +255,18 @@ function RelationSearchField({
         type="text"
         role="combobox"
         aria-autocomplete="list"
-        aria-expanded={open}
+        aria-expanded={disabled ? false : open}
         aria-haspopup="listbox"
         placeholder={selectedLabel || "Buscar empleado…"}
         value={displayValue}
-        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        onChange={handleInput}
-        onFocus={() => { if (!open) search(query); }}
-        onBlur={() => setTimeout(() => { setOpen(false); setFocusedIndex(-1); }, 150)}
+        disabled={disabled}
+        className={cn(
+          "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+          disabled && "cursor-not-allowed opacity-60",
+        )}
+        onChange={disabled ? undefined : handleInput}
+        onFocus={disabled ? undefined : () => { if (!open) search(query); }}
+        onBlur={disabled ? undefined : () => setTimeout(() => { setOpen(false); setFocusedIndex(-1); }, 150)}
         onKeyDown={(e) => {
           if (e.key === "Escape") { setOpen(false); setQuery(""); setFocusedIndex(-1); }
           if (e.key === "ArrowDown") {
@@ -261,10 +285,10 @@ function RelationSearchField({
         }}
       />
       <input type="hidden" name={field.name} value={selectedId ?? ""} />
-      {loading && (
+      {!disabled && loading && (
         <span className="absolute right-2 top-2 text-muted-foreground text-xs">…</span>
       )}
-      {open && (
+      {!disabled && open && (
         <ul
           role="listbox"
           className="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-md border border-input bg-background shadow-md text-sm"
@@ -340,11 +364,11 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
     const uploadedFile = fileField ? formData.get(fileField.name) : null;
     const hasFile = uploadedFile instanceof File && uploadedFile.size > 0;
 
-    // Build JSON-serializable payload (file fields excluded).
+    // Build JSON-serializable payload (file fields excluded; ownership fields excluded in edit).
     function buildPayload() {
       return Object.fromEntries(
         fields
-          .filter((f) => f.type !== "file")
+          .filter((f) => f.type !== "file" && !(mode === "edit" && f.editReadonly))
           .map((field) => [field, normalizeValue(formData.get(field.name), field)] as const)
           .filter(([field, value]) => value !== null || !field.omitWhenEmpty)
           .map(([field, value]) => [field.name, value] as const),
@@ -360,6 +384,16 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
     );
     if (missingRelationSearch.length > 0) {
       setErrors(Object.fromEntries(missingRelationSearch.map((f) => [f.name, ["Este campo es requerido"]])));
+      toast.error("Hay campos por corregir. Revisa lo marcado en rojo.");
+      return;
+    }
+
+    // Validar selects requeridos (incluyendo binary-status selects)
+    const missingSelects = fields.filter(
+      (f) => f.type === "select" && f.required && !(mode === "edit" && f.editReadonly) && !formData.get(f.name),
+    );
+    if (missingSelects.length > 0) {
+      setErrors(Object.fromEntries(missingSelects.map((f) => [f.name, ["Este campo es requerido"]])));
       toast.error("Hay campos por corregir. Revisa lo marcado en rojo.");
       return;
     }
@@ -418,17 +452,25 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
           {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
 
-        <form id={formId} className="grid gap-4 sm:grid-cols-2" onSubmit={submit} noValidate={false}>
+        <form id={formId} key={`${mode}-${row?.id ?? "new"}`} className="grid gap-4 sm:grid-cols-2" onSubmit={submit} noValidate={false}>
           {fields.filter((f) => !(f.createOnly && mode === "edit")).map((field) => {
             const err = errors[field.name]?.[0];
             const invalid = cn(err && "border-destructive focus-visible:border-destructive");
+            const isReadonly = mode === "edit" && !!field.editReadonly;
             return (
               <label key={field.name} className={cn("space-y-1.5 text-sm", field.colSpan === "full" && "sm:col-span-2")}>
                 <span className="font-medium">
                   {field.label}
                   {field.required ? <span className="text-destructive"> *</span> : null}
                 </span>
-                {field.type === "file" ? (
+                {mode === "create" && field.createHidden ? (
+                  <>
+                    <input type="hidden" name={field.name} value={field.defaultValue ?? "active"} />
+                    <span className="inline-flex h-9 items-center rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground">
+                      {field.options?.find((o) => o.value === (field.defaultValue ?? "active"))?.label ?? (field.defaultValue ?? "Activo")}
+                    </span>
+                  </>
+                ) : field.type === "file" ? (
                   <input
                     name={field.name}
                     type="file"
@@ -446,20 +488,24 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
                     defaultVal={fieldDefault(row, field)}
                     onClearError={() => clearError(field.name)}
                     errorClass={invalid}
+                    disabled={isReadonly}
                   />
                 ) : field.type === "relation-search" ? (
                   <RelationSearchField
                     field={field}
                     defaultVal={fieldDefault(row, field)}
+                    disabled={isReadonly}
                   />
                 ) : field.type === "select" ? (
                   <select
                     name={field.name}
                     required={field.required}
                     defaultValue={fieldDefault(row, field)}
+                    disabled={isReadonly}
                     onChange={() => clearError(field.name)}
                     className={cn(
                       "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition focus-visible:border-primary",
+                      isReadonly && "cursor-not-allowed opacity-60",
                       invalid,
                     )}
                   >
