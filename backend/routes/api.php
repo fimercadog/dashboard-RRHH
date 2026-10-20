@@ -252,7 +252,17 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     // El permiso por recurso se valida dentro del controlador.
     Route::get('/exports/{resource}.{format}', ExportController::class)
-        ->whereIn('resource', ['employees', 'attendances', 'vacation-requests', 'permission-requests', 'sick-leaves', 'employee-documents', 'audit-logs', 'clients', 'contacts', 'deals', 'activities', 'segments', 'products', 'stock-movements'])
+        ->whereIn('resource', [
+            'users', 'departments', 'positions',
+            'employees', 'attendances', 'vacation-requests', 'permission-requests', 'sick-leaves', 'employee-documents', 'audit-logs', 'shifts',
+            'job-vacancies', 'job-candidates', 'job-interviews', 'job-applications',
+            'products', 'stock-movements', 'product-stock', 'categories', 'brands', 'warehouses', 'units',
+            'clients', 'contacts', 'deals', 'activities', 'segments',
+            'suppliers', 'purchase-orders', 'purchase-invoices', 'purchase-receipts', 'accounts-payable',
+            'quotes', 'sale-orders', 'sale-invoices', 'accounts-receivable',
+            'payments', 'transfers', 'cash-accounts', 'financial-transactions',
+            'accounting-periods', 'journal-entries', 'chart-of-accounts',
+        ])
         ->whereIn('format', ['csv', 'pdf']);
 });
 

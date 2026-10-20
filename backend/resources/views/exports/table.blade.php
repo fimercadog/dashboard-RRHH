@@ -12,6 +12,11 @@
 </head>
 <body>
     <h1>Exportacion {{ $resource }}</h1>
+    @if ($truncated ?? false)
+    <p style="color: #b91c1c; font-size: 11px; margin-bottom: 8px;">
+        ⚠ Este PDF muestra los primeros {{ $limit }} registros. Para el conjunto completo, exporte en formato CSV.
+    </p>
+    @endif
     <table>
         <thead>
             <tr>
@@ -23,9 +28,15 @@
         <tbody>
             @foreach ($rows as $row)
                 <tr>
-                    @foreach ($columns as $column)
-                        <td>{{ $row->{$column} }}</td>
-                    @endforeach
+                    @if ($rowMapper ?? null)
+                        @foreach (call_user_func($rowMapper, $row) as $value)
+                            <td>{{ $value }}</td>
+                        @endforeach
+                    @else
+                        @foreach ($columns as $column)
+                            <td>{{ $row->{$column} }}</td>
+                        @endforeach
+                    @endif
                 </tr>
             @endforeach
         </tbody>
