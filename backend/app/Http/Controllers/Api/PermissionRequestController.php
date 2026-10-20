@@ -11,4 +11,5 @@ class PermissionRequestController extends BaseCrudController
     protected string $resource = PermissionRequestResource::class;
     protected array $with = ['employee', 'approver'];
     protected array $filterable = ['status' => 'status', 'type' => 'type', 'employee_id' => 'employee_id'];
+    protected array $immutableOnUpdate = ['employee_id'];
 }

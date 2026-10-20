@@ -16,5 +16,6 @@ class JobInterviewController extends BaseCrudController
     ];
     protected array $searchable = ['notes'];
     protected array $filterable = ['type', 'result', 'job_application_id'];
+    protected array $immutableOnUpdate = ['job_application_id'];
 }
 

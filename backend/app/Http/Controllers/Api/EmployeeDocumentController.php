@@ -17,6 +17,7 @@ class EmployeeDocumentController extends BaseCrudController
     protected array $with = ['employee'];
     protected array $searchable = ['name', 'document_type'];
     protected array $filterable = ['status' => 'status', 'employee_id' => 'employee_id'];
+    protected array $immutableOnUpdate = ['employee_id'];
 
     public function store(Request $request, AuditService $audit): JsonResponse
     {

@@ -18,6 +18,7 @@ class JobApplicationController extends BaseCrudController
     ];
     protected array $searchable = ['notes'];
     protected array $filterable = ['status', 'job_vacancy_id', 'job_candidate_id'];
+    protected array $immutableOnUpdate = ['job_vacancy_id', 'job_candidate_id'];
 
     public function hire(Request $request, int $id): JsonResponse
     {

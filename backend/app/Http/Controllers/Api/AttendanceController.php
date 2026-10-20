@@ -16,6 +16,7 @@ class AttendanceController extends BaseCrudController
     protected array $with = ['employee.department', 'employee.position'];
 
     protected array $filterable = ['status' => 'status', 'employee_id' => 'employee_id'];
+    protected array $immutableOnUpdate = ['employee_id'];
 
     /**
      * Igual que BaseCrudController::store, pero idempotente cuando el cliente

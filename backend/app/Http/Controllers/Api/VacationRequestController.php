@@ -11,4 +11,5 @@ class VacationRequestController extends BaseCrudController
     protected string $resource = VacationRequestResource::class;
     protected array $with = ['employee', 'approver'];
     protected array $filterable = ['status' => 'status', 'employee_id' => 'employee_id'];
+    protected array $immutableOnUpdate = ['employee_id'];
 }

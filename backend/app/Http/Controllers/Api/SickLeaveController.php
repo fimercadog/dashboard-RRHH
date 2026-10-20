@@ -11,4 +11,5 @@ class SickLeaveController extends BaseCrudController
     protected string $resource = SickLeaveResource::class;
     protected array $with = ['employee'];
     protected array $filterable = ['status' => 'status', 'employee_id' => 'employee_id'];
+    protected array $immutableOnUpdate = ['employee_id'];
 }

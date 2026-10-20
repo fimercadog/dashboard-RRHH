@@ -25,6 +25,9 @@ abstract class BaseCrudController extends Controller
 
     protected array $sortable = [];
 
+    /** Campos que no pueden modificarse al actualizar — siempre se descartan del payload de update. */
+    protected array $immutableOnUpdate = [];
+
     /**
      * Payload validado. Si existe App\Http\Requests\Store{Modelo}Request se
      * aplican sus reglas (mismo FormRequest para crear y actualizar; en update
@@ -90,6 +93,9 @@ abstract class BaseCrudController extends Controller
         $model = ($this->model)::query()->where('company_id', $cid)->findOrFail($id);
         $oldValues = $model->getOriginal();
         $payload = $this->validatedInput($request, isUpdate: true);
+        foreach ($this->immutableOnUpdate as $field) {
+            unset($payload[$field]);
+        }
         $payload['company_id'] = $cid;
         $model->update($payload);
         $model->load($this->with);
