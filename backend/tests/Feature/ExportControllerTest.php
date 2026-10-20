@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\ExportController;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\User;
@@ -59,6 +60,25 @@ class ExportControllerTest extends TestCase
     {
         $this->actAs(['employees.manage']);
         $this->get('/api/exports/nonexistent.csv')->assertNotFound();
+    }
+
+    public function test_resource_in_map_but_absent_from_permissions_returns_403_not_500(): void
+    {
+        Permission::firstOrCreate(['name' => 'employees.manage', 'guard_name' => 'web']);
+        $user = User::factory()->create(['company_id' => $this->company->id]);
+        $user->givePermissionTo('employees.manage');
+
+        // Simula: developer agrega recurso a $map pero olvida $permissionByResource
+        $ctrl = new ExportController();
+        $prop = new \ReflectionProperty(ExportController::class, 'permissionByResource');
+        $prop->setAccessible(true);
+        $perms = $prop->getValue($ctrl);
+        unset($perms['employees']);
+        $prop->setValue($ctrl, $perms);
+        $this->app->instance(ExportController::class, $ctrl);
+
+        Sanctum::actingAs($user, ['*']);
+        $this->get('/api/exports/employees.csv')->assertForbidden();
     }
 
     public function test_unknown_format_returns_404(): void

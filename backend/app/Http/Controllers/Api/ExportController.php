@@ -497,6 +497,7 @@ class ExportController extends Controller
     {
         $map = $this->map();
         abort_unless(array_key_exists($resource, $map), 404);
+        abort_unless(array_key_exists($resource, $this->permissionByResource), 403);
         abort_unless($request->user()->can($this->permissionByResource[$resource]), 403);
 
         [$model, $headers, $queryEnhancer, $rowMapper] = array_pad($map[$resource], 4, null);
