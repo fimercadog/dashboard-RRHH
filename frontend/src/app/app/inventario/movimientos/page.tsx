@@ -33,6 +33,7 @@ export default function MovimientosPage() {
       resource="/stock-movements"
       columns={columns}
       fields={[]}
+      exportResource="stock-movements"
     />
   );
 }

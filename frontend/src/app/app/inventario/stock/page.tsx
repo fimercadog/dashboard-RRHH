@@ -21,6 +21,7 @@ export default function StockPage() {
       title="Stock"
       description="Niveles de inventario por producto y bodega."
       resource="/stock"
+      exportResource="product-stock"
       columns={columns}
       fields={[]}
     />

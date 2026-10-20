@@ -40,6 +40,7 @@ export default function CxPPage() {
       title="Cuentas por pagar"
       description="Obligaciones pendientes con proveedores."
       resource="/accounts-payable"
+      exportResource="accounts-payable"
       columns={columns}
       fields={[]}
     />

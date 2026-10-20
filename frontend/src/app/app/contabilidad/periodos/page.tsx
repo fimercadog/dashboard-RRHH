@@ -1,40 +1,31 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge, badgeVariant } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { api } from "@/lib/api";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DataTable } from "@/components/data-table/data-table";
+import { api, API_BASE } from "@/lib/api";
+import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { AccountingPeriod } from "@/lib/types";
+import { useApiTable } from "@/lib/use-api-table";
 
 const BLANK = { name: "", start_date: "", end_date: "" };
 
 export default function PeriodosPage() {
-  const [periods, setPeriods] = useState<AccountingPeriod[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState(BLANK);
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [closing, setClosing] = useState<number | null>(null);
-
-  const load = () => {
-    setLoading(true);
-    api.get<{ data: AccountingPeriod[] }>("/accounting-periods?per_page=50")
-      .then((r) => setPeriods(r.data.data))
-      .catch(() => setError("Error al cargar los períodos."))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => { load(); }, []);
+  const table = useApiTable<AccountingPeriod>("/accounting-periods");
+  const [open, setOpen] = React.useState(false);
+  const [form, setForm] = React.useState(BLANK);
+  const [saving, setSaving] = React.useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
+  const [closing, setClosing] = React.useState<number | null>(null);
 
   const save = async () => {
     setSaving(true); setFormError(null);
     try {
       await api.post("/accounting-periods", form);
-      setOpen(false); setForm(BLANK); load();
+      setOpen(false); setForm(BLANK); table.refresh();
     } catch (e: any) {
       setFormError(e?.response?.data?.message || "Error al crear el período.");
     } finally {
@@ -47,7 +38,7 @@ export default function PeriodosPage() {
     setClosing(id);
     try {
       await api.post(`/accounting-periods/${id}/close`, {});
-      load();
+      table.refresh();
     } catch (e: any) {
       alert(e?.response?.data?.message || "Error al cerrar el período.");
     } finally {
@@ -55,76 +46,68 @@ export default function PeriodosPage() {
     }
   };
 
+  const columns: AppColumnDef<AccountingPeriod>[] = [
+    { accessorKey: "name", header: "Nombre" },
+    dateColumn<AccountingPeriod>("start_date", "Inicio"),
+    dateColumn<AccountingPeriod>("end_date", "Fin"),
+    { header: "Asientos", cell: ({ row }) => (row.original as any).entries_count ?? "—" },
+    {
+      header: "Estado",
+      cell: ({ row }) => (
+        <Badge variant={badgeVariant(row.original.status)}>
+          {row.original.status === "open" ? "Abierto" : "Cerrado"}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => {
+        const p = row.original;
+        if (p.status === "open") {
+          return (
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" onClick={() => close(p.id)} disabled={closing === p.id}>
+                {closing === p.id ? "Cerrando..." : "Cerrar"}
+              </Button>
+            </div>
+          );
+        }
+        if (p.status === "closed" && (p as any).closed_at) {
+          return (
+            <span className="text-xs text-muted-foreground">
+              Cerrado {new Date((p as any).closed_at).toLocaleDateString()}
+            </span>
+          );
+        }
+        return null;
+      },
+    },
+  ];
+
   return (
-    <div className="mx-auto max-w-4xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Períodos Contables</h1>
+          <h1 className="text-2xl font-semibold">Períodos Contables</h1>
           <p className="text-sm text-muted-foreground">Gestión de períodos abiertos y cerrados</p>
         </div>
         <Button onClick={() => { setFormError(null); setForm(BLANK); setOpen(true); }}>+ Nuevo período</Button>
       </div>
 
-      {loading && <p className="text-sm text-muted-foreground">Cargando...</p>}
-      {error && <p className="text-sm text-destructive">{error}</p>}
-
-      {!loading && !error && (
-        <div className="rounded-lg border">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/40">
-                <th className="w-10 px-3 py-2 text-left font-medium">N.º</th>
-                <th className="px-4 py-2 text-left font-medium">Nombre</th>
-                <th className="px-4 py-2 text-left font-medium">Inicio</th>
-                <th className="px-4 py-2 text-left font-medium">Fin</th>
-                <th className="px-4 py-2 text-left font-medium">Asientos</th>
-                <th className="px-4 py-2 text-left font-medium">Estado</th>
-                <th className="px-4 py-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {periods.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
-                    No hay períodos. Crea el primero para empezar a registrar asientos.
-                  </td>
-                </tr>
-              )}
-              {periods.map((p, i) => (
-                <tr key={p.id} className="border-b last:border-0 odd:bg-background even:bg-muted/30 hover:bg-muted/50">
-                  <td className="px-3 py-2 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
-                  <td className="px-4 py-2 font-medium">{p.name}</td>
-                  <td className="px-4 py-2">{p.start_date}</td>
-                  <td className="px-4 py-2">{p.end_date}</td>
-                  <td className="px-4 py-2">{p.entries_count ?? "—"}</td>
-                  <td className="px-4 py-2">
-                    <Badge variant={badgeVariant(p.status)}>
-                      {p.status === "open" ? "Abierto" : "Cerrado"}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-2">
-                    {p.status === "open" && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => close(p.id)}
-                        disabled={closing === p.id}
-                      >
-                        {closing === p.id ? "Cerrando..." : "Cerrar"}
-                      </Button>
-                    )}
-                    {p.status === "closed" && p.closed_at && (
-                      <span className="text-xs text-muted-foreground">
-                        Cerrado {new Date(p.closed_at).toLocaleDateString()}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={table.data}
+        search={table.search}
+        onSearchChange={table.setSearch}
+        page={table.page}
+        onPageChange={table.setPage}
+        perPage={table.perPage}
+        onPerPageChange={table.setPerPage}
+        exportBaseUrl={`${API_BASE}/exports/accounting-periods`}
+        loading={table.loading}
+        error={table.error}
+      />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md">
@@ -147,11 +130,11 @@ export default function PeriodosPage() {
                 <Input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} />
               </div>
             </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-              <Button onClick={save} disabled={saving}>{saving ? "Creando..." : "Crear período"}</Button>
-            </div>
           </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button onClick={save} disabled={saving}>{saving ? "Creando..." : "Crear período"}</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

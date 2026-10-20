@@ -27,7 +27,7 @@ export default function CandidatosPage() {
   return (
     <ModuleTablePage title="Candidatos"
       description="Registro de personas en proceso de seleccion."
-      resource="/job-candidates" columns={columns} fields={fields}
+      resource="/job-candidates" exportResource="job-candidates" columns={columns} fields={fields}
       actionLabel="Nuevo candidato" modalDescription="Registra los datos del candidato." />
   );
 }

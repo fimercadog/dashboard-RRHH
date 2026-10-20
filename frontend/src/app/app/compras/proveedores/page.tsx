@@ -24,7 +24,7 @@ const fields: CrudField[] = [
   { name: "phone", label: "Teléfono" },
   { name: "address", label: "Dirección", type: "textarea" },
   { name: "payment_terms", label: "Días de pago (plazo)", type: "number" },
-  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
+  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS, defaultValue: "active", createHidden: true },
 ];
 
 export default function ProveedoresPage() {
@@ -33,6 +33,7 @@ export default function ProveedoresPage() {
       title="Proveedores"
       description="Directorio de proveedores de la empresa."
       resource="/suppliers"
+      exportResource="suppliers"
       columns={columns}
       fields={fields}
       actionLabel="Nuevo proveedor"

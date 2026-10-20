@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import * as React from "react";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,60 +12,47 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { api } from "@/lib/api";
+import { DataTable } from "@/components/data-table/data-table";
+import { api, API_BASE } from "@/lib/api";
+import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { CashAccount, Transfer } from "@/lib/types";
+import { useApiTable } from "@/lib/use-api-table";
 
 const COP = (v: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
 
 type FormState = {
   from_account_id: string;
-  to_account_id: string;
-  amount: string;
-  date: string;
+  to_account_id:   string;
+  amount:    string;
+  date:      string;
   reference: string;
-  notes: string;
+  notes:     string;
 };
 
 const EMPTY_FORM: FormState = {
   from_account_id: "",
-  to_account_id: "",
-  amount: "",
-  date: new Date().toISOString().split("T")[0],
+  to_account_id:   "",
+  amount:    "",
+  date:      new Date().toISOString().split("T")[0],
   reference: "",
-  notes: "",
+  notes:     "",
 };
 
 export default function TransferenciasPage() {
-  const [transfers, setTransfers] = useState<Transfer[]>([]);
-  const [accounts, setAccounts] = useState<CashAccount[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [cancelTarget, setCancelTarget] = useState<Transfer | null>(null);
-  const [cancelling, setCancelling] = useState(false);
+  const table = useApiTable<Transfer>("/transfers");
+  const [accounts, setAccounts] = React.useState<CashAccount[]>([]);
+  const [open, setOpen] = React.useState(false);
+  const [form, setForm] = React.useState<FormState>(EMPTY_FORM);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
+  const [cancelTarget, setCancelTarget] = React.useState<Transfer | null>(null);
+  const [cancelling, setCancelling] = React.useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [transfersRes, accountsRes] = await Promise.all([
-        api.get<{ data: Transfer[] }>("/transfers?per_page=50"),
-        api.get<{ data: CashAccount[] }>("/cash-accounts?per_page=100"),
-      ]);
-      setTransfers(transfersRes.data.data ?? []);
-      setAccounts((accountsRes.data.data ?? []).filter((a) => a.status === "active"));
-    } catch {
-      setError("No se pudieron cargar las transferencias.");
-    } finally {
-      setLoading(false);
-    }
+  React.useEffect(() => {
+    api.get<{ data: CashAccount[] }>("/cash-accounts?per_page=100")
+      .then(r => setAccounts((r.data.data ?? []).filter(a => a.status === "active")));
   }, []);
-
-  useEffect(() => { load(); }, [load]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -90,7 +77,7 @@ export default function TransferenciasPage() {
       });
       setOpen(false);
       setForm(EMPTY_FORM);
-      await load();
+      table.refresh();
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setFormError(msg ?? "Error al registrar la transferencia.");
@@ -105,7 +92,7 @@ export default function TransferenciasPage() {
     try {
       await api.post(`/transfers/${cancelTarget.id}/cancel`, {});
       setCancelTarget(null);
-      await load();
+      table.refresh();
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       alert(msg ?? "Error al cancelar la transferencia.");
@@ -121,11 +108,40 @@ export default function TransferenciasPage() {
     </div>
   );
 
+  const columns: AppColumnDef<Transfer>[] = [
+    dateColumn<Transfer>("date", "Fecha"),
+    { header: "Origen", cell: ({ row }) => (row.original as any).from_account?.name ?? "-" },
+    { header: "Destino", cell: ({ row }) => (row.original as any).to_account?.name ?? "-" },
+    { header: "Monto", cell: ({ row }) => <span className="font-medium tabular-nums">{COP(row.original.amount)}</span> },
+    { accessorKey: "reference", header: "Referencia" },
+    { accessorKey: "notes", header: "Notas" },
+    {
+      header: "Estado",
+      cell: ({ row }) => (
+        <Badge variant={badgeVariant(row.original.status)}>
+          {row.original.status === "active" ? "Activa" : "Cancelada"}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) =>
+        row.original.status === "active" ? (
+          <div className="flex justify-end">
+            <Button size="sm" variant="destructive" onClick={() => setCancelTarget(row.original)}>
+              Cancelar
+            </Button>
+          </div>
+        ) : null,
+    },
+  ];
+
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Transferencias</h1>
+          <h1 className="text-2xl font-semibold">Transferencias</h1>
           <p className="text-sm text-muted-foreground">Mueve fondos entre cuentas de efectivo.</p>
         </div>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setForm(EMPTY_FORM); setFormError(null); } }}>
@@ -189,51 +205,19 @@ export default function TransferenciasPage() {
         </Dialog>
       </div>
 
-      {loading && <p className="text-muted-foreground text-sm">Cargando...</p>}
-      {error && <p className="text-destructive text-sm">{error}</p>}
-
-      {!loading && !error && transfers.length === 0 && (
-        <div className="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
-          No hay transferencias registradas aún.
-        </div>
-      )}
-
-      {!loading && transfers.length > 0 && (
-        <div className="rounded-lg overflow-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b bg-muted/50">
-              <tr>
-                {["N.º", "Fecha", "Origen", "Destino", "Monto", "Referencia", "Notas", "Estado", ""].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left font-medium text-muted-foreground">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {transfers.map((t, i) => (
-                <tr key={t.id} className="border-b last:border-0 odd:bg-background even:bg-muted hover:bg-muted/70">
-                  <td className="px-3 py-3 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
-                  <td className="px-4 py-3">{t.date as unknown as string}</td>
-                  <td className="px-4 py-3">{t.from_account?.name ?? `#${t.id}`}</td>
-                  <td className="px-4 py-3">{t.to_account?.name ?? "-"}</td>
-                  <td className="px-4 py-3 font-medium">{COP(t.amount)}</td>
-                  <td className="px-4 py-3">{t.reference ?? "-"}</td>
-                  <td className="px-4 py-3">{t.notes ?? "-"}</td>
-                  <td className="px-4 py-3">
-                    <Badge variant={badgeVariant(t.status)}>
-                      {t.status === "active" ? "Activa" : "Cancelada"}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    {t.status === "active" && (
-                      <Button size="sm" variant="destructive" onClick={() => setCancelTarget(t)}>Cancelar</Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={table.data}
+        search={table.search}
+        onSearchChange={table.setSearch}
+        page={table.page}
+        onPageChange={table.setPage}
+        perPage={table.perPage}
+        onPerPageChange={table.setPerPage}
+        exportBaseUrl={`${API_BASE}/exports/transfers`}
+        loading={table.loading}
+        error={table.error}
+      />
 
       <Dialog open={!!cancelTarget} onOpenChange={(v) => { if (!v) setCancelTarget(null); }}>
         <DialogContent>

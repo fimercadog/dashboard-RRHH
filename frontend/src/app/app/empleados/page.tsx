@@ -35,6 +35,7 @@ const fields: CrudField[] = [
     type: "select",
     required: true,
     defaultValue: "active",
+    createHidden: true,
     options: [
       ...STATUS_OPTIONS,
       { label: "Terminado", value: "terminated" },

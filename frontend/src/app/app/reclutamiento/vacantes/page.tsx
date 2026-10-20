@@ -35,7 +35,7 @@ export default function VacantesPage() {
   return (
     <ModuleTablePage title="Vacantes"
       description="Gestion de cargos disponibles para seleccion de personal."
-      resource="/job-vacancies" columns={columns} fields={fields}
+      resource="/job-vacancies" exportResource="job-vacancies" columns={columns} fields={fields}
       actionLabel="Nueva vacante" modalDescription="Registra los datos de la posicion a cubrir." />
   );
 }

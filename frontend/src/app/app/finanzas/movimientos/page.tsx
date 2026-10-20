@@ -45,6 +45,7 @@ export default function MovimientosFinanzasPage() {
       title="Movimientos financieros"
       description="Historial de ingresos, egresos y transferencias por cuenta."
       resource="/financial-transactions"
+      exportResource="financial-transactions"
       columns={columns}
       fields={[]}
     />

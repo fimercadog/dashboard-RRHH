@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/data-table/data-table";
-import { api, PaginatedResponse } from "@/lib/api";
+import { api, API_BASE, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { PurchaseInvoice, PurchaseOrder, PurchaseReceipt, Supplier } from "@/lib/types";
 import { useApiTable } from "@/lib/use-api-table";
@@ -360,6 +360,9 @@ export default function FacturasCompraPage() {
         onSearchChange={table.setSearch}
         page={table.page}
         onPageChange={table.setPage}
+        perPage={table.perPage}
+        onPerPageChange={table.setPerPage}
+        exportBaseUrl={`${API_BASE}/exports/purchase-invoices`}
         loading={table.loading}
         error={table.error}
       />

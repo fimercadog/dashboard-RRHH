@@ -17,7 +17,7 @@ const columns: AppColumnDef<Role>[] = [
 
 const fields: CrudField[] = [
   { name: "name", label: "Nombre del rol", required: true },
-  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
+  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS, defaultValue: "active", createHidden: true },
 ];
 
 export default function AppRolesPage() {

@@ -16,7 +16,7 @@ const columns: AppColumnDef<Brand>[] = [
 const fields: CrudField[] = [
   { name: "name", label: "Nombre", required: true },
   {
-    name: "status", label: "Estado", type: "select", required: true,
+    name: "status", label: "Estado", type: "select", required: true, defaultValue: "active", createHidden: true,
     options: STATUS_OPTIONS,
   },
 ];

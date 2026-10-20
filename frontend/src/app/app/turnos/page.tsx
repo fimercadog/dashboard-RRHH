@@ -22,9 +22,9 @@ const fields: CrudField[] = [
   { name: "start_time", label: "Inicio", type: "time", required: true },
   { name: "end_time", label: "Fin", type: "time", required: true },
   { name: "break_minutes", label: "Minutos de descanso", type: "number" },
-  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
+  { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS, defaultValue: "active", createHidden: true },
 ];
 
 export default function ShiftsPage() {
-  return <ModuleTablePage title="Turnos" description="Catalogo inicial de turnos y base para asignaciones semanales." resource="/shifts" columns={columns} fields={fields} actionLabel="Nuevo turno" />;
+  return <ModuleTablePage title="Turnos" description="Catalogo inicial de turnos y base para asignaciones semanales." resource="/shifts" exportResource="shifts" columns={columns} fields={fields} actionLabel="Nuevo turno" />;
 }

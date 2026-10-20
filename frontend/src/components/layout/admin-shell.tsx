@@ -215,12 +215,14 @@ const navGroups: NavGroup[] = [
   {
     label: "Integraciones",
     items: [
-      { href: "/app/whatsapp/conversaciones",    label: "Conversaciones WA",  icon: MessageSquare, permissions: ["conversations.view"] },
-      { href: "/app/integraciones",             label: "Integraciones",       icon: Link2,         permissions: ["integrations.view"] },
-      { href: "/app/configuracion/whatsapp",    label: "Config WhatsApp",     icon: MessageCircle, permissions: ["whatsapp.manage"] },
-      { href: "/app/configuracion/ia",          label: "Proveedor IA",        icon: Bot,           permissions: ["ai.manage"] },
-      { href: "/app/configuracion/zoom",        label: "Config Zoom",         icon: Video,         permissions: ["zoom.manage"] },
-      { href: "/app/configuracion/google-sheets", label: "Config Google Sheets", icon: Sheet,      permissions: ["google_sheets.manage"] },
+      { href: "/app/whatsapp/conversaciones",        label: "Conversaciones WA",      icon: MessageSquare, permissions: ["conversations.view"] },
+      { href: "/app/zoom/reuniones",               label: "Reuniones Zoom",         icon: Video,         permissions: ["zoom.view"] },
+      { href: "/app/google-sheets/exportaciones",  label: "Exportaciones GSheets",  icon: Sheet,         permissions: ["google_sheets.view"] },
+      { href: "/app/integraciones",                label: "Integraciones",          icon: Link2,         permissions: ["integrations.view"] },
+      { href: "/app/configuracion/whatsapp",       label: "Config WhatsApp",        icon: MessageCircle, permissions: ["whatsapp.manage"] },
+      { href: "/app/configuracion/ia",             label: "Proveedor IA",           icon: Bot,           permissions: ["ai.manage"] },
+      { href: "/app/configuracion/zoom",           label: "Config Zoom",            icon: Video,         permissions: ["zoom.manage"] },
+      { href: "/app/configuracion/google-sheets",  label: "Config Google Sheets",   icon: Sheet,         permissions: ["google_sheets.manage"] },
     ],
   },
   {

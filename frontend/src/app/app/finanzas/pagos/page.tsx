@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import * as React from "react";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,80 +12,57 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { api } from "@/lib/api";
+import { DataTable } from "@/components/data-table/data-table";
+import { api, API_BASE } from "@/lib/api";
+import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { CashAccount, Payment } from "@/lib/types";
+import { useApiTable } from "@/lib/use-api-table";
 
 const COP = (v: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
 
 const PAYABLE_LABELS: Record<string, string> = {
-  accounts_receivable: "CxC (cobro cliente)",
-  accounts_payable: "CxP (pago proveedor)",
-  "App\\Models\\AccountsReceivable": "CxC (cobro cliente)",
-  "App\\Models\\AccountPayable": "CxP (pago proveedor)",
+  accounts_receivable: "CxC (cobro)",
+  accounts_payable:    "CxP (pago)",
 };
-
-const fmtDate = (d: string) =>
-  new Date(d).toLocaleDateString("es-CO", { day: "2-digit", month: "2-digit", year: "numeric" });
-
 const METHOD_LABELS: Record<string, string> = {
-  cash: "Efectivo",
-  transfer: "Transferencia",
-  check: "Cheque",
-  card: "Tarjeta",
-  other: "Otro",
+  cash: "Efectivo", transfer: "Transferencia", check: "Cheque", card: "Tarjeta", other: "Otro",
 };
 
 type FormState = {
   payable_type: string;
-  payable_id: string;
+  payable_id:   string;
   cash_account_id: string;
-  amount: string;
-  date: string;
-  method: string;
+  amount:   string;
+  date:     string;
+  method:   string;
   reference: string;
 };
 
 const EMPTY_FORM: FormState = {
   payable_type: "accounts_receivable",
-  payable_id: "",
+  payable_id:   "",
   cash_account_id: "",
-  amount: "",
-  date: new Date().toISOString().split("T")[0],
-  method: "cash",
+  amount:   "",
+  date:     new Date().toISOString().split("T")[0],
+  method:   "transfer",
   reference: "",
 };
 
 export default function PagosPage() {
-  const [payments, setPayments] = useState<Payment[]>([]);
-  const [accounts, setAccounts] = useState<CashAccount[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [cancelTarget, setCancelTarget] = useState<Payment | null>(null);
-  const [cancelling, setCancelling] = useState(false);
+  const table = useApiTable<Payment>("/payments");
+  const [accounts, setAccounts] = React.useState<CashAccount[]>([]);
+  const [open, setOpen] = React.useState(false);
+  const [form, setForm] = React.useState<FormState>(EMPTY_FORM);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
+  const [cancelTarget, setCancelTarget] = React.useState<Payment | null>(null);
+  const [cancelling, setCancelling] = React.useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [paymentsRes, accountsRes] = await Promise.all([
-        api.get<{ data: Payment[] }>("/payments?per_page=50"),
-        api.get<{ data: CashAccount[] }>("/cash-accounts?per_page=100"),
-      ]);
-      setPayments(paymentsRes.data.data ?? []);
-      setAccounts((accountsRes.data.data ?? []).filter((a) => a.status === "active"));
-    } catch {
-      setError("No se pudieron cargar los pagos.");
-    } finally {
-      setLoading(false);
-    }
+  React.useEffect(() => {
+    api.get<{ data: CashAccount[] }>("/cash-accounts?per_page=100")
+      .then(r => setAccounts((r.data.data ?? []).filter(a => a.status === "active")));
   }, []);
-
-  useEffect(() => { load(); }, [load]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -107,7 +84,7 @@ export default function PagosPage() {
       });
       setOpen(false);
       setForm(EMPTY_FORM);
-      await load();
+      table.refresh();
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setFormError(msg ?? "Error al registrar el pago.");
@@ -122,7 +99,7 @@ export default function PagosPage() {
     try {
       await api.post(`/payments/${cancelTarget.id}/cancel`, {});
       setCancelTarget(null);
-      await load();
+      table.refresh();
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       alert(msg ?? "Error al cancelar el pago.");
@@ -138,11 +115,45 @@ export default function PagosPage() {
     </div>
   );
 
+  const columns: AppColumnDef<Payment>[] = [
+    dateColumn<Payment>("date", "Fecha"),
+    { header: "Tipo", cell: ({ row }) => PAYABLE_LABELS[row.original.payable_type] ?? row.original.payable_type },
+    { header: "Monto", cell: ({ row }) => <span className="font-medium tabular-nums">{COP(row.original.amount)}</span> },
+    { header: "Método", cell: ({ row }) => METHOD_LABELS[row.original.method] ?? row.original.method },
+    { header: "Cuenta caja", cell: ({ row }) => (row.original as any).cash_account?.name ?? "-" },
+    { accessorKey: "reference", header: "Referencia" },
+    {
+      header: "Estado",
+      cell: ({ row }) => (
+        <Badge variant={badgeVariant(row.original.status)}>
+          {row.original.status === "active" ? "Activo" : "Cancelado"}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) =>
+        row.original.status === "active" ? (
+          <div className="flex justify-end">
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-destructive hover:text-destructive hover:border-destructive"
+              onClick={() => setCancelTarget(row.original)}
+            >
+              Cancelar
+            </Button>
+          </div>
+        ) : null,
+    },
+  ];
+
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Pagos y cobros</h1>
+          <h1 className="text-2xl font-semibold">Pagos y cobros</h1>
           <p className="text-sm text-muted-foreground">Registra pagos a proveedores (CxP) y cobros de clientes (CxC).</p>
         </div>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setForm(EMPTY_FORM); setFormError(null); } }}>
@@ -211,51 +222,19 @@ export default function PagosPage() {
         </Dialog>
       </div>
 
-      {loading && <p className="text-muted-foreground text-sm">Cargando...</p>}
-      {error && <p className="text-destructive text-sm">{error}</p>}
-
-      {!loading && !error && payments.length === 0 && (
-        <div className="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
-          No hay pagos registrados aún.
-        </div>
-      )}
-
-      {!loading && payments.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b bg-muted/50">
-              <tr>
-                {["N.º", "Fecha", "Tipo", "Monto", "Método", "Cuenta caja", "Referencia", "Estado", ""].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left font-medium text-muted-foreground">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((p, i) => (
-                <tr key={p.id} className="border-b last:border-0 odd:bg-background even:bg-muted hover:bg-muted/70">
-                  <td className="px-3 py-3 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
-                  <td className="px-4 py-3">{fmtDate(p.date as unknown as string)}</td>
-                  <td className="px-4 py-3 text-xs">{PAYABLE_LABELS[p.payable_type] ?? p.payable_type}</td>
-                  <td className="px-4 py-3 font-medium">{COP(p.amount)}</td>
-                  <td className="px-4 py-3">{METHOD_LABELS[p.method] ?? p.method}</td>
-                  <td className="px-4 py-3">{p.cash_account?.name ?? "-"}</td>
-                  <td className="px-4 py-3">{p.reference ?? "-"}</td>
-                  <td className="px-4 py-3">
-                    <Badge variant={badgeVariant(p.status)}>
-                      {p.status === "active" ? "Activo" : "Cancelado"}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    {p.status === "active" && (
-                      <Button size="sm" variant="outline" className="text-destructive hover:text-destructive hover:border-destructive" onClick={() => setCancelTarget(p)}>Cancelar</Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={table.data}
+        search={table.search}
+        onSearchChange={table.setSearch}
+        page={table.page}
+        onPageChange={table.setPage}
+        perPage={table.perPage}
+        onPerPageChange={table.setPerPage}
+        exportBaseUrl={`${API_BASE}/exports/payments`}
+        loading={table.loading}
+        error={table.error}
+      />
 
       <Dialog open={!!cancelTarget} onOpenChange={(v) => { if (!v) setCancelTarget(null); }}>
         <DialogContent>

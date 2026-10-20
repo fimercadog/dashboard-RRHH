@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge, badgeVariant, type BadgeVariant } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { api } from "@/lib/api";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DataTable } from "@/components/data-table/data-table";
+import { api, API_BASE } from "@/lib/api";
+import { AppColumnDef } from "@/lib/table-types";
 import { ChartOfAccount } from "@/lib/types";
+import { useApiTable } from "@/lib/use-api-table";
 
 const TYPE_LABEL: Record<string, string> = {
   asset: "Activo", liability: "Pasivo", equity: "Patrimonio",
@@ -31,29 +34,12 @@ const BLANK: Partial<ChartOfAccount> = {
 };
 
 export default function PlanCuentasPage() {
-  const [accounts, setAccounts] = useState<ChartOfAccount[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<ChartOfAccount | null>(null);
-  const [form, setForm] = useState(BLANK);
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-
-  const load = () => {
-    setLoading(true);
-    api.get<{ data: ChartOfAccount[] }>("/chart-of-accounts?per_page=200")
-      .then((r) => setAccounts(r.data.data))
-      .catch(() => setError("Error al cargar el plan de cuentas."))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => { load(); }, []);
-
-  const filtered = accounts.filter((a) =>
-    !search || a.code.includes(search) || a.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const table = useApiTable<ChartOfAccount>("/chart-of-accounts");
+  const [open, setOpen] = React.useState(false);
+  const [editing, setEditing] = React.useState<ChartOfAccount | null>(null);
+  const [form, setForm] = React.useState(BLANK);
+  const [saving, setSaving] = React.useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
 
   const openNew = () => { setEditing(null); setForm(BLANK); setFormError(null); setOpen(true); };
   const openEdit = (a: ChartOfAccount) => { setEditing(a); setForm({ ...a }); setFormError(null); setOpen(true); };
@@ -66,7 +52,7 @@ export default function PlanCuentasPage() {
       } else {
         await api.post("/chart-of-accounts", form);
       }
-      setOpen(false); load();
+      setOpen(false); table.refresh();
     } catch (e: any) {
       setFormError(e?.response?.data?.message || "Error al guardar.");
     } finally {
@@ -77,83 +63,82 @@ export default function PlanCuentasPage() {
   const toggleStatus = async (a: ChartOfAccount) => {
     const newStatus = a.status === "active" ? "inactive" : "active";
     await api.put(`/chart-of-accounts/${a.id}`, { status: newStatus }).catch(() => {});
-    load();
+    table.refresh();
   };
 
+  const columns: AppColumnDef<ChartOfAccount>[] = [
+    {
+      accessorKey: "code",
+      header: "Código",
+      cell: ({ row }) => (
+        <span
+          className="font-mono font-medium"
+          style={{ paddingLeft: `${((row.original.level ?? 1) - 1) * 1.5}rem` }}
+        >
+          {row.original.code}
+        </span>
+      ),
+    },
+    { accessorKey: "name", header: "Nombre" },
+    {
+      header: "Tipo",
+      cell: ({ row }) => (
+        <Badge variant={TYPE_VARIANT[row.original.type] ?? "default"}>{TYPE_LABEL[row.original.type]}</Badge>
+      ),
+    },
+    {
+      header: "Naturaleza",
+      cell: ({ row }) => row.original.nature === "debit" ? "Débito" : "Crédito",
+    },
+    {
+      header: "Movimientos",
+      cell: ({ row }) => row.original.allows_movements ? "✓" : "—",
+    },
+    {
+      header: "Estado",
+      cell: ({ row }) => (
+        <Badge variant={badgeVariant(row.original.status)}>
+          {row.original.status === "active" ? "Activa" : "Inactiva"}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => (
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" size="sm" onClick={() => openEdit(row.original)}>Editar</Button>
+          <Button variant="ghost" size="sm" onClick={() => toggleStatus(row.original)}>
+            {row.original.status === "active" ? "Inactivar" : "Activar"}
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Plan de Cuentas</h1>
+          <h1 className="text-2xl font-semibold">Plan de Cuentas</h1>
           <p className="text-sm text-muted-foreground">Estructura jerárquica de cuentas contables</p>
         </div>
         <Button onClick={openNew}>+ Nueva cuenta</Button>
       </div>
 
-      <Input
-        placeholder="Buscar por código o nombre..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="max-w-sm"
+      <DataTable
+        columns={columns}
+        data={table.data}
+        search={table.search}
+        onSearchChange={table.setSearch}
+        page={table.page}
+        onPageChange={table.setPage}
+        perPage={table.perPage}
+        onPerPageChange={table.setPerPage}
+        exportBaseUrl={`${API_BASE}/exports/chart-of-accounts`}
+        loading={table.loading}
+        error={table.error}
       />
-
-      {loading && <p className="text-sm text-muted-foreground">Cargando...</p>}
-      {error && <p className="text-sm text-destructive">{error}</p>}
-
-      {!loading && !error && (
-        <div className="rounded-lg border">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/40">
-                <th className="w-10 px-3 py-2 text-left font-medium">N.º</th>
-                <th className="px-4 py-2 text-left font-medium">Código</th>
-                <th className="px-4 py-2 text-left font-medium">Nombre</th>
-                <th className="px-4 py-2 text-left font-medium">Tipo</th>
-                <th className="px-4 py-2 text-left font-medium">Naturaleza</th>
-                <th className="px-4 py-2 text-left font-medium">Movimientos</th>
-                <th className="px-4 py-2 text-left font-medium">Estado</th>
-                <th className="px-4 py-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
-                    {search ? "Sin resultados para la búsqueda." : "No hay cuentas registradas. Crea la primera."}
-                  </td>
-                </tr>
-              )}
-              {filtered.map((a, i) => (
-                <tr key={a.id} className="border-b last:border-0 odd:bg-background even:bg-muted/30 hover:bg-muted/50">
-                  <td className="px-3 py-2 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
-                  <td className="px-4 py-2 font-mono font-medium" style={{ paddingLeft: `${(a.level - 1) * 1.5 + 1}rem` }}>
-                    {a.code}
-                  </td>
-                  <td className="px-4 py-2">{a.name}</td>
-                  <td className="px-4 py-2">
-                    <Badge variant={TYPE_VARIANT[a.type] ?? "default"}>{TYPE_LABEL[a.type]}</Badge>
-                  </td>
-                  <td className="px-4 py-2 capitalize">{a.nature === "debit" ? "Débito" : "Crédito"}</td>
-                  <td className="px-4 py-2">{a.allows_movements ? "✓" : "—"}</td>
-                  <td className="px-4 py-2">
-                    <Badge variant={badgeVariant(a.status)}>
-                      {a.status === "active" ? "Activa" : "Inactiva"}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-2">
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => openEdit(a)}>Editar</Button>
-                      <Button variant="ghost" size="sm" onClick={() => toggleStatus(a)}>
-                        {a.status === "active" ? "Inactivar" : "Activar"}
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
@@ -202,11 +187,11 @@ export default function PlanCuentasPage() {
               <label className="text-xs font-medium">Notas</label>
               <Input value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
             </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-              <Button onClick={save} disabled={saving}>{saving ? "Guardando..." : "Guardar"}</Button>
-            </div>
           </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button onClick={save} disabled={saving}>{saving ? "Guardando..." : "Guardar"}</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

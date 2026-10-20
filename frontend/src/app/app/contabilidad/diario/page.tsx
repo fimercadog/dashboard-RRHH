@@ -1,36 +1,25 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { api } from "@/lib/api";
+import { DataTable } from "@/components/data-table/data-table";
+import { api, API_BASE } from "@/lib/api";
+import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { JournalEntry, JournalEntryLine } from "@/lib/types";
+import { useApiTable } from "@/lib/use-api-table";
 
 const STATUS_LABEL: Record<string, string> = {
   draft: "Borrador", posted: "Publicado", reversed: "Revertido",
 };
 
 export default function DiarioPage() {
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [detail, setDetail] = useState<JournalEntry | null>(null);
-  const [lines, setLines] = useState<JournalEntryLine[]>([]);
-  const [loadingDetail, setLoadingDetail] = useState(false);
-  const [reversing, setReversing] = useState(false);
-
-  const load = () => {
-    setLoading(true);
-    api.get<{ data: JournalEntry[] }>("/journal-entries?per_page=100")
-      .then((r) => setEntries(r.data.data))
-      .catch(() => setError("Error al cargar el diario."))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => { load(); }, []);
+  const table = useApiTable<JournalEntry>("/journal-entries");
+  const [detail, setDetail] = React.useState<JournalEntry | null>(null);
+  const [lines, setLines] = React.useState<JournalEntryLine[]>([]);
+  const [loadingDetail, setLoadingDetail] = React.useState(false);
+  const [reversing, setReversing] = React.useState(false);
 
   const openDetail = async (e: JournalEntry) => {
     setDetail(e); setLines([]); setLoadingDetail(true);
@@ -50,7 +39,7 @@ export default function DiarioPage() {
     setReversing(true);
     try {
       await api.post(`/journal-entries/${detail.id}/reverse`, {});
-      setDetail(null); load();
+      setDetail(null); table.refresh();
     } catch (e: any) {
       alert(e?.response?.data?.message || "Error al revertir.");
     } finally {
@@ -58,75 +47,59 @@ export default function DiarioPage() {
     }
   };
 
-  const filtered = entries.filter((e) =>
-    !search ||
-    e.number.toLowerCase().includes(search.toLowerCase()) ||
-    e.description.toLowerCase().includes(search.toLowerCase())
-  );
-
   const totalDebit = lines.reduce((s, l) => s + Number(l.debit), 0);
   const totalCredit = lines.reduce((s, l) => s + Number(l.credit), 0);
 
+  const columns: AppColumnDef<JournalEntry>[] = [
+    { accessorKey: "number", header: "Número", cell: ({ row }) => <span className="font-mono font-medium">{row.original.number}</span> },
+    dateColumn<JournalEntry>("date", "Fecha"),
+    { header: "Descripción", cell: ({ row }) => <span className="max-w-xs truncate block">{row.original.description}</span> },
+    {
+      header: "Referencia",
+      cell: ({ row }) => {
+        const e = row.original;
+        return e.reference_type ? (
+          <span className="text-xs text-muted-foreground">{e.reference_type} #{e.reference_id}</span>
+        ) : "—";
+      },
+    },
+    {
+      header: "Estado",
+      cell: ({ row }) => (
+        <Badge variant={badgeVariant(row.original.status)}>{STATUS_LABEL[row.original.status]}</Badge>
+      ),
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => (
+        <div className="flex justify-end">
+          <Button variant="ghost" size="sm" onClick={() => openDetail(row.original)}>Ver</Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-6">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Libro Diario</h1>
+        <h1 className="text-2xl font-semibold">Libro Diario</h1>
         <p className="text-sm text-muted-foreground">Registro de asientos contables (solo lectura + reversión)</p>
       </div>
 
-      <Input
-        placeholder="Buscar por número o descripción..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="max-w-sm"
+      <DataTable
+        columns={columns}
+        data={table.data}
+        search={table.search}
+        onSearchChange={table.setSearch}
+        page={table.page}
+        onPageChange={table.setPage}
+        perPage={table.perPage}
+        onPerPageChange={table.setPerPage}
+        exportBaseUrl={`${API_BASE}/exports/journal-entries`}
+        loading={table.loading}
+        error={table.error}
       />
-
-      {loading && <p className="text-sm text-muted-foreground">Cargando...</p>}
-      {error && <p className="text-sm text-destructive">{error}</p>}
-
-      {!loading && !error && (
-        <div className="rounded-lg border">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/40">
-                <th className="w-10 px-3 py-2 text-left font-medium">N.º</th>
-                <th className="px-4 py-2 text-left font-medium">Número</th>
-                <th className="px-4 py-2 text-left font-medium">Fecha</th>
-                <th className="px-4 py-2 text-left font-medium">Descripción</th>
-                <th className="px-4 py-2 text-left font-medium">Referencia</th>
-                <th className="px-4 py-2 text-left font-medium">Estado</th>
-                <th className="px-4 py-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
-                    {search ? "Sin resultados." : "No hay asientos registrados."}
-                  </td>
-                </tr>
-              )}
-              {filtered.map((e, i) => (
-                <tr key={e.id} className="border-b last:border-0 odd:bg-background even:bg-muted/30 hover:bg-muted/50">
-                  <td className="px-3 py-2 text-xs tabular-nums text-muted-foreground">{i + 1}</td>
-                  <td className="px-4 py-2 font-mono font-medium">{e.number}</td>
-                  <td className="px-4 py-2">{e.date}</td>
-                  <td className="px-4 py-2 max-w-xs truncate">{e.description}</td>
-                  <td className="px-4 py-2 text-xs text-muted-foreground">
-                    {e.reference_type ? `${e.reference_type} #${e.reference_id}` : "—"}
-                  </td>
-                  <td className="px-4 py-2">
-                    <Badge variant={badgeVariant(e.status)}>{STATUS_LABEL[e.status]}</Badge>
-                  </td>
-                  <td className="px-4 py-2">
-                    <Button variant="ghost" size="sm" onClick={() => openDetail(e)}>Ver</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
 
       <Dialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}>
         <DialogContent className="max-w-2xl">
@@ -171,9 +144,7 @@ export default function DiarioPage() {
                     <tbody>
                       {lines.map((l) => (
                         <tr key={l.id} className="border-b last:border-0 odd:bg-background even:bg-muted/30">
-                          <td className="px-3 py-1.5 font-mono text-xs">
-                            {l.account_code} {l.account_name}
-                          </td>
+                          <td className="px-3 py-1.5 font-mono text-xs">{l.account_code} {l.account_name}</td>
                           <td className="px-3 py-1.5 text-xs text-muted-foreground">{l.description}</td>
                           <td className="px-3 py-1.5 text-right">{Number(l.debit) > 0 ? Number(l.debit).toLocaleString("es-CO", { minimumFractionDigits: 2 }) : "—"}</td>
                           <td className="px-3 py-1.5 text-right">{Number(l.credit) > 0 ? Number(l.credit).toLocaleString("es-CO", { minimumFractionDigits: 2 }) : "—"}</td>

@@ -56,6 +56,8 @@ const fields: CrudField[] = [
     name: "status",
     label: "Estado",
     type: "select",
+    defaultValue: "active",
+    createHidden: true,
     options: [
       { value: "active", label: "Activa" },
       { value: "inactive", label: "Inactiva" },
@@ -69,6 +71,7 @@ export default function CuentasPage() {
       title="Cuentas de efectivo"
       description="Cajas, cuentas bancarias y de ahorro de la empresa."
       resource="/cash-accounts"
+      exportResource="cash-accounts"
       columns={columns}
       fields={fields}
       actionLabel="Nueva cuenta"

@@ -21,7 +21,7 @@ import {
   PurchaseLineItemsEditor,
   purchaseLineSubtotal,
 } from "@/components/documents/line-items-editor";
-import { api, PaginatedResponse } from "@/lib/api";
+import { api, API_BASE, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { PurchaseOrder, Supplier, Warehouse } from "@/lib/types";
 import { useApiTable } from "@/lib/use-api-table";
@@ -298,6 +298,9 @@ export default function OrdenesPage() {
         onSearchChange={table.setSearch}
         page={table.page}
         onPageChange={table.setPage}
+        perPage={table.perPage}
+        onPerPageChange={table.setPerPage}
+        exportBaseUrl={`${API_BASE}/exports/purchase-orders`}
         loading={table.loading}
         error={table.error}
       />

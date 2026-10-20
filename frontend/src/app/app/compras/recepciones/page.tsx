@@ -20,7 +20,7 @@ import {
   PurchaseLine,
   PurchaseLineItemsEditor,
 } from "@/components/documents/line-items-editor";
-import { api, PaginatedResponse } from "@/lib/api";
+import { api, API_BASE, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { PurchaseOrder, PurchaseReceipt, Supplier, Warehouse } from "@/lib/types";
 import { useApiTable } from "@/lib/use-api-table";
@@ -344,6 +344,9 @@ export default function RecepcionesPage() {
         onSearchChange={table.setSearch}
         page={table.page}
         onPageChange={table.setPage}
+        perPage={table.perPage}
+        onPerPageChange={table.setPerPage}
+        exportBaseUrl={`${API_BASE}/exports/purchase-receipts`}
         loading={table.loading}
         error={table.error}
       />

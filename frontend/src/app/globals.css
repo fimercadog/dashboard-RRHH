@@ -110,6 +110,29 @@
   animation: marketing-gradient-text 5s linear infinite;
 }
 
+/* Fija el tema claro dentro del alcance de la web pública aunque el admin
+   haya activado modo oscuro. Debe preceder a .dark para que la especificidad
+   del selector de atributo [data-theme="light"] sobre un elemento descendiente
+   sobreescriba las variables de .dark en <html>. */
+[data-theme="light"] {
+  color-scheme: light;
+  --background: #fbf7f8;
+  --foreground: #26262e;
+  --card: #ffffff;
+  --card-foreground: #26262e;
+  --primary: #a3175a;
+  --primary-foreground: #ffffff;
+  --muted: #f3eaee;
+  --muted-foreground: #7a6b71;
+  --border: #e7dce0;
+  --accent: #f7e4ec;
+  --destructive: #c23b2b;
+  --navy: #26262e;
+  --success: #0e8f5c;
+  --warning: #b9770e;
+  --marketing-shadow: 0 24px 70px rgb(38 20 30 / 14%);
+}
+
 .dark {
   color-scheme: dark;
   --background: #17151a;

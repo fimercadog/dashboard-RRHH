@@ -21,7 +21,7 @@ import {
   SaleLineItemsEditor,
   saleLineSubtotal,
 } from "@/components/documents/line-items-editor";
-import { api, PaginatedResponse } from "@/lib/api";
+import { api, API_BASE, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { Client, Quote } from "@/lib/types";
 import { useApiTable } from "@/lib/use-api-table";
@@ -252,6 +252,9 @@ export default function CotizacionesPage() {
         onSearchChange={table.setSearch}
         page={table.page}
         onPageChange={table.setPage}
+        perPage={table.perPage}
+        onPerPageChange={table.setPerPage}
+        exportBaseUrl={`${API_BASE}/exports/quotes`}
         loading={table.loading}
         error={table.error}
       />

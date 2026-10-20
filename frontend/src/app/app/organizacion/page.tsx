@@ -10,7 +10,7 @@ import { AppColumnDef } from "@/lib/table-types";
 type Department = { id: number; name: string; description?: string; status: string };
 type Position = { id: number; name: string; description?: string; status: string; department?: { id: number; name: string } | null };
 
-const statusField: CrudField = { name: "status", label: "Estado", type: "select", required: true, defaultValue: "active", options: STATUS_OPTIONS };
+const statusField: CrudField = { name: "status", label: "Estado", type: "select", required: true, defaultValue: "active", createHidden: true, options: STATUS_OPTIONS };
 
 const departmentColumns: AppColumnDef<Department>[] = [
   { accessorKey: "name", header: "Departamento" },
@@ -45,6 +45,7 @@ export default function AppOrganizationPage() {
         title="Departamentos"
         description="Areas de la organizacion."
         resource="/departments"
+        exportResource="departments"
         columns={departmentColumns}
         fields={departmentFields}
         actionLabel="Nuevo departamento"
@@ -53,6 +54,7 @@ export default function AppOrganizationPage() {
         title="Cargos"
         description="Cargos por departamento (usa el ID del departamento)."
         resource="/positions"
+        exportResource="positions"
         columns={positionColumns}
         fields={positionFields}
         actionLabel="Nuevo cargo"

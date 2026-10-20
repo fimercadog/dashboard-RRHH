@@ -4,7 +4,7 @@ import { WhatsAppButton } from "./whatsapp-button";
 
 export function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white text-foreground">
+    <div className="min-h-screen bg-white text-foreground" data-theme="light">
       <MarketingHeader />
       {children}
       <MarketingFooter />

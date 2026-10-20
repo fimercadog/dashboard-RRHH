@@ -16,7 +16,7 @@ const columns: AppColumnDef<RequestRow>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "employee_id", label: "Empleado", type: "relation-search", endpoint: "/employees/selector", required: true },
+  { name: "employee_id", label: "Empleado", type: "relation-search", endpoint: "/employees/selector", required: true, editReadonly: true },
   {
     name: "type",
     label: "Tipo",

@@ -7,7 +7,7 @@ import { AccountsReceivable } from "@/lib/types";
 
 const STATUS_LABELS: Record<string, string> = {
   open: "Abierta",
-  partially_paid: "Parcialmente pagada",
+  partially_paid: "Pago parcial",
   paid: "Pagada",
   cancelled: "Cancelada",
 };
@@ -35,6 +35,7 @@ export default function CxCPage() {
       title="Cuentas por cobrar"
       description="Saldos pendientes de cobro a clientes."
       resource="/accounts-receivable"
+      exportResource="accounts-receivable"
       columns={columns}
       fields={[]}
       actionLabel=""

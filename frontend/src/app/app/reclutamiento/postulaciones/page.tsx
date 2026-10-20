@@ -26,8 +26,8 @@ const columns: AppColumnDef<JobApplication>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "job_vacancy_id", label: "Vacante", type: "relation-select", endpoint: "/job-vacancies?per_page=100&status=open", required: true },
-  { name: "job_candidate_id", label: "Candidato", type: "relation-select", endpoint: "/job-candidates?per_page=100", required: true },
+  { name: "job_vacancy_id", label: "Vacante", type: "relation-select", endpoint: "/job-vacancies?per_page=100&status=open", required: true, editReadonly: true },
+  { name: "job_candidate_id", label: "Candidato", type: "relation-select", endpoint: "/job-candidates?per_page=100", required: true, editReadonly: true },
   { name: "applied_at", label: "Fecha postulacion", type: "date", required: true },
   { name: "status", label: "Estado", type: "select", required: true, defaultValue: "new",
     options: [
@@ -42,7 +42,7 @@ export default function PostulacionesPage() {
   return (
     <ModuleTablePage title="Postulaciones"
       description="Seguimiento de candidatos por vacante y estado del proceso."
-      resource="/job-applications" columns={columns} fields={fields}
+      resource="/job-applications" exportResource="job-applications" columns={columns} fields={fields}
       actionLabel="Nueva postulacion" modalDescription="Vincula un candidato a una vacante." />
   );
 }

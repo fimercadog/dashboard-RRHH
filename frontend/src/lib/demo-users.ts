@@ -8,7 +8,7 @@ export type DemoUser = {
 
 export const DEMO_USERS: DemoUser[] = [
   { name: "Diego Salazar",    role: "Super Admin",              email: "superusuario@andespeople.co" },
-  { name: "Sofia Mercado",    role: "Super Admin",              email: "superadmin@andespeople.co" },
+  { name: "Sofia Mercado",    role: "Administrador de empresa", email: "superadmin@andespeople.co" },
   { name: "Camila Rojas",     role: "Administrador de empresa", email: "admin@andespeople.co" },
   { name: "Sebastian Moreno", role: "Recursos Humanos",         email: "rrhh@andespeople.co" },
   { name: "Valentina Castro", role: "Supervisor",               email: "supervisor@andespeople.co" },

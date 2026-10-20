@@ -22,7 +22,7 @@ const columns: AppColumnDef<JobInterview>[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "job_application_id", label: "Postulacion", type: "relation-select", endpoint: "/job-applications?per_page=100", required: true },
+  { name: "job_application_id", label: "Postulacion", type: "relation-select", endpoint: "/job-applications?per_page=100", required: true, editReadonly: true },
   { name: "scheduled_at", label: "Fecha y hora", type: "datetime-local", required: true },
   { name: "type", label: "Tipo", type: "select", required: true, defaultValue: "presential",
     options: [{ label: "Presencial", value: "presential" }, { label: "Virtual", value: "virtual" }, { label: "Telefono", value: "phone" }] },
@@ -35,7 +35,7 @@ export default function EntrevistasPage() {
   return (
     <ModuleTablePage title="Entrevistas"
       description="Agenda y resultados de entrevistas de seleccion."
-      resource="/job-interviews" columns={columns} fields={fields}
+      resource="/job-interviews" exportResource="job-interviews" columns={columns} fields={fields}
       actionLabel="Nueva entrevista" modalDescription="Programa una entrevista para una postulacion." />
   );
 }

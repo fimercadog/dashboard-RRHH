@@ -53,7 +53,7 @@ const fields: CrudField[] = [
   { name: "brand_id", label: "Marca", type: "relation-select", endpoint: "/brands?per_page=100" },
   { name: "unit_id", label: "Unidad", type: "relation-select", endpoint: "/units?per_page=100" },
   {
-    name: "status", label: "Estado", type: "select", required: true, defaultValue: "active",
+    name: "status", label: "Estado", type: "select", required: true, defaultValue: "active", createHidden: true,
     options: STATUS_OPTIONS,
   },
   { name: "image_url", label: "URL de imagen", type: "url", colSpan: "full" },
