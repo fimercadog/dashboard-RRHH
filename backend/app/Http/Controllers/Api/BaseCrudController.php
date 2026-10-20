@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Concerns\ResolvesCompany;
 use App\Http\Controllers\Controller;
 use App\Services\AuditService;
 use App\Services\TableQueryService;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -70,7 +71,11 @@ abstract class BaseCrudController extends Controller
         $payload = $this->validatedInput($request);
         $companyId = $this->companyId($request);
         $payload['company_id'] = $companyId;
-        $model = ($this->model)::create($payload)->load($this->with);
+        try {
+            $model = ($this->model)::create($payload)->load($this->with);
+        } catch (UniqueConstraintViolationException $e) {
+            return response()->json(['message' => 'Ya existe un registro con esos datos.', 'errors' => []], 422);
+        }
         $audit->record('created', $model, $request);
         Cache::increment("company_version_{$companyId}");
 
@@ -97,7 +102,11 @@ abstract class BaseCrudController extends Controller
             unset($payload[$field]);
         }
         $payload['company_id'] = $cid;
-        $model->update($payload);
+        try {
+            $model->update($payload);
+        } catch (UniqueConstraintViolationException $e) {
+            return response()->json(['message' => 'Ya existe un registro con esos datos.', 'errors' => []], 422);
+        }
         $model->load($this->with);
         $audit->record('updated', $model, $request, $oldValues);
         Cache::increment("company_version_{$cid}");
