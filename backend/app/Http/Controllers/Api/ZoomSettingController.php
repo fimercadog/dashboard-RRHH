@@ -58,7 +58,10 @@ class ZoomSettingController extends Controller
         try {
             $response = Http::withBasicAuth($setting->client_id, $setting->client_secret)
                 ->asForm()
-                ->post("https://zoom.us/oauth/token?grant_type=account_credentials&account_id={$setting->account_id}");
+                ->post('https://zoom.us/oauth/token', [
+                    'grant_type' => 'account_credentials',
+                    'account_id' => $setting->account_id,
+                ]);
 
             if ($response->successful() && $response->json('access_token')) {
                 $setting->update(['is_active' => true, 'connected_at' => now()]);
