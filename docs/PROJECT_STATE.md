@@ -1,8 +1,8 @@
 # DFC Talento Humano — Estado del proyecto
 
 > Última verificación: 2026-10-20
-> Rama: `master` · HEAD: `81758b2`
-> Cambios en curso (unstaged + untracked): ficha ampliada del empleado (ver sección 2)
+> Rama: `master` · HEAD: `c848554` (ficha ampliada commiteada)
+> Cambios en curso (sin commit): indicadores de asistencia SPEC-017 (ver sección 2)
 
 ---
 
@@ -36,7 +36,8 @@
 | Registro de entradas / salidas (check-in / check-out) | Implementado y desplegado |
 | Registro de tardanzas | Implementado y desplegado |
 | Consulta de registros | Implementado y desplegado |
-| **Indicadores (ausencias, tardanzas, horas extra)** | ⛔ Brecha — no implementado |
+| **Indicadores de asistencia (ausencias, tardanzas)** | ✓ Implementado — SPEC-017, pendiente commit |
+| **Horas extra** | ⛔ Brecha de modelo — ver KI-001 y SPEC-017 §Brechas |
 
 ### Turnos
 
@@ -76,6 +77,23 @@
 
 Verificados y aprobados por CENTINELA + NANCY el 2026-10-20.
 **No hacer commit ni push sin autorización explícita.**
+
+### SPEC-017 — Indicadores de asistencia (2026-10-20)
+
+Auditado por CENTINELA (3 × LOW — LOW-1 y LOW-3 resueltos, LOW-2 → KI-001 resuelto).
+Aprobado por NANCY + MARGARITA. 396 tests / 996 assertions. TypeScript limpio.
+Ajustes finales aplicados: navegación `router.push('/app/asistencia')`, validación 366 días, KI-001 cerrado.
+
+| Archivo | Cambio |
+|---|---|
+| `backend/app/Http/Controllers/Api/AttendanceStatsController.php` | Nuevo — endpoint `GET /api/attendance-stats` |
+| `backend/routes/api.php` | +1 ruta con `can:attendance.manage` |
+| `backend/tests/Feature/AttendanceStatsTest.php` | Nuevo — 15 tests |
+| `frontend/src/lib/types.ts` | +3 tipos: `AttendanceStats`, `AttendanceStatsByEmployee`, `AttendanceStatsByDepartment` |
+| `frontend/src/app/app/asistencia/estadisticas/page.tsx` | Nueva página de indicadores |
+| `docs/KNOWN_ISSUES.md` | Nuevo — KI-001 (límite de rango de fechas) |
+
+### Ficha ampliada del empleado (ya en commit c848554)
 
 ### Archivos modificados (tracked)
 
@@ -117,7 +135,7 @@ Ambas migraciones corrieron en el entorno local (`php artisan migrate:status` co
 | **SST** | ⛔ No implementado | Media |
 | **Desempeño** | ⛔ No implementado | Media |
 | **Central documental** | ⛔ No implementado | Media |
-| Indicadores de asistencia | ⛔ No implementado | Media |
+| Horas extra (indicador asistencia) | ⛔ Brecha de modelo — KI-001 | Media |
 | Indicadores de reclutamiento | ⛔ No implementado | Baja |
 
 ---
@@ -145,7 +163,7 @@ Presentes en la vertical. Profundidad no auditada en esta sesión.
 
 | Suite | Tests | Assertions | Fecha | Entorno |
 |---|---|---|---|---|
-| Backend (`php artisan test`) | **379** | **946** | 2026-10-20 | SQLite local |
+| Backend (`php artisan test`) | **396** | **996** | 2026-10-20 | SQLite local |
 | E2E Playwright | 11 | — | sesión anterior | No re-ejecutados — no declarar como estado actual |
 
 ---
@@ -154,6 +172,7 @@ Presentes en la vertical. Profundidad no auditada en esta sesión.
 
 | Fecha | Alcance | Resultado |
 |---|---|---|
+| 2026-10-20 | `AttendanceStatsController` + ruta + tests + frontend | APROBADO (CENTINELA) — LOW-1/LOW-3 resueltos, LOW-2 → KI-001 |
 | 2026-10-20 | `EmployeeWorkHistoryController` + SS + frontend historial | APROBADO (CENTINELA) |
 | Sesión anterior | MEDIUM-1, CA-17, LOW-3 | Resueltos — commit `6bf010c` |
 
@@ -161,8 +180,8 @@ Presentes en la vertical. Profundidad no auditada en esta sesión.
 
 ## 8. Próximo paso recomendado
 
-1. **Commit** de los cambios en curso (requiere autorización).
-2. **Indicadores de asistencia** — brecha de menor alcance.
+1. **Commit** de SPEC-017 (indicadores de asistencia) — requiere autorización.
+2. **KI-001** — definir con Fidel el rango máximo de fechas antes de implementar la restricción.
 3. **Nómina** — mayor impacto; requiere SPEC-PLANNER antes de implementar.
 
 ---

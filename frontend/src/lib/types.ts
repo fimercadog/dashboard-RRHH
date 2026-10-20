@@ -54,6 +54,34 @@ export type Attendance = {
   late_minutes: number;
 };
 
+export type AttendanceStatsByEmployee = {
+  employee_id: number;
+  full_name: string;
+  department: string;
+  absences_justified: number;
+  absences_unjustified: number;
+  tardiness_count: number;
+  tardiness_minutes: number;
+};
+
+export type AttendanceStatsByDepartment = {
+  department: string;
+  absences_justified: number;
+  absences_unjustified: number;
+  tardiness_count: number;
+  tardiness_minutes: number;
+};
+
+export type AttendanceStats = {
+  summary: {
+    absences: { justified: number; unjustified: number };
+    tardiness: { count: number; total_minutes: number };
+  };
+  by_employee: AttendanceStatsByEmployee[];
+  by_department: AttendanceStatsByDepartment[];
+  meta: { from: string; to: string; classification_note: string };
+};
+
 export type RequestRow = {
   id: number;
   employee?: Employee;

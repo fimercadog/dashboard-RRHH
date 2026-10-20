@@ -118,6 +118,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::apiResource('positions', PositionController::class)->middleware('can:settings.manage');
     Route::apiResource('attendances', AttendanceController::class)->except(['destroy'])->middleware('can:attendance.manage');
     Route::delete('/attendances/{attendance}', [AttendanceController::class, 'destroy'])->middleware('can:attendance.delete');
+    Route::get('attendance-stats', \App\Http\Controllers\Api\AttendanceStatsController::class)->middleware('can:attendance.manage');
     Route::apiResource('vacation-requests', VacationRequestController::class)->except(['destroy'])->middleware('can:requests.approve');
     Route::delete('/vacation-requests/{vacation_request}', [VacationRequestController::class, 'destroy'])->middleware('can:requests.delete');
     Route::apiResource('permission-requests', PermissionRequestController::class)->except(['destroy'])->middleware('can:requests.approve');
