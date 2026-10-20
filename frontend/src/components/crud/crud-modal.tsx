@@ -163,10 +163,16 @@ function RelationSearchField({
   field,
   defaultVal,
   disabled,
+  errorClass,
+  onClearError,
+  onDropdownOpenChange,
 }: {
   field: CrudField;
   defaultVal: string | number;
   disabled?: boolean;
+  errorClass?: string;
+  onClearError?: () => void;
+  onDropdownOpenChange?: (open: boolean) => void;
 }) {
   const [query, setQuery]                 = React.useState("");
   const [results, setResults]             = React.useState<RelationOption[]>([]);
@@ -179,6 +185,8 @@ function RelationSearchField({
   const [focusedIndex, setFocusedIndex]   = React.useState(-1);
   const abortRef                          = React.useRef<AbortController | null>(null);
   const debounceRef                       = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => { onDropdownOpenChange?.(open); }, [open, onDropdownOpenChange]);
 
   // Resolver label en modo edición — se re-ejecuta cuando cambia el registro abierto
   React.useEffect(() => {
@@ -245,6 +253,7 @@ function RelationSearchField({
     setQuery("");
     setOpen(false);
     setFocusedIndex(-1);
+    onClearError?.();
   };
 
   const displayValue = open ? query : selectedLabel || query;
@@ -263,12 +272,16 @@ function RelationSearchField({
         className={cn(
           "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
           disabled && "cursor-not-allowed opacity-60",
+          errorClass,
         )}
         onChange={disabled ? undefined : handleInput}
         onFocus={disabled ? undefined : () => { if (!open) search(query); }}
         onBlur={disabled ? undefined : () => setTimeout(() => { setOpen(false); setFocusedIndex(-1); }, 150)}
         onKeyDown={(e) => {
-          if (e.key === "Escape") { setOpen(false); setQuery(""); setFocusedIndex(-1); }
+          if (e.key === "Escape") {
+            if (open) { setOpen(false); setQuery(""); setFocusedIndex(-1); }
+            return;
+          }
           if (e.key === "ArrowDown") {
             e.preventDefault();
             setFocusedIndex(i => Math.min(i + 1, results.length - 1));
@@ -339,6 +352,7 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
   const formId = React.useId();
 
   const fieldRefs = React.useRef<Record<string, React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>>>({});
+  const searchDropdownOpen = React.useRef(false);
   function getFieldRef(name: string): React.RefObject<HTMLInputElement | HTMLTextAreaElement | null> {
     if (!fieldRefs.current[name]) {
       fieldRefs.current[name] = React.createRef<HTMLInputElement | HTMLTextAreaElement>();
@@ -378,22 +392,32 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
     // Remove empty file inputs so FormData only carries the actual file.
     if (fileField && !hasFile) formData.delete(fileField.name);
 
+    // F1: validar campos visibles obligatorios (reemplaza validación nativa perdida con noValidate)
+    const VISIBLE_TYPES = new Set(["text", "email", "password", "url", "date", "time", "datetime-local", "number", "textarea"]);
+    const clientErrors: ApiErrors = {};
+    for (const f of fields) {
+      if (!VISIBLE_TYPES.has(f.type ?? "text")) continue;
+      if (mode === "edit" && f.editReadonly) continue;
+      if (mode === "create" && f.createHidden) continue;
+      const raw = String(formData.get(f.name) ?? "").trim();
+      if (!raw) { if (f.required) clientErrors[f.name] = ["Este campo es requerido"]; continue; }
+      if (f.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw))
+        clientErrors[f.name] = ["Ingresa un correo electrónico válido"];
+      if (f.type === "url") { try { new URL(raw); } catch { clientErrors[f.name] = ["Ingresa una URL válida"]; } }
+    }
+
     // CA-13: validar campos relation-search requeridos antes de enviar
-    const missingRelationSearch = fields.filter(
-      (f) => f.type === "relation-search" && f.required && !formData.get(f.name),
-    );
-    if (missingRelationSearch.length > 0) {
-      setErrors(Object.fromEntries(missingRelationSearch.map((f) => [f.name, ["Este campo es requerido"]])));
-      toast.error("Hay campos por corregir. Revisa lo marcado en rojo.");
-      return;
+    for (const f of fields.filter((f) => f.type === "relation-search" && f.required && !formData.get(f.name))) {
+      clientErrors[f.name] = ["Este campo es requerido"];
     }
 
     // Validar selects requeridos (incluyendo binary-status selects)
-    const missingSelects = fields.filter(
-      (f) => f.type === "select" && f.required && !(mode === "edit" && f.editReadonly) && !formData.get(f.name),
-    );
-    if (missingSelects.length > 0) {
-      setErrors(Object.fromEntries(missingSelects.map((f) => [f.name, ["Este campo es requerido"]])));
+    for (const f of fields.filter((f) => f.type === "select" && f.required && !(mode === "edit" && f.editReadonly) && !formData.get(f.name))) {
+      clientErrors[f.name] = ["Este campo es requerido"];
+    }
+
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors);
       toast.error("Hay campos por corregir. Revisa lo marcado en rojo.");
       return;
     }
@@ -446,13 +470,13 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent onEscapeKeyDown={(e) => { if (searchDropdownOpen.current) e.preventDefault(); }}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
 
-        <form id={formId} key={`${mode}-${row?.id ?? "new"}`} className="grid gap-4 sm:grid-cols-2" onSubmit={submit} noValidate={false}>
+        <form id={formId} key={`${mode}-${row?.id ?? "new"}`} className="grid gap-4 sm:grid-cols-2" onSubmit={submit} noValidate>
           {fields.filter((f) => !(f.createOnly && mode === "edit")).map((field) => {
             const err = errors[field.name]?.[0];
             const invalid = cn(err && "border-destructive focus-visible:border-destructive");
@@ -495,6 +519,9 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
                     field={field}
                     defaultVal={fieldDefault(row, field)}
                     disabled={isReadonly}
+                    errorClass={invalid}
+                    onClearError={() => clearError(field.name)}
+                    onDropdownOpenChange={(isOpen) => { searchDropdownOpen.current = isOpen; }}
                   />
                 ) : field.type === "select" ? (
                   <select
