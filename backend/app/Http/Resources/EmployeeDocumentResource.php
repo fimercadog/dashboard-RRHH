@@ -20,7 +20,6 @@ class EmployeeDocumentResource extends JsonResource
             'employee' => new EmployeeResource($this->whenLoaded('employee')),
             'document_type' => $this->document_type,
             'name' => $this->name,
-            'file_path' => $this->file_path,
             'file_url'  => $this->file_path ? Storage::disk('public')->url($this->file_path) : null,
             'issue_date' => $this->issue_date,
             'expiration_date' => $this->expiration_date,

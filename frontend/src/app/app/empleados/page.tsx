@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Eye } from "lucide-react";
 import Link from "next/link";
 import { CrudField } from "@/components/crud/crud-modal";
@@ -9,6 +10,15 @@ import { Badge, badgeVariant, badgeLabel } from "@/components/ui/badge";
 import { EMPLOYEE_IDENTIFICATION_TYPE_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
 import { AppColumnDef } from "@/lib/table-types";
 import { Employee } from "@/lib/types";
+
+const STATUS_FILTER_OPTIONS = [
+  { value: "", label: "Todos los estados" },
+  { value: "active", label: "Activo" },
+  { value: "pending_withdrawal", label: "En proceso de retiro" },
+  { value: "inactive", label: "Inactivo" },
+  { value: "on_leave", label: "En licencia" },
+  { value: "terminated", label: "Terminado" },
+];
 
 const columns: AppColumnDef<Employee>[] = [
   { accessorKey: "employee_code", header: "Codigo" },
@@ -40,14 +50,35 @@ const fields: CrudField[] = [
       ...STATUS_OPTIONS,
       { label: "Terminado", value: "terminated" },
       { label: "En licencia", value: "on_leave" },
+      { label: "En proceso de retiro", value: "pending_withdrawal" },
     ],
   },
+  { name: "eps", label: "EPS" },
+  { name: "arl", label: "ARL" },
+  { name: "pension_fund", label: "Fondo de pension" },
+  { name: "compensation_fund", label: "Caja de compensacion" },
   { name: "department_id", label: "Area", type: "relation-select", endpoint: "/departments?per_page=100" },
   { name: "position_id", label: "Cargo", type: "relation-select", endpoint: "/positions?per_page=100" },
   { name: "salary", label: "Salario", type: "number", min: 0, hint: "Solo numeros, sin negativos" },
 ];
 
 export default function EmployeesPage() {
+  const [statusFilter, setStatusFilter] = useState("");
+
+  const extraParams = statusFilter ? { status: statusFilter } : undefined;
+
+  const filterSlot = (
+    <select
+      value={statusFilter}
+      onChange={(e) => setStatusFilter(e.target.value)}
+      className="w-52 rounded-md border border-input bg-background px-3 py-2 text-sm"
+    >
+      {STATUS_FILTER_OPTIONS.map((opt) => (
+        <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ))}
+    </select>
+  );
+
   return (
     <ModuleTablePage
       title="Empleados"
@@ -58,6 +89,8 @@ export default function EmployeesPage() {
       fields={fields}
       actionLabel="Nuevo empleado"
       modalDescription="Captura la informacion basica del colaborador."
+      extraParams={extraParams}
+      filterSlot={filterSlot}
       extraRowActions={(row, refresh) => (
         <>
           <Link href={`/app/empleados/${row.id}`} className="inline-flex h-8 items-center gap-2 rounded-md px-2 text-sm hover:bg-muted">

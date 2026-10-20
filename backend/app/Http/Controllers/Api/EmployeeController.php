@@ -6,6 +6,7 @@ use App\Http\Resources\EmployeeResource;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class EmployeeController extends BaseCrudController
 {
@@ -14,6 +15,17 @@ class EmployeeController extends BaseCrudController
     protected array $with = ['department', 'position', 'manager'];
     protected array $searchable = ['employee_code', 'first_name', 'last_name', 'identification_number', 'email'];
     protected array $filterable = ['status' => 'employment_status', 'department_id' => 'department_id', 'position_id' => 'position_id'];
+
+    /** Carga work_history y documents solo en el detalle, no en el listado. */
+    public function show(Request $request, string $id): JsonResource
+    {
+        $model = Employee::query()
+            ->where('company_id', $this->companyId($request))
+            ->with([...$this->with, 'workHistory', 'documents'])
+            ->findOrFail($id);
+
+        return new EmployeeResource($model);
+    }
 
     /** Selector ligero con búsqueda server-side — accesible a cualquier rol autenticado de la empresa. */
     public function selector(Request $request): JsonResponse

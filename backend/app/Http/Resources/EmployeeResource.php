@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\EmployeeWorkHistoryResource;
+use App\Http\Resources\EmployeeDocumentResource;
 
 class EmployeeResource extends JsonResource
 {
@@ -42,7 +44,13 @@ class EmployeeResource extends JsonResource
             'contract_type' => $this->contract_type,
             'salary' => $this->salary,
             'work_schedule' => $this->work_schedule,
+            'eps' => $this->eps,
+            'arl' => $this->arl,
+            'pension_fund' => $this->pension_fund,
+            'compensation_fund' => $this->compensation_fund,
             'notes' => $this->notes,
+            'work_history' => EmployeeWorkHistoryResource::collection($this->whenLoaded('workHistory')),
+            'documents' => EmployeeDocumentResource::collection($this->whenLoaded('documents')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

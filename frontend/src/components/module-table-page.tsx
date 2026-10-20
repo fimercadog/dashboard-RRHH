@@ -22,6 +22,8 @@ type ModuleTablePageProps<T extends object & RowWithId> = {
   fields?: CrudField[];
   modalDescription?: string;
   extraRowActions?: (row: T, refresh: () => void) => React.ReactNode;
+  extraParams?: Record<string, string>;
+  filterSlot?: React.ReactNode;
 };
 
 export function ModuleTablePage<T extends object & RowWithId>({
@@ -34,8 +36,10 @@ export function ModuleTablePage<T extends object & RowWithId>({
   fields,
   modalDescription,
   extraRowActions,
+  extraParams,
+  filterSlot,
 }: ModuleTablePageProps<T>) {
-  const table = useApiTable<T>(resource);
+  const table = useApiTable<T>(resource, extraParams);
   const { isActive: contingencyActive, moduleEnabled, enqueue } = useContingency();
   const moduleKey = resource.replace(/^\//, "");
   // Modulo habilitado en contingencia: los altas se encolan en local.
@@ -110,6 +114,7 @@ export function ModuleTablePage<T extends object & RowWithId>({
         </div>
       ) : null}
 
+      {filterSlot}
       <DataTable
         columns={tableColumns}
         exportBaseUrl={exportResource ? `${API_BASE}/exports/${exportResource}` : undefined}

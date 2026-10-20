@@ -66,6 +66,7 @@ use App\Http\Controllers\Api\IntegrationStatusController;
 use App\Http\Controllers\Api\GoogleSheetsSettingController;
 use App\Http\Controllers\Api\ZoomSettingController;
 use App\Http\Controllers\Api\ImportController;
+use App\Http\Controllers\Api\EmployeeWorkHistoryController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -109,6 +110,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/employees/selector', [EmployeeController::class, 'selector']);
     Route::apiResource('employees', EmployeeController::class)->except(['destroy'])->middleware('can:employees.manage');
     Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->middleware('can:employees.delete');
+    Route::get('employees/{employee}/work-history', [EmployeeWorkHistoryController::class, 'index'])->middleware('can:employees.manage');
+    Route::post('employees/{employee}/work-history', [EmployeeWorkHistoryController::class, 'store'])->middleware('can:employees.manage');
+    Route::put('employees/{employee}/work-history/{id}', [EmployeeWorkHistoryController::class, 'update'])->middleware('can:employees.manage');
+    Route::delete('employees/{employee}/work-history/{id}', [EmployeeWorkHistoryController::class, 'destroy'])->middleware('can:employees.manage');
     Route::apiResource('departments', DepartmentController::class)->middleware('can:settings.manage');
     Route::apiResource('positions', PositionController::class)->middleware('can:settings.manage');
     Route::apiResource('attendances', AttendanceController::class)->except(['destroy'])->middleware('can:attendance.manage');

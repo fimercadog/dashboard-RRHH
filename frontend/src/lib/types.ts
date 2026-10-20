@@ -22,10 +22,26 @@ export type Employee = {
   contract_type?: string;
   salary?: number;
   work_schedule?: string;
+  eps?: string;
+  arl?: string;
+  pension_fund?: string;
+  compensation_fund?: string;
   notes?: string;
   department?: { id: number; name: string };
   position?: { id: number; name: string };
   manager?: { id: number; first_name: string; last_name: string; full_name?: string };
+  work_history?: EmployeeWorkHistory[];
+  documents?: DocumentRow[];
+};
+
+export type EmployeeWorkHistory = {
+  id: number;
+  employee_id: number;
+  event_type: 'hire' | 'promotion' | 'salary_adjustment' | 'recognition' | 'other';
+  title: string;
+  description?: string;
+  effective_date: string;
+  created_at?: string;
 };
 
 export type Attendance = {

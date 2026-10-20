@@ -83,6 +83,7 @@ const VARIANT_MAP: Record<string, BadgeVariant> = {
   // muted
   draft: "muted", borrador: "muted",
   on_leave: "warning",
+  pending_withdrawal: "warning",
 };
 
 export function badgeVariant(status: string): BadgeVariant {
@@ -96,6 +97,7 @@ const LABEL_MAP: Record<string, string> = {
   cancelled: "Cancelado", completed: "Completado",
   archived: "Archivado",
   terminated: "Terminado", on_leave: "En licencia",
+  pending_withdrawal: "En proceso de retiro",
   suspended: "Suspendido", on_hold: "En espera",
   sent: "Enviado", posted: "Publicado",
   paid: "Pagado", overdue: "Vencido",

@@ -19,6 +19,7 @@ class Employee extends Model
         'address', 'city', 'emergency_contact_name', 'emergency_contact_phone', 'hire_date',
         'termination_date', 'employment_status', 'position_id', 'department_id', 'manager_id',
         'contract_type', 'salary', 'work_schedule', 'notes', 'avatar',
+        'eps', 'arl', 'pension_fund', 'compensation_fund',
     ];
 
     protected $casts = [
@@ -41,6 +42,7 @@ class Employee extends Model
     public function manager(): BelongsTo { return $this->belongsTo(Employee::class, 'manager_id'); }
     public function attendances(): HasMany { return $this->hasMany(Attendance::class); }
     public function documents(): HasMany { return $this->hasMany(EmployeeDocument::class); }
+    public function workHistory(): HasMany { return $this->hasMany(EmployeeWorkHistory::class)->orderByDesc('effective_date'); }
     public function vacationRequests(): HasMany { return $this->hasMany(VacationRequest::class); }
     public function permissionRequests(): HasMany { return $this->hasMany(PermissionRequest::class); }
     public function sickLeaves(): HasMany { return $this->hasMany(SickLeave::class); }
