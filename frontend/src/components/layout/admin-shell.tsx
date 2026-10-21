@@ -98,6 +98,8 @@ type NavItem = {
   premiumBody?: string;
   /** Control critico: color de alerta fijo aunque este inactivo. */
   alert?: boolean;
+  /** Modulo en construccion: muestra badge "Proximamente" y no navega. */
+  comingSoon?: boolean;
 };
 
 type NavGroup = {
@@ -115,13 +117,17 @@ const navGroups: NavGroup[] = [
   {
     label: "Recursos Humanos",
     items: [
-      { href: "/app/empleados", label: "Empleados", icon: Users, permissions: ["employees.manage"] },
-      { href: "/app/asistencia", label: "Asistencia", icon: Clock3, permissions: ["attendance.manage"] },
-      { href: "/app/vacaciones", label: "Vacaciones", icon: CalendarDays, permissions: ["requests.approve"] },
-      { href: "/app/permisos", label: "Permisos", icon: BadgeCheck, permissions: ["requests.approve"] },
-      { href: "/app/incapacidades", label: "Incapacidades", icon: Stethoscope, permissions: ["requests.approve"] },
-      { href: "/app/documentos", label: "Documentos", icon: FileText, permissions: ["documents.manage"] },
-      { href: "/app/turnos", label: "Turnos", icon: Activity, permissions: ["attendance.manage"] },
+      { href: "/app/empleados",     label: "Empleados",                icon: Users,       permissions: ["employees.manage"] },
+      { href: "/app/reclutamiento", label: "Reclutamiento y selección", icon: UserSearch, permissions: ["recruitment.view"] },
+      { href: "/app/asistencia",    label: "Asistencia y ausentismo",  icon: Clock3,      permissions: ["attendance.manage"] },
+      { href: "/app/vacaciones",    label: "Vacaciones",               icon: CalendarDays, permissions: ["requests.approve"] },
+      { href: "/app/permisos",      label: "Permisos",                 icon: BadgeCheck,  permissions: ["requests.approve"] },
+      { href: "/app/incapacidades", label: "Incapacidades",            icon: Stethoscope, permissions: ["requests.approve"] },
+      { href: "/app/turnos",        label: "Turnos",                   icon: Activity,    permissions: ["attendance.manage"] },
+      { href: "/app/nomina",        label: "Nómina y liquidaciones",   icon: Banknote,    permissions: ["payroll.manage"], comingSoon: true },
+      { href: "/app/sst",           label: "SST",                      icon: Shield,      permissions: [],                 comingSoon: true },
+      { href: "/app/desempeno",     label: "Desempeño",                icon: TrendingUp,  permissions: [],                 comingSoon: true },
+      { href: "/app/documentos",    label: "Central documental",       icon: FileText,    permissions: ["documents.manage"] },
     ],
   },
   {
@@ -185,15 +191,6 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Reclutamiento",
-    items: [
-      { href: "/app/reclutamiento/vacantes",     label: "Vacantes",     icon: BriefcaseBusiness, permissions: ["recruitment.view"] },
-      { href: "/app/reclutamiento/candidatos",   label: "Candidatos",   icon: UserSearch,        permissions: ["recruitment.view"] },
-      { href: "/app/reclutamiento/postulaciones", label: "Postulaciones", icon: ClipboardCheck,   permissions: ["recruitment.view"] },
-      { href: "/app/reclutamiento/entrevistas",  label: "Entrevistas",  icon: CalendarClock,     permissions: ["recruitment.view"] },
-    ],
-  },
-  {
     label: "Reportes",
     items: [
       { href: "/app/reportes", label: "Reportes", icon: BarChart3, permissions: ["reports.view"] },
@@ -252,6 +249,21 @@ function NavLink({ item }: { item: NavItem }) {
   const pathname = usePathname();
   const Icon = item.icon;
   const { isActive: contingencyActive, pendingCount } = useContingency();
+
+  if (item.comingSoon) {
+    return (
+      <div
+        className="flex h-9 cursor-not-allowed items-center gap-3 rounded-md px-3 text-sm text-muted-foreground/50"
+        aria-disabled="true"
+      >
+        <Icon className="h-4 w-4" />
+        <span>{item.label}</span>
+        <span className="ml-auto rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+          Próximamente
+        </span>
+      </div>
+    );
+  }
 
   if (item.alert) {
     const active = pathname.replace(/\/$/, "") === item.href.replace(/\/$/, "");

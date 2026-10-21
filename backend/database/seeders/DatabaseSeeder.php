@@ -132,9 +132,15 @@ class DatabaseSeeder extends Seeder
 
         $demoUsers = [
             [
+                'name' => 'Diego Salazar',
+                'email' => 'superusuario@andespeople.co',
+                'role' => 'Super Admin',
+                'employee_index' => null,
+            ],
+            [
                 'name' => 'Sofia Mercado',
                 'email' => 'superadmin@andespeople.co',
-                'role' => 'Super Admin',
+                'role' => 'Administrador de empresa',
                 'employee_index' => null,
             ],
             [
