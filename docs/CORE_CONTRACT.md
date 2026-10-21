@@ -236,3 +236,60 @@ Ver checklist completo en `docs/VERTICAL_TEMPLATE.md` §3.
 - Completar el mapa contra enums/estados/acciones reales del backend; el fallback que solo capitaliza texto no garantiza español.
 - Si la etiqueta depende del sustantivo (por ejemplo, solicitud frente a documento), el mapa debe aceptar contexto de dominio o usar etiquetas específicas. Evitar discordancias gramaticales en badges.
 - Añadir pruebas de cobertura de estados y acciones para impedir regresiones entre módulos.
+
+---
+
+## 12. Patrón Calculadora Configurable (toda la vertical de Talento Humano)
+
+> Decisión de Fidel — 2026-10-20. Aplica a todos los módulos de DFC Talento Humano.
+
+Cada módulo funciona como una **calculadora configurable**: datos editables, reglas visibles, resultados verificables. Ningún módulo impone valores fijos en código ni requiere cambio de código para ajustar la operación normal del negocio.
+
+### Los cinco principios
+
+1. **Configuración editable** — parámetros, porcentajes, topes, factores y reglas editables por usuario autorizado. Cada valor tiene: vigencia (`effective_from`/`effective_to`), fuente normativa cuando aplique, ámbito por empresa (`scope = global | company`).
+
+2. **Simulación sin efectos** — el usuario calcula escenarios antes de confirmar. Una simulación no crea registros oficiales ni cierra períodos.
+
+3. **Desglose visible** — todo resultado expone: fórmula aplicada, valores usados, subtotales y resultado final. Prohibido mostrar un número sin su procedimiento.
+
+4. **Validación antes de confirmar** — campos obligatorios, permisos, parámetros vigentes y reglas legales verificados antes de guardar o cerrar. Si falta algo: HTTP 422 + lista exacta de lo que falta (`missing_params`).
+
+5. **Trazabilidad completa** — quién calculó, qué parámetros usó, qué cambió y cuándo. Un registro cerrado conserva `parameters_snapshot` JSON; correcciones solo vía procedimiento controlado.
+
+### Regla de seguridad transversal
+
+Que un parámetro sea editable **no significa** que cualquier valor sea legalmente válido.
+
+- Un parámetro sin `verified_at` puede usarse en simulación pero **bloquea el cierre** de un período real.
+- Una exención o tasa privilegiada requiere validación explícita por rol autorizado antes de aplicarse a cálculos reales.
+- Modificar un parámetro global **no altera** retroactivamente registros cerrados.
+
+### Aplicación por módulo
+
+| Módulo | Qué es configurable |
+|---|---|
+| Nómina | Salario, devengados, deducciones, aportes, retenciones, parámetros legales |
+| Seguridad social | IBC, tasas salud/pensión/ARL, umbrales FSP |
+| Contratos | Modalidades, condiciones, alertas de vencimiento |
+| Vacaciones | Días acumulados, disfrute, compensaciones permitidas |
+| Prestaciones sociales | Bases de cesantías, prima, intereses |
+| Liquidación final | Causales, fechas, conceptos aplicables |
+| Horas extra y recargos | Franjas horarias, porcentajes de recargo |
+| Selección y contratación | Criterios de evaluación, ponderaciones |
+| Desempeño | Indicadores, pesos, escalas |
+| SST | Matrices de riesgo, frecuencias, controles |
+| Comunicaciones | Motor de reglas y flujos (no calculadora matemática) |
+| Reportes e indicadores | Métricas, filtros, fórmulas configurables |
+
+### Cómo implementar (regla de construcción)
+
+Cuando un módulo necesite un cálculo con parámetros legales o configurables:
+
+1. Los parámetros van a tabla versionada (ej. `payroll_parameter_values`) — nunca hardcodeados en el servicio.
+2. El servicio consulta parámetros por fecha y empresa antes de operar.
+3. El servicio registra advertencias cuando usa valores no verificados.
+4. El controlador de cierre llama `canClose()` o equivalente: HTTP 422 + `missing_params` si faltan verificaciones.
+5. El modelo de resultado almacena `parameters_snapshot` JSON con los valores exactos usados.
+
+**Referencia canónica:** `PayrollService`, `PayrollParameterService`, `PayrollPeriod::canClose()` (commit 261db53).
