@@ -159,7 +159,11 @@ test.describe.serial("Empleados — CRUD", () => {
     const toggleBtn = page.getByRole("button", { name: /deshabilitar/i }).first();
     await expect(toggleBtn).toBeVisible({ timeout: 5_000 });
     await toggleBtn.click();
-    await expect(page.getByText(/inactivo/i).first()).toBeVisible({ timeout: 10_000 });
+    // getByText(/inactivo/i) resolvía al <option> oculto del select de filtros;
+    // restringimos al <span> dentro de una celda de tabla para apuntar al badge.
+    await expect(
+      page.locator("td span", { hasText: /^Inactivo$/i }).first()
+    ).toBeVisible({ timeout: 10_000 });
   });
 });
 
