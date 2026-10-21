@@ -1,13 +1,13 @@
 # Pendientes activos — DFC Talento Humano
 
-> Última actualización: 2026-10-20
+> Última actualización: 2026-10-21
 
 ---
 
 ## Commits pendientes (sin push)
 
-- [ ] Commit: `DatabaseSeeder.php` + `admin-shell.tsx` — Diego Salazar seeder + unificación sidebar "Recursos Humanos"
-- [ ] Push: commit `a38c751` (KpiCard + statsSlot) — existe solo localmente
+- [x] Commit `334fb69`: `DatabaseSeeder.php` + `admin-shell.tsx` + `PENDIENTES.md` — hecho 2026-10-21
+- [ ] Push: commits `a38c751` y `334fb69` — pendientes de push a origin
 
 ---
 
@@ -22,16 +22,16 @@
 
 ## SPEC-CONT-001 — Continuidad, backups y rollback
 
-- [ ] Revisión del informe de auditoría entregado (2026-10-20) — 4 fases propuestas, ninguna implementada
+- [ ] Revisión del informe de auditoría entregado (2026-10-20) — 4 fases propuestas
 - [ ] Fase 1: push trabajo actual + plantilla de continuidad en WORKFLOW.md + regla en CLAUDE.md
 - [ ] Fase 2: verificar backup automático en Hostinger (SSH read) + documentar backup manual
-- [ ] Fase 3: guard en script de deploy — backup de BD antes de `migrate --force`
+- [x] Fase 3: guard en script de deploy — mysqldump antes de `migrate --force` — hecho 2026-10-21 en `docs/deploy-hostinger.md`
 - [ ] Fase 4: tags de release + suite MySQL en phpunit.xml
 
-### Riesgos críticos sin resolver
+### Riesgos críticos
 
-- [ ] **CRÍTICO** — Sin backup verificado de BD de producción
-- [ ] **CRÍTICO** — Script de deploy ejecuta `migrate --force` sin backup previo
+- [ ] **CRÍTICO** — Backup verificado de BD de producción: pendiente ejecutar primer deploy con guard para confirmar que crea el .sql en ~/backups/
+- [x] **CRÍTICO** — Script de deploy ejecuta `migrate --force` sin backup: **resuelto** — guard en deploy-hostinger.md
 - [ ] **ALTO** — Sin pruebas en MySQL (solo SQLite en memoria)
 - [ ] **ALTO** — Sin CI/CD (cero automatización en push/PR)
 
