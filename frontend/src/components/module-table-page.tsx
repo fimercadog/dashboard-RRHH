@@ -24,6 +24,7 @@ type ModuleTablePageProps<T extends object & RowWithId> = {
   extraRowActions?: (row: T, refresh: () => void) => React.ReactNode;
   extraParams?: Record<string, string>;
   filterSlot?: React.ReactNode;
+  statsSlot?: React.ReactNode;
 };
 
 export function ModuleTablePage<T extends object & RowWithId>({
@@ -38,6 +39,7 @@ export function ModuleTablePage<T extends object & RowWithId>({
   extraRowActions,
   extraParams,
   filterSlot,
+  statsSlot,
 }: ModuleTablePageProps<T>) {
   const table = useApiTable<T>(resource, extraParams);
   const { isActive: contingencyActive, moduleEnabled, enqueue } = useContingency();
@@ -114,6 +116,7 @@ export function ModuleTablePage<T extends object & RowWithId>({
         </div>
       ) : null}
 
+      {statsSlot}
       {filterSlot}
       <DataTable
         columns={tableColumns}
