@@ -83,19 +83,24 @@ function CreateOCModal({ open, onOpenChange, onSaved }: CreateOCModalProps) {
   // Load reference data when modal opens
   React.useEffect(() => {
     if (!open) return;
-    setLoadingData(true);
-    Promise.all([
-      api.get<PaginatedResponse<Supplier>>("/suppliers", { params: { per_page: 200 } }),
-      api.get<PaginatedResponse<Warehouse>>("/warehouses", { params: { per_page: 100 } }),
-      api.get<PaginatedResponse<ProductOption>>("/products", { params: { per_page: 500 } }),
-    ])
-      .then(([s, w, p]) => {
+    async function loadData() {
+      setLoadingData(true);
+      try {
+        const [s, w, p] = await Promise.all([
+          api.get<PaginatedResponse<Supplier>>("/suppliers", { params: { per_page: 200 } }),
+          api.get<PaginatedResponse<Warehouse>>("/warehouses", { params: { per_page: 100 } }),
+          api.get<PaginatedResponse<ProductOption>>("/products", { params: { per_page: 500 } }),
+        ]);
         setSuppliers(s.data.data);
         setWarehouses(w.data.data);
         setProducts(p.data.data);
-      })
-      .catch(() => toast.error("No se pudieron cargar los datos de referencia."))
-      .finally(() => setLoadingData(false));
+      } catch {
+        toast.error("No se pudieron cargar los datos de referencia.");
+      } finally {
+        setLoadingData(false);
+      }
+    }
+    void loadData();
   }, [open]);
 
   function resetForm() {

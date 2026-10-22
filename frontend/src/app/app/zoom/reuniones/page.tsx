@@ -39,13 +39,19 @@ export default function ReunionesZoomPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    api
-      .get<Meeting[]>("/zoom/meetings", { params: filter !== "all" ? { status: filter } : {} })
-      .then((res) => setMeetings(res.data))
-      .catch(() => setError("No se pudieron cargar las reuniones."))
-      .finally(() => setLoading(false));
+    async function loadData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await api.get<Meeting[]>("/zoom/meetings", { params: filter !== "all" ? { status: filter } : {} });
+        setMeetings(res.data);
+      } catch {
+        setError("No se pudieron cargar las reuniones.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    void loadData();
   }, [filter]);
 
   return (

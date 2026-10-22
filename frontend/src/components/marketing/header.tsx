@@ -38,7 +38,7 @@ export function MarketingHeader() {
 
   // Cierra el menu movil al cambiar de ruta.
   useEffect(() => {
-    setOpen(false);
+    void (async () => { setOpen(false); })();
   }, [pathname]);
 
   return (

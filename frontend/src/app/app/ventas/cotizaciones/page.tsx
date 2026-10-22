@@ -63,14 +63,22 @@ function CreateQuoteModal({ open, onOpenChange, onSaved }: CreateQuoteModalProps
 
   React.useEffect(() => {
     if (!open) return;
-    setLoadingData(true);
-    Promise.all([
-      api.get<PaginatedResponse<Client>>("/clients", { params: { per_page: 500 } }),
-      api.get<PaginatedResponse<ProductOption>>("/products", { params: { per_page: 500 } }),
-    ])
-      .then(([c, p]) => { setClients(c.data.data); setProducts(p.data.data); })
-      .catch(() => toast.error("No se pudieron cargar los datos de referencia."))
-      .finally(() => setLoadingData(false));
+    async function loadData() {
+      setLoadingData(true);
+      try {
+        const [c, p] = await Promise.all([
+          api.get<PaginatedResponse<Client>>("/clients", { params: { per_page: 500 } }),
+          api.get<PaginatedResponse<ProductOption>>("/products", { params: { per_page: 500 } }),
+        ]);
+        setClients(c.data.data);
+        setProducts(p.data.data);
+      } catch {
+        toast.error("No se pudieron cargar los datos de referencia.");
+      } finally {
+        setLoadingData(false);
+      }
+    }
+    void loadData();
   }, [open]);
 
   function resetForm() {

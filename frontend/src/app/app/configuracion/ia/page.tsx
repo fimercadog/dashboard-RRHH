@@ -51,7 +51,7 @@ export default function AiConfigPage() {
     }
   }, [loadModels]);
 
-  useEffect(() => { loadSettings(); }, [loadSettings]);
+  useEffect(() => { void (async () => { await loadSettings(); })(); }, [loadSettings]);
 
   async function handleSave() {
     setSaving(true);

@@ -22,7 +22,7 @@ export function useApiTable<T>(resource: string, extraParams?: Record<string, st
   }, [search]);
 
   // Volver a página 1 cuando cambia el tamaño de página
-  React.useEffect(() => { setPage(1); }, [perPage]);
+  React.useEffect(() => { void (async () => { setPage(1); })(); }, [perPage]);
 
   React.useEffect(() => {
     const controller = new AbortController();

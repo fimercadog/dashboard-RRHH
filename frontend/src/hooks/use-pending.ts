@@ -38,7 +38,7 @@ export function usePending() {
   }, []);
 
   useEffect(() => {
-    void fetch();
+    void (async () => { await fetch(); })();
     timerRef.current = setInterval(() => void fetch(), POLL_MS);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);

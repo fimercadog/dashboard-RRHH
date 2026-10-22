@@ -63,10 +63,10 @@ export default function ConversacionesPage() {
     }
   }, [filter, page]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { void (async () => { await load(); })(); }, [load]);
 
   // Reset page when filter changes
-  useEffect(() => { setPage(1); }, [filter]);
+  useEffect(() => { void (async () => { setPage(1); })(); }, [filter]);
 
   return (
     <div className="space-y-5">

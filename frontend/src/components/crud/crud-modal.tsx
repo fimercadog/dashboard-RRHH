@@ -99,32 +99,37 @@ function RelationSelectField({
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    setValue(defaultVal);
+    void (async () => { setValue(defaultVal); })();
   }, [defaultVal]);
 
   React.useEffect(() => {
     if (!field.endpoint) return;
-    setLoading(true);
-    api.get(field.endpoint).then((res) => {
-      const raw: unknown[] = Array.isArray(res.data)
-        ? res.data
-        : Array.isArray(res.data?.data)
-          ? (res.data.data as unknown[])
-          : [];
-      setOptions(
-        raw.map((item) => {
-          const r = item as Record<string, unknown>;
-          const label =
-            r.label != null
-              ? String(r.label)
-              : r.first_name != null
-                ? `${r.first_name} ${r.last_name ?? ""}`.trim()
-                : String(r.name ?? r.id);
-          return { id: Number(r.id), label };
-        }),
-      );
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    async function loadOptions() {
+      setLoading(true);
+      try {
+        const res = await api.get(field.endpoint!);
+        const raw: unknown[] = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.data)
+            ? (res.data.data as unknown[])
+            : [];
+        setOptions(
+          raw.map((item) => {
+            const r = item as Record<string, unknown>;
+            const label =
+              r.label != null
+                ? String(r.label)
+                : r.first_name != null
+                  ? `${r.first_name} ${r.last_name ?? ""}`.trim()
+                  : String(r.name ?? r.id);
+            return { id: Number(r.id), label };
+          }),
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+    void loadOptions();
   }, [field.endpoint]);
 
   return (
@@ -190,11 +195,12 @@ function RelationSearchField({
 
   // Resolver label en modo edición — se re-ejecuta cuando cambia el registro abierto
   React.useEffect(() => {
-    if (defaultVal && Number(defaultVal)) {
-      setSelectedId(Number(defaultVal));
-      setSelectedLabel("");
-      api.get(`${field.endpoint}?id=${defaultVal}`)
-        .then((res) => {
+    async function resolveLabel() {
+      if (defaultVal && Number(defaultVal)) {
+        setSelectedId(Number(defaultVal));
+        setSelectedLabel("");
+        try {
+          const res = await api.get(`${field.endpoint}?id=${defaultVal}`);
           const raw: RelationOption[] = Array.isArray(res.data) ? (res.data as RelationOption[])
             : Array.isArray((res.data as { data?: unknown })?.data) ? (res.data as { data: RelationOption[] }).data
             : [];
@@ -202,12 +208,15 @@ function RelationSearchField({
             setSelectedId(raw[0].id);
             setSelectedLabel(raw[0].label);
           }
-        })
-        .catch(() => {});
-    } else {
-      setSelectedId(null);
-      setSelectedLabel("");
+        } catch {
+          // label not found — keep blank
+        }
+      } else {
+        setSelectedId(null);
+        setSelectedLabel("");
+      }
     }
+    void resolveLabel();
   }, [defaultVal, field.endpoint]);
 
   const search = (term: string) => {

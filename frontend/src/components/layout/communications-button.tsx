@@ -90,8 +90,9 @@ export function CommunicationsButton() {
 
   React.useEffect(() => {
     if (!open) return;
-    void loadCampaigns();
-    void loadSources();
+    void (async () => {
+      await Promise.all([loadCampaigns(), loadSources()]);
+    })();
   }, [open]);
 
   async function previewAudience(campaignId?: number) {

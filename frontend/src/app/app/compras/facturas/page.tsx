@@ -65,19 +65,24 @@ function CreatePurchaseInvoiceModal({ open, onOpenChange, onSaved }: CreateInvoi
 
   React.useEffect(() => {
     if (!open) return;
-    setLoadingData(true);
-    Promise.all([
-      api.get<PaginatedResponse<Supplier>>("/suppliers", { params: { per_page: 200 } }),
-      api.get<PaginatedResponse<PurchaseOrder>>("/purchase-orders", { params: { per_page: 200 } }),
-      api.get<PaginatedResponse<PurchaseReceipt>>("/purchase-receipts", { params: { per_page: 200 } }),
-    ])
-      .then(([s, po, pr]) => {
+    async function loadData() {
+      setLoadingData(true);
+      try {
+        const [s, po, pr] = await Promise.all([
+          api.get<PaginatedResponse<Supplier>>("/suppliers", { params: { per_page: 200 } }),
+          api.get<PaginatedResponse<PurchaseOrder>>("/purchase-orders", { params: { per_page: 200 } }),
+          api.get<PaginatedResponse<PurchaseReceipt>>("/purchase-receipts", { params: { per_page: 200 } }),
+        ]);
         setSuppliers(s.data.data);
         setPurchaseOrders(po.data.data);
         setPurchaseReceipts(pr.data.data);
-      })
-      .catch(() => toast.error("No se pudieron cargar los datos de referencia."))
-      .finally(() => setLoadingData(false));
+      } catch {
+        toast.error("No se pudieron cargar los datos de referencia.");
+      } finally {
+        setLoadingData(false);
+      }
+    }
+    void loadData();
   }, [open]);
 
   function onPoChange(poId: number | "") {

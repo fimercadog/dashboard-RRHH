@@ -21,14 +21,16 @@ export function BetaNotice() {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    try {
-      if (!window.sessionStorage.getItem(SEEN_KEY)) {
-        setOpen(true);
-        window.sessionStorage.setItem(SEEN_KEY, "1");
+    void (async () => {
+      try {
+        if (!window.sessionStorage.getItem(SEEN_KEY)) {
+          setOpen(true);
+          window.sessionStorage.setItem(SEEN_KEY, "1");
+        }
+      } catch {
+        // sessionStorage no disponible (modo privado, etc.): sin popup automatico.
       }
-    } catch {
-      // sessionStorage no disponible (modo privado, etc.): sin popup automatico.
-    }
+    })();
   }, []);
 
   return (

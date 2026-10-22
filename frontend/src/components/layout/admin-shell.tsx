@@ -342,7 +342,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   // Cierra el menu movil al navegar a otra ruta.
   React.useEffect(() => {
-    setMobileNavOpen(false);
+    void (async () => { setMobileNavOpen(false); })();
   }, [pathname]);
 
   const logout = React.useCallback(async () => {
@@ -360,23 +360,25 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     // El token Bearer vive en localStorage, pero solo /auth/me confirma que
     // sigue siendo valido. Pinta ya desde la cache (cliente) mientras se
     // resuelve, y redirige si /auth/me falla.
-    const cached = getStoredUser();
-    if (cached) {
-      setUser(cached);
-      setCheckingSession(false);
-    }
-
-    fetchMe()
-      .then((response) => {
+    async function checkSession() {
+      const cached = getStoredUser();
+      if (cached) {
+        setUser(cached);
+        setCheckingSession(false);
+      }
+      try {
+        const response = await fetchMe();
         updateStoredUser(response.data.user);
         setUser(response.data.user);
-      })
-      .catch(() => {
+      } catch {
         // El interceptor 401 ya limpio la sesion; aqui solo redirigimos.
         clearAuthSession();
         router.replace("/login");
-      })
-      .finally(() => setCheckingSession(false));
+      } finally {
+        setCheckingSession(false);
+      }
+    }
+    void checkSession();
   }, [router]);
 
   React.useEffect(() => {

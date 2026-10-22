@@ -65,16 +65,26 @@ function CreateSaleOrderModal({ open, onOpenChange, onSaved }: CreateSaleOrderMo
 
   React.useEffect(() => {
     if (!open) return;
-    setLoadingData(true);
-    Promise.all([
-      api.get<PaginatedResponse<Client>>("/clients", { params: { per_page: 500 } }),
-      api.get<PaginatedResponse<Warehouse>>("/warehouses", { params: { per_page: 100 } }),
-      api.get<PaginatedResponse<ProductOption>>("/products", { params: { per_page: 500 } }),
-      api.get<PaginatedResponse<Quote>>("/quotes", { params: { per_page: 200 } }),
-    ])
-      .then(([c, w, p, q]) => { setClients(c.data.data); setWarehouses(w.data.data); setProducts(p.data.data); setQuotes(q.data.data); })
-      .catch(() => toast.error("No se pudieron cargar los datos de referencia."))
-      .finally(() => setLoadingData(false));
+    async function loadData() {
+      setLoadingData(true);
+      try {
+        const [c, w, p, q] = await Promise.all([
+          api.get<PaginatedResponse<Client>>("/clients", { params: { per_page: 500 } }),
+          api.get<PaginatedResponse<Warehouse>>("/warehouses", { params: { per_page: 100 } }),
+          api.get<PaginatedResponse<ProductOption>>("/products", { params: { per_page: 500 } }),
+          api.get<PaginatedResponse<Quote>>("/quotes", { params: { per_page: 200 } }),
+        ]);
+        setClients(c.data.data);
+        setWarehouses(w.data.data);
+        setProducts(p.data.data);
+        setQuotes(q.data.data);
+      } catch {
+        toast.error("No se pudieron cargar los datos de referencia.");
+      } finally {
+        setLoadingData(false);
+      }
+    }
+    void loadData();
   }, [open]);
 
   function onQuoteChange(qId: number | "") {

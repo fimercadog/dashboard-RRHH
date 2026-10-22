@@ -42,11 +42,18 @@ function useEmployees(load: boolean) {
   const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
     if (!load) return;
-    setLoading(true);
-    api.get<PaginatedResponse<Employee>>("/employees", { params: { per_page: 200 } })
-      .then((r) => setEmployees(r.data.data ?? []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    async function loadData() {
+      setLoading(true);
+      try {
+        const r = await api.get<PaginatedResponse<Employee>>("/employees", { params: { per_page: 200 } });
+        setEmployees(r.data.data ?? []);
+      } catch {
+        // ignore
+      } finally {
+        setLoading(false);
+      }
+    }
+    void loadData();
   }, [load]);
   return { employees, loading };
 }
@@ -204,13 +211,16 @@ function EditReviewModal({ review, onOpenChange, onSaved }: EditReviewModalProps
 
   React.useEffect(() => {
     if (!review) return;
-    setOverallRating(review.overall_rating?.toString() ?? "");
-    setGoalsRating(review.goals_rating?.toString() ?? "");
-    setCompetenciesRating(review.competencies_rating?.toString() ?? "");
-    setStrengths(review.strengths ?? "");
-    setImprovements(review.improvements ?? "");
-    setGoalsNext(review.goals_next_period ?? "");
-    setErrors({});
+    async function sync() {
+      setOverallRating(review!.overall_rating?.toString() ?? "");
+      setGoalsRating(review!.goals_rating?.toString() ?? "");
+      setCompetenciesRating(review!.competencies_rating?.toString() ?? "");
+      setStrengths(review!.strengths ?? "");
+      setImprovements(review!.improvements ?? "");
+      setGoalsNext(review!.goals_next_period ?? "");
+      setErrors({});
+    }
+    void sync();
   }, [review]);
 
   async function submit(e: React.FormEvent) {

@@ -53,13 +53,19 @@ export default function ExportacionesGSheetsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    api
-      .get<Export[]>("/google-sheets/exports", { params: filter !== "all" ? { status: filter } : {} })
-      .then((res) => setExports(res.data))
-      .catch(() => setError("No se pudieron cargar las exportaciones."))
-      .finally(() => setLoading(false));
+    async function loadData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await api.get<Export[]>("/google-sheets/exports", { params: filter !== "all" ? { status: filter } : {} });
+        setExports(res.data);
+      } catch {
+        setError("No se pudieron cargar las exportaciones.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    void loadData();
   }, [filter]);
 
   return (

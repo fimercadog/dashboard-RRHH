@@ -39,7 +39,7 @@ export default function ConfiguracionContabilidadPage() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { void (async () => { await load(); })(); }, []);
 
   const openEdit = (c: AccountingAccountConfig) => {
     setEditing(c);

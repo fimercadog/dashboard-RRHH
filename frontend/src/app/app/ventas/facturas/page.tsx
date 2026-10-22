@@ -70,15 +70,24 @@ function CreateSaleInvoiceModal({ open, onOpenChange, onSaved }: CreateSaleInvoi
 
   React.useEffect(() => {
     if (!open) return;
-    setLoadingData(true);
-    Promise.all([
-      api.get<PaginatedResponse<Client>>("/clients", { params: { per_page: 500 } }),
-      api.get<PaginatedResponse<SaleOrder>>("/sale-orders", { params: { per_page: 200 } }),
-      api.get<PaginatedResponse<ProductOption>>("/products", { params: { per_page: 500 } }),
-    ])
-      .then(([c, so, p]) => { setClients(c.data.data); setSaleOrders(so.data.data); setProducts(p.data.data); })
-      .catch(() => toast.error("No se pudieron cargar los datos de referencia."))
-      .finally(() => setLoadingData(false));
+    async function loadData() {
+      setLoadingData(true);
+      try {
+        const [c, so, p] = await Promise.all([
+          api.get<PaginatedResponse<Client>>("/clients", { params: { per_page: 500 } }),
+          api.get<PaginatedResponse<SaleOrder>>("/sale-orders", { params: { per_page: 200 } }),
+          api.get<PaginatedResponse<ProductOption>>("/products", { params: { per_page: 500 } }),
+        ]);
+        setClients(c.data.data);
+        setSaleOrders(so.data.data);
+        setProducts(p.data.data);
+      } catch {
+        toast.error("No se pudieron cargar los datos de referencia.");
+      } finally {
+        setLoadingData(false);
+      }
+    }
+    void loadData();
   }, [open]);
 
   function onSoChange(soId: number | "") {

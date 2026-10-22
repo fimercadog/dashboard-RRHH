@@ -78,7 +78,7 @@ export default function AttendanceStatsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { load(applied); }, [load, applied]);
+  useEffect(() => { void (async () => { await load(applied); })(); }, [load, applied]);
 
   function apply() {
     setApplied({ ...filters });

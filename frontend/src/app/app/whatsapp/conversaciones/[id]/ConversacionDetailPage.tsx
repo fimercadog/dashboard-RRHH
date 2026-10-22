@@ -93,9 +93,9 @@ export default function ConversacionDetailPage() {
   }, []);
 
   useEffect(() => {
-    loadConv();
-    loadMessages();
-    loadUsers();
+    void (async () => {
+      await Promise.all([loadConv(), loadMessages(), loadUsers()]);
+    })();
   }, [loadConv, loadMessages, loadUsers]);
 
   // Scroll to bottom when messages load/arrive
