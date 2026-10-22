@@ -101,4 +101,44 @@ El permiso `leads.*` NUNCA debe asignarse a usuarios de empresas cliente. Reserv
 
 ---
 
+---
+
+## KI-004 — 26 errores ESLint preexistentes (`react-hooks/set-state-in-effect`)
+
+| Campo | Detalle |
+|---|---|
+| **Archivos** | `src/lib/use-api-table.ts:25`, `src/components/crud/crud-modal.tsx:102,107,194`, y ~12 páginas CRUD |
+| **Detectado** | 2026-10-22 — suite de verificación completa |
+| **Severidad** | LOW (deuda técnica — no bloquea build ni producción) |
+| **Estado** | **DOCUMENTADO** — todos preexistentes, ninguno introducido por sesión 2026-10-22 |
+
+### Descripción
+
+`npm run lint` reporta 26 errores de la regla `react-hooks/set-state-in-effect`. Patrón recurrente:
+
+```typescript
+// Patrón que dispara la regla (simplificado):
+useEffect(() => {
+  setState(value);  // setState llamado directamente dentro de useEffect
+}, [dep]);
+```
+
+La regla prohíbe actualizar estado directamente en un efecto sin condición de limpieza, ya que puede causar render loops o comportamientos inesperados en StrictMode.
+
+### Impacto real
+
+- `npm run build` (producción) **ignora los errores de lint** — el build es limpio (verificado 2026-10-22).
+- `npm run dev` funciona correctamente.
+- Las páginas afectadas funcionan en runtime porque React 18 StrictMode no dispara los casos degenerados para estos patrones específicos.
+
+### Deuda técnica
+
+Corregir requiere refactorizar los efectos para usar patrones como `useCallback` + dependencias correctas, o restructurar el flujo de estado. Es trabajo no trivial que puede introducir regresiones si no se hace con cuidado. Pospuesto a fase de refactoring dedicada.
+
+### Criterio de cierre
+
+(1) Refactorizar todos los efectos afectados con revisión de NANCY. (2) `npm run lint` pasa con 0 errores. (3) Regresión en E2E: 12/12.
+
+---
+
 *Añadir nuevos ítems con prefijo `KI-NNN` en orden cronológico.*

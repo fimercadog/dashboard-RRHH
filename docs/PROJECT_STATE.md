@@ -1,8 +1,8 @@
 # DFC Talento Humano — Estado del proyecto
 
-> Última verificación: 2026-10-20
-> Rama: `master` · HEAD: `c848554` (ficha ampliada commiteada)
-> Cambios en curso (sin commit): indicadores de asistencia SPEC-017 (ver sección 2)
+> Última verificación: 2026-10-22
+> Rama: `master` · HEAD: `3539ed7` · remoto sincronizado (origin/master)
+> Árbol limpio — no hay cambios sin commit
 
 ---
 
@@ -73,10 +73,24 @@
 
 ---
 
-## 2. Cambios en curso (no commiteados)
+## 2. Cambios recientes commiteados (sesión 2026-10-22)
 
-Verificados y aprobados por CENTINELA + NANCY el 2026-10-20.
-**No hacer commit ni push sin autorización explícita.**
+Todos en master, empujados a origin. Árbol limpio.
+
+| Commit | Descripción |
+|---|---|
+| `9212358` | fix(security): H-UC1/UC2 — IDOR employee_id + avatar_path en UserController |
+| `6a4f4eb` | test(security): H2 — 3 tests adicionales de roles por empresa |
+| `6edc521` | fix(security): H2 — roles per-company (migración + RoleController + seeders + tests) |
+| `64573eb` | chore(ci+docs): GitHub Actions CI + KNOWN_ISSUES H2/H3 |
+| `f5b3281` | fix(security): IDOR crítico UserController + migración PHPUnit #[Test] |
+| `5494fa1` | test(e2e): fix selector Editar vs "Editar foto" en Playwright |
+
+**Módulos implementados (no en lista anterior):**
+- SST (incidentes) — `SstIncidentController` + 12 tests
+- Desempeño (evaluaciones) — `PerformanceReviewController` + tests
+- KPI cards en 48 páginas — 27 endpoints `stats()` backend
+- Indicadores de asistencia SPEC-017 — `AttendanceStatsController` + 15 tests
 
 ### SPEC-017 — Indicadores de asistencia (2026-10-20)
 
@@ -132,8 +146,8 @@ Ambas migraciones corrieron en el entorno local (`php artisan migrate:status` co
 | Módulo | Estado | Prioridad |
 |---|---|---|
 | **Nómina y liquidaciones** | ⛔ Solo especificación | Alta |
-| **SST** | ⛔ No implementado | Media |
-| **Desempeño** | ⛔ No implementado | Media |
+| **SST** | ✓ Implementado (2026-10-21) | Media |
+| **Desempeño** | ✓ Implementado (2026-10-21) | Media |
 | **Central documental** | ⛔ No implementado | Media |
 | Horas extra (indicador asistencia) | ⛔ Brecha de modelo — KI-001 | Media |
 | Indicadores de reclutamiento | ⛔ No implementado | Baja |
@@ -163,8 +177,12 @@ Presentes en la vertical. Profundidad no auditada en esta sesión.
 
 | Suite | Tests | Assertions | Fecha | Entorno |
 |---|---|---|---|---|
-| Backend (`php artisan test`) | **396** | **996** | 2026-10-20 | SQLite local |
-| E2E Playwright | 11 | — | sesión anterior | No re-ejecutados — no declarar como estado actual |
+| Backend SQLite (`php artisan test`) | **447** | **1116** | 2026-10-22 | SQLite en memoria |
+| Backend MySQL (`phpunit.mysql.xml`) | **439** | **1088** | 2026-10-22 | MariaDB local |
+| E2E Playwright | **12** | — | 2026-10-22 | Chromium bundled |
+| TypeScript (`tsc --noEmit`) | 0 errores | — | 2026-10-22 | — |
+| Build producción (`npm run build`) | ✅ | — | 2026-10-22 | — |
+| Lint ESLint | ⚠ 26 errores preexistentes | — | 2026-10-22 | KI-004 |
 
 ---
 
