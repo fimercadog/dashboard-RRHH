@@ -1,6 +1,6 @@
 # Pendientes activos — DFC Talento Humano
 
-> Última actualización: 2026-10-22 (sesión autónoma — corrección IDOR crítico + suite 436/436)
+> Última actualización: 2026-10-22 (sesión autónoma — H2 roles per-company cerrado + suite 441/441)
 
 ---
 
@@ -11,7 +11,10 @@
 - [x] `a19e764` feat(frontend-kpi): KPI cards en 48 páginas — todos los módulos — 2026-10-21
 - [x] `b6cb518` chore(frontend): admin-shell sidebar RRHH, crud-modal, types, conversaciones — 2026-10-21
 - [x] `e1b58a2` docs(pendientes): PENDIENTES, BACKLOG, SPEC-CONT-002 e informes de sesión — 2026-10-21
-- [ ] **Push pendiente** — autorización de Fidel requerida
+- [x] `f5b3281` fix(security): IDOR crítico UserController + migración PHPUnit #[Test] — 2026-10-22
+- [x] `64573eb` chore(ci+docs): GitHub Actions CI + KNOWN_ISSUES — 2026-10-22
+- [x] `6edc521` fix(security): H2 — roles per-company (migración + RoleController + UserController + seeders + tests) — 2026-10-22
+- [ ] **Push pendiente** — autorización de Fidel requerida (7 commits desde último push)
 
 ---
 
@@ -23,7 +26,7 @@
 | ✅ CERRADO | **IDOR crítico UserController::store()** — `??=` reemplazado por `=` forzando company_id del token | Hecho 2026-10-22 — test de regresión añadido |
 | ✅ CERRADO | **`dashboard/page.tsx`** — KpiCard local documentado: difiere de shared (useCountUp, tone, Delta.pct); no se migra sin refactor del shared | Documentado 2026-10-22 |
 | ✅ CERRADO | **Empresa cliente IDOR/multitenancy audit** — CENTINELA ejecutó auditoría completa | Ver hallazgos abajo |
-| 🟡 DEUDA | **RoleController — roles globales** — cualquier admin puede modificar roles de otras empresas; requiere decisión arquitectónica (per-company roles vs super-admin guard) | Decisión pendiente |
+| ✅ CERRADO | **RoleController — roles per-company** — migración + controller + UserController + seeders + 5 tests nuevos. 441/441 pasan | Hecho 2026-10-22 |
 | 🟡 DEUDA | **`asistencia/estadisticas/page.tsx`** — KpiCard local mínimo (por diseño SPEC-019) | Pendiente aprobación SPEC-019 |
 | 🟡 R4 | **SPEC-CONT-002.md** — draft de protocolo existe; falta validar rollback/recuperación paso a paso | Después de R1+R2 |
 | 🔵 INFRA | **CI/CD** — cero automatización en push/PR | Decisión de infraestructura |
@@ -33,7 +36,7 @@
 | # | Severidad | Hallazgo | Estado |
 |---|-----------|----------|--------|
 | H1 | CRÍTICO | `UserController::store()` — `company_id` inyectable via payload (`??=` no protegía cuando el campo venía en el request) | **CORREGIDO** — `??=` → `=`, test añadido, 436/436 pass |
-| H2 | ALTO | `RoleController::update()` — roles globales sin ownership check por empresa | **DEUDA DOCUMENTADA** — requiere decisión arq. |
+| H2 | ALTO | `RoleController::update()` — roles globales sin ownership check por empresa | **RESUELTO** — per-company roles implementados 2026-10-22, 441/441 |
 | H3 | MEDIO | `LeadController::update()` — sin ownership check (leads son globales por diseño) | **DOCUMENTADO** — contenido por diseño; `leads.*` no debe asignarse a tenants |
 
 ---
@@ -47,7 +50,7 @@
 | 🔵 ENTORNO | **E2E Playwright** — conectar extensión Chrome en `chrome://extensions` para desbloquear flujos E2E | Bloqueado — extensión no conectada |
 | ⚫ DECISIÓN | **SPEC-018 VP-002..VP-006** — cálculos de nómina bloqueados hasta validación profesional externa | En espera |
 | ⚫ DECISIÓN | **SPEC-019 (Asistencia)** — implementación en pausa hasta aprobación | En espera |
-| 🟡 LISTO | **`git push`** — 5 commits locales listos (`69722a2`..`e1b58a2`), árbol limpio | Esperando autorización |
+| 🟡 LISTO | **`git push`** — 7 commits locales listos (`69722a2`..`6edc521`), árbol limpio | Esperando autorización |
 
 ---
 
