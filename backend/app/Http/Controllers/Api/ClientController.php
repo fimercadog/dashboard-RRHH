@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Resources\ClientResource;
 use App\Models\Client;
 use App\Services\AuditService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ClientController extends BaseCrudController
@@ -47,5 +48,15 @@ class ClientController extends BaseCrudController
         $client->delete(); // SoftDelete
 
         return response()->noContent();
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = Client::where('company_id', $cid);
+        return response()->json([
+            'total'  => $q->count(),
+            'active' => $q->clone()->where('status', 'active')->count(),
+        ]);
     }
 }

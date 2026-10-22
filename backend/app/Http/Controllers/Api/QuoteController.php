@@ -6,6 +6,7 @@ use App\Http\Resources\QuoteResource;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Services\AuditService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -80,5 +81,16 @@ class QuoteController extends BaseCrudController
             $discountTotal += $disc;
         }
         return [$subtotal, $discountTotal];
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = Quote::where('company_id', $cid);
+        return response()->json([
+            'total'    => $q->count(),
+            'pending'  => $q->clone()->whereIn('status', ['draft', 'sent'])->count(),
+            'accepted' => $q->clone()->where('status', 'accepted')->count(),
+        ]);
     }
 }

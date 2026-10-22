@@ -20,6 +20,20 @@ class JobApplicationController extends BaseCrudController
     protected array $filterable = ['status', 'job_vacancy_id', 'job_candidate_id'];
     protected array $immutableOnUpdate = ['job_vacancy_id', 'job_candidate_id'];
 
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q   = JobApplication::where('company_id', $cid);
+        return response()->json([
+            'total'            => $q->clone()->count(),
+            'pending'          => $q->clone()->where('status', 'pending')->count(),
+            'in_process'       => $q->clone()->where('status', 'in_process')->count(),
+            'selected'         => $q->clone()->where('status', 'selected')->count(),
+            'rejected'         => $q->clone()->where('status', 'rejected')->count(),
+            'hired_this_month' => $q->clone()->where('status', 'selected')->whereNotNull('hired_employee_id')->whereMonth('updated_at', now()->month)->whereYear('updated_at', now()->year)->count(),
+        ]);
+    }
+
     public function hire(Request $request, int $id): JsonResponse
     {
         $application = JobApplication::where('company_id', $this->companyId($request))

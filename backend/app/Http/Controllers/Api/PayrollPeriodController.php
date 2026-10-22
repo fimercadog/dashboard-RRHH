@@ -20,6 +20,18 @@ class PayrollPeriodController extends BaseCrudController
         'reversal_authorized_by', 'reversal_authorized_at', 'closed_by', 'closed_at',
     ];
 
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q   = PayrollPeriod::where('company_id', $cid);
+        return response()->json([
+            'total'    => $q->clone()->count(),
+            'draft'    => $q->clone()->where('status', 'draft')->count(),
+            'running'  => $q->clone()->where('status', 'running')->count(),
+            'closed'   => $q->clone()->where('status', 'closed')->count(),
+        ]);
+    }
+
     /**
      * Cierra el período — CA-N: verifica parámetros antes de cerrar.
      */

@@ -6,6 +6,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\AuditService;
 use App\Services\TableQueryService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -17,6 +18,16 @@ class UserController extends BaseCrudController
     protected array $with = ['employee'];
     protected array $searchable = ['name', 'email'];
     protected array $filterable = ['status' => 'status'];
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = User::where('company_id', $cid);
+        return response()->json([
+            'total'  => $q->count(),
+            'active' => $q->clone()->where('status', 'active')->count(),
+        ]);
+    }
 
     public function index(Request $request, TableQueryService $tables)
     {

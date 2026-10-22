@@ -7,6 +7,7 @@ use App\Models\SaleOrder;
 use App\Models\SaleOrderItem;
 use App\Services\AuditService;
 use App\Services\SaleService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -79,5 +80,16 @@ class SaleOrderController extends BaseCrudController
             $discountTotal += $disc;
         }
         return [$subtotal, $discountTotal];
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = SaleOrder::where('company_id', $cid);
+        return response()->json([
+            'total'     => $q->count(),
+            'pending'   => $q->clone()->where('status', 'draft')->count(),
+            'confirmed' => $q->clone()->whereIn('status', ['confirmed', 'shipped', 'delivered'])->count(),
+        ]);
     }
 }

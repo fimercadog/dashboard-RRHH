@@ -19,6 +19,19 @@ class EmployeeDocumentController extends BaseCrudController
     protected array $filterable = ['status' => 'status', 'employee_id' => 'employee_id'];
     protected array $immutableOnUpdate = ['employee_id'];
 
+    public function stats(Request $request): JsonResponse
+    {
+        $cid  = $this->companyId($request);
+        $q    = EmployeeDocument::where('company_id', $cid);
+        $today = now()->toDateString();
+        $in30  = now()->addDays(30)->toDateString();
+        return response()->json([
+            'total'          => $q->clone()->count(),
+            'expired'        => $q->clone()->whereNotNull('expiration_date')->where('expiration_date', '<', $today)->count(),
+            'expiring_soon'  => $q->clone()->whereNotNull('expiration_date')->whereBetween('expiration_date', [$today, $in30])->count(),
+        ]);
+    }
+
     public function store(Request $request, AuditService $audit): JsonResponse
     {
         $cid  = $this->companyId($request);

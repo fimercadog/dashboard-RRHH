@@ -8,6 +8,7 @@ use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use App\Services\AccountingService;
 use App\Services\AuditService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class JournalEntryController extends BaseCrudController
@@ -18,6 +19,17 @@ class JournalEntryController extends BaseCrudController
     protected array  $filterable = ['status', 'reference_type', 'accounting_period_id'];
 
     public function __construct(private AccountingService $accounting) {}
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = JournalEntry::where('company_id', $cid);
+        return response()->json([
+            'total'      => $q->count(),
+            'this_month' => $q->clone()->whereMonth('date', now()->month)->whereYear('date', now()->year)->count(),
+            'draft'      => $q->clone()->where('status', 'draft')->count(),
+        ]);
+    }
 
     public function show(Request $request, string $id)
     {

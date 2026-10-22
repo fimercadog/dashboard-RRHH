@@ -6,11 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\RoleResource;
 use App\Services\AuditService;
 use App\Services\TableQueryService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
+    public function stats(): JsonResponse
+    {
+        return response()->json([
+            'total'  => Role::count(),
+            'active' => Role::where('status', 'active')->count(),
+        ]);
+    }
+
     public function index(Request $request, TableQueryService $tables)
     {
         $query = Role::query()->with('permissions');

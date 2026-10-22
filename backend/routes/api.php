@@ -67,6 +67,8 @@ use App\Http\Controllers\Api\GoogleSheetsSettingController;
 use App\Http\Controllers\Api\ZoomSettingController;
 use App\Http\Controllers\Api\ImportController;
 use App\Http\Controllers\Api\EmployeeWorkHistoryController;
+use App\Http\Controllers\Api\SstIncidentController;
+use App\Http\Controllers\Api\PerformanceReviewController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -101,6 +103,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/contingency/activate', [ContingencyController::class, 'activate'])->middleware('can:settings.manage');
     Route::post('/contingency/deactivate', [ContingencyController::class, 'deactivate'])->middleware('can:settings.manage');
 
+    Route::get('/leads/stats', [LeadController::class, 'stats'])->middleware('can:leads.view');
     Route::get('/leads', [LeadController::class, 'index'])->middleware('can:leads.view');
     Route::match(['put', 'patch'], '/leads/{lead}', [LeadController::class, 'update'])->middleware('can:leads.view');
 
@@ -108,8 +111,11 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::put('/company', [CompanyController::class, 'update'])->middleware('can:settings.manage');
 
     Route::get('/employees/selector', [EmployeeController::class, 'selector']);
+    Route::get('/employees/stats', [EmployeeController::class, 'stats'])->middleware('can:employees.view');
     Route::apiResource('employees', EmployeeController::class)->except(['destroy'])->middleware('can:employees.manage');
     Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->middleware('can:employees.delete');
+    Route::post('employees/{employee}/avatar', [EmployeeController::class, 'uploadAvatar'])->middleware('can:employees.manage');
+    Route::delete('employees/{employee}/avatar', [EmployeeController::class, 'deleteAvatar'])->middleware('can:employees.manage');
     Route::get('employees/{employee}/work-history', [EmployeeWorkHistoryController::class, 'index'])->middleware('can:employees.manage');
     Route::post('employees/{employee}/work-history', [EmployeeWorkHistoryController::class, 'store'])->middleware('can:employees.manage');
     Route::put('employees/{employee}/work-history/{id}', [EmployeeWorkHistoryController::class, 'update'])->middleware('can:employees.manage');
@@ -119,78 +125,114 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::apiResource('attendances', AttendanceController::class)->except(['destroy'])->middleware('can:attendance.manage');
     Route::delete('/attendances/{attendance}', [AttendanceController::class, 'destroy'])->middleware('can:attendance.delete');
     Route::get('attendance-stats', \App\Http\Controllers\Api\AttendanceStatsController::class)->middleware('can:attendance.manage');
+    Route::get('/vacation-requests/stats', [VacationRequestController::class, 'stats'])->middleware('can:requests.approve');
     Route::apiResource('vacation-requests', VacationRequestController::class)->except(['destroy'])->middleware('can:requests.approve');
     Route::delete('/vacation-requests/{vacation_request}', [VacationRequestController::class, 'destroy'])->middleware('can:requests.delete');
+    Route::get('/permission-requests/stats', [PermissionRequestController::class, 'stats'])->middleware('can:requests.approve');
     Route::apiResource('permission-requests', PermissionRequestController::class)->except(['destroy'])->middleware('can:requests.approve');
     Route::delete('/permission-requests/{permission_request}', [PermissionRequestController::class, 'destroy'])->middleware('can:requests.delete');
+    Route::get('/sick-leaves/stats', [SickLeaveController::class, 'stats'])->middleware('can:requests.approve');
     Route::apiResource('sick-leaves', SickLeaveController::class)->except(['destroy'])->middleware('can:requests.approve');
     Route::delete('/sick-leaves/{sick_leave}', [SickLeaveController::class, 'destroy'])->middleware('can:requests.delete');
+    Route::get('/employee-documents/stats', [EmployeeDocumentController::class, 'stats'])->middleware('can:documents.manage');
     Route::apiResource('employee-documents', EmployeeDocumentController::class)->except(['destroy'])->middleware('can:documents.manage');
     Route::delete('/employee-documents/{employee_document}', [EmployeeDocumentController::class, 'destroy'])->middleware('can:documents.delete');
+    Route::get('/shifts/stats', [ShiftController::class, 'stats'])->middleware('can:attendance.manage');
     Route::apiResource('shifts', ShiftController::class)->except(['destroy'])->middleware('can:attendance.manage');
     Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy'])->middleware('can:attendance.delete');
+    Route::get('/audit-logs/stats', [AuditLogController::class, 'stats'])->middleware('can:audit.view');
     Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'show'])->middleware('can:audit.view');
+    Route::get('/roles/stats', [RoleController::class, 'stats'])->middleware('can:roles.manage');
     Route::apiResource('roles', RoleController::class)->only(['index', 'store', 'update'])->middleware('can:roles.manage');
+    Route::get('/users/stats', [UserController::class, 'stats'])->middleware('can:users.manage');
     Route::apiResource('users', UserController::class)->only(['index', 'store', 'update'])->middleware('can:users.manage');
     Route::post('users/{user}/avatar', [UserController::class, 'uploadAvatar'])->middleware('can:users.manage');
     Route::delete('users/{user}/avatar', [UserController::class, 'deleteAvatar'])->middleware('can:users.manage');
 
     // CRM — Fase A.
+    Route::get('/contacts/stats', [ContactController::class, 'stats'])->middleware('can:contacts.manage');
     Route::apiResource('contacts', ContactController::class)->middleware('can:contacts.manage');
     Route::apiResource('client-notes', ClientNoteController::class)->only(['index', 'store', 'destroy'])->middleware('can:clients.manage');
+    Route::get('/deals/stats', [DealController::class, 'stats'])->middleware('can:deals.manage');
     Route::apiResource('deals', DealController::class)->middleware('can:deals.manage');
+    Route::get('/activities/stats', [ActivityController::class, 'stats'])->middleware('can:activities.manage');
     Route::apiResource('activities', ActivityController::class)->middleware('can:activities.manage');
+    Route::get('/segments/stats', [SegmentController::class, 'stats'])->middleware('can:segments.manage');
     Route::apiResource('segments', SegmentController::class)->middleware('can:segments.manage');
     Route::post('/segments/{segment}/clients', [SegmentController::class, 'syncClients'])->middleware('can:segments.manage');
 
+    Route::get('/clients/stats', [ClientController::class, 'stats'])->middleware('can:clients.manage');
     Route::apiResource('clients', ClientController::class)->middleware('can:clients.manage');
 
     // Inventario — Fase B.
+    Route::get('/categories/stats', [CategoryController::class, 'stats'])->middleware('can:inventory.manage');
     Route::apiResource('categories', CategoryController::class)->middleware('can:inventory.manage');
+    Route::get('/brands/stats', [BrandController::class, 'stats'])->middleware('can:inventory.manage');
     Route::apiResource('brands', BrandController::class)->middleware('can:inventory.manage');
+    Route::get('/units/stats', [UnitController::class, 'stats'])->middleware('can:inventory.manage');
     Route::apiResource('units', UnitController::class)->middleware('can:inventory.manage');
+    Route::get('/warehouses/stats', [WarehouseController::class, 'stats'])->middleware('can:inventory.manage');
     Route::apiResource('warehouses', WarehouseController::class)->middleware('can:inventory.manage');
+    Route::get('/products/stats', [ProductController::class, 'stats'])->middleware('can:inventory.manage');
     Route::apiResource('products', ProductController::class)->middleware('can:inventory.manage');
+    Route::get('/stock/stats', [StockController::class, 'stats'])->middleware('can:inventory.view');
     Route::get('/stock', [StockController::class, 'index'])->middleware('can:inventory.view');
+    Route::get('/stock-movements/stats', [StockMovementController::class, 'stats'])->middleware('can:inventory.view');
     Route::get('/stock-movements', [StockMovementController::class, 'index'])->middleware('can:inventory.view');
     Route::post('/stock-movements', [StockMovementController::class, 'store'])->middleware('can:inventory.movements');
 
     // Compras — Fase C.
+    Route::get('/suppliers/stats', [SupplierController::class, 'stats'])->middleware('can:purchases.view');
     Route::apiResource('suppliers', SupplierController::class)->middleware('can:purchases.manage');
+    Route::get('/purchase-orders/stats', [PurchaseOrderController::class, 'stats'])->middleware('can:purchases.view');
     Route::apiResource('purchase-orders', PurchaseOrderController::class)->middleware('can:purchases.manage');
+    Route::get('/purchase-receipts/stats', [PurchaseReceiptController::class, 'stats'])->middleware('can:purchases.manage');
     Route::apiResource('purchase-receipts', PurchaseReceiptController::class)->middleware('can:purchases.manage');
     Route::post('/purchase-receipts/{id}/post', [PurchaseReceiptController::class, 'post'])->middleware('can:purchases.manage');
+    Route::get('/purchase-invoices/stats', [PurchaseInvoiceController::class, 'stats'])->middleware('can:purchases.view');
     Route::apiResource('purchase-invoices', PurchaseInvoiceController::class)->middleware('can:purchases.manage');
     Route::post('/purchase-invoices/{id}/post', [PurchaseInvoiceController::class, 'post'])->middleware('can:purchases.manage');
+    Route::get('/accounts-payable/stats', [AccountPayableController::class, 'stats'])->middleware('can:purchases.view');
     Route::apiResource('accounts-payable', AccountPayableController::class)->only(['index', 'show'])->middleware('can:purchases.view');
 
     // Ventas — Fase D.
+    Route::get('/quotes/stats', [QuoteController::class, 'stats'])->middleware('can:sales.view');
     Route::apiResource('quotes', QuoteController::class)->middleware('can:sales.manage');
+    Route::get('/sale-orders/stats', [SaleOrderController::class, 'stats'])->middleware('can:sales.view');
     Route::apiResource('sale-orders', SaleOrderController::class)->middleware('can:sales.manage');
     Route::post('/sale-orders/{id}/confirm', [SaleOrderController::class, 'confirm'])->middleware('can:sales.manage');
+    Route::get('/sale-invoices/stats', [SaleInvoiceController::class, 'stats'])->middleware('can:sales.view');
     Route::apiResource('sale-invoices', SaleInvoiceController::class)->middleware('can:sales.manage');
     Route::post('/sale-invoices/{id}/post', [SaleInvoiceController::class, 'post'])->middleware('can:sales.manage');
     Route::post('/sale-invoices/{id}/return', [SaleInvoiceController::class, 'createReturn'])->middleware('can:sales.manage');
+    Route::get('/accounts-receivable/stats', [AccountsReceivableController::class, 'stats'])->middleware('can:sales.view');
     Route::apiResource('accounts-receivable', AccountsReceivableController::class)->only(['index', 'show'])->middleware('can:sales.view');
 
     // Finanzas — Fase E.
+    Route::get('/cash-accounts/stats', [CashAccountController::class, 'stats'])->middleware('can:finance.manage');
     Route::apiResource('cash-accounts', CashAccountController::class)->middleware('can:finance.manage');
+    Route::get('/payments/stats', [PaymentController::class, 'stats'])->middleware('can:finance.manage');
     Route::apiResource('payments', PaymentController::class)->only(['index', 'show', 'store'])->middleware('can:finance.manage');
     Route::post('/payments/{id}/cancel', [PaymentController::class, 'cancel'])->middleware('can:finance.manage');
+    Route::get('/transfers/stats', [TransferController::class, 'stats'])->middleware('can:finance.manage');
     Route::apiResource('transfers', TransferController::class)->only(['index', 'show', 'store'])->middleware('can:finance.manage');
     Route::post('/transfers/{id}/cancel', [TransferController::class, 'cancel'])->middleware('can:finance.manage');
+    Route::get('/financial-transactions/stats', [FinancialTransactionController::class, 'stats'])->middleware('can:finance.view');
     Route::apiResource('financial-transactions', FinancialTransactionController::class)->only(['index', 'show'])->middleware('can:finance.view');
 
     // Contabilidad — Fase F.
     // GET index registrado antes del apiResource para que accounting.view no quede sombrado por accounting.manage.
+    Route::get('/chart-of-accounts/stats', [ChartOfAccountController::class, 'stats'])->middleware('can:accounting.view');
     Route::get('/chart-of-accounts', [ChartOfAccountController::class, 'index'])->middleware('can:accounting.view');
     Route::apiResource('chart-of-accounts', ChartOfAccountController::class)->except(['index'])->middleware('can:accounting.manage');
 
+    Route::get('/accounting-periods/stats', [AccountingPeriodController::class, 'stats'])->middleware('can:accounting.view');
     Route::get('/accounting-periods', [AccountingPeriodController::class, 'index'])->middleware('can:accounting.view');
     Route::apiResource('accounting-periods', AccountingPeriodController::class)->only(['show', 'store'])->middleware('can:accounting.manage');
     Route::post('/accounting-periods/{id}/close', [AccountingPeriodController::class, 'close'])->middleware('can:accounting.close');
     Route::post('/accounting-periods/{id}/opening', [JournalEntryController::class, 'opening'])->middleware('can:accounting.manage');
 
+    Route::get('/journal-entries/stats', [JournalEntryController::class, 'stats'])->middleware('can:accounting.view');
     Route::get('/journal-entries', [JournalEntryController::class, 'index'])->middleware('can:accounting.view');
     Route::apiResource('journal-entries', JournalEntryController::class)->only(['show', 'store'])->middleware('can:accounting.manage');
     Route::post('/journal-entries/{id}/reverse', [JournalEntryController::class, 'reverse'])->middleware('can:accounting.manage');
@@ -200,13 +242,17 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::apiResource('accounting-configs', AccountingAccountConfigController::class)->except(['index'])->middleware('can:accounting.manage');
 
     // Reclutamiento — Fase G.
+    Route::get('/recruitment/stats', [JobVacancyController::class, 'stats'])->middleware('can:recruitment.view');
     Route::apiResource('job-vacancies', JobVacancyController::class)->except(['destroy'])->middleware('can:recruitment.view');
     Route::delete('/job-vacancies/{job_vacancy}', [JobVacancyController::class, 'destroy'])->middleware('can:recruitment.delete');
+    Route::get('/job-candidates/stats', [JobCandidateController::class, 'stats'])->middleware('can:recruitment.view');
     Route::apiResource('job-candidates', JobCandidateController::class)->except(['destroy'])->middleware('can:recruitment.view');
     Route::delete('/job-candidates/{job_candidate}', [JobCandidateController::class, 'destroy'])->middleware('can:recruitment.delete');
+    Route::get('/job-applications/stats', [JobApplicationController::class, 'stats'])->middleware('can:recruitment.view');
     Route::apiResource('job-applications', JobApplicationController::class)->except(['destroy'])->middleware('can:recruitment.view');
     Route::delete('/job-applications/{job_application}', [JobApplicationController::class, 'destroy'])->middleware('can:recruitment.delete');
     Route::post('/job-applications/{id}/hire', [JobApplicationController::class, 'hire'])->middleware('can:recruitment.update');
+    Route::get('/job-interviews/stats', [JobInterviewController::class, 'stats'])->middleware('can:recruitment.view');
     Route::apiResource('job-interviews', JobInterviewController::class)->except(['destroy'])->middleware('can:recruitment.view');
     Route::delete('/job-interviews/{job_interview}', [JobInterviewController::class, 'destroy'])->middleware('can:recruitment.delete');
 
@@ -260,6 +306,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('company-tax-profiles/{profile}/validate', [\App\Http\Controllers\Api\CompanyTaxProfileController::class, 'validate'])->middleware('can:payroll.validate_tax_profile');
 
     Route::prefix('payroll')->group(function () {
+        Route::get('periods/stats', [\App\Http\Controllers\Api\PayrollPeriodController::class, 'stats'])->middleware('can:payroll.view');
         Route::apiResource('periods', \App\Http\Controllers\Api\PayrollPeriodController::class)->except(['destroy'])->middleware('can:payroll.manage');
         Route::delete('periods/{period}', [\App\Http\Controllers\Api\PayrollPeriodController::class, 'destroy'])->middleware('can:payroll.delete');
         Route::post('periods/{period}/close', [\App\Http\Controllers\Api\PayrollPeriodController::class, 'close'])->middleware('can:payroll.close');
@@ -279,6 +326,18 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/import/{entity}', [ImportController::class, 'upload'])
         ->whereIn('entity', ['employees', 'clients', 'products']);
     Route::get('/import/{importJob}/status', [ImportController::class, 'status']);
+
+    // SST — Seguridad y Salud en el Trabajo.
+    Route::get('sst/incidents/stats', [SstIncidentController::class, 'stats'])->middleware('can:sst.manage');
+    Route::apiResource('sst/incidents', SstIncidentController::class)->except(['destroy'])->middleware('can:sst.manage');
+    Route::delete('sst/incidents/{incident}', [SstIncidentController::class, 'destroy'])->middleware('can:sst.delete');
+    Route::post('sst/incidents/{incident}/close', [SstIncidentController::class, 'close'])->middleware('can:sst.manage');
+
+    // Desempeño — Evaluaciones de desempeño.
+    Route::get('/performance-reviews/stats', [PerformanceReviewController::class, 'stats'])->middleware('can:desempeno.manage');
+    Route::apiResource('performance-reviews', PerformanceReviewController::class)->except(['destroy'])->middleware('can:desempeno.manage');
+    Route::delete('performance-reviews/{review}', [PerformanceReviewController::class, 'destroy'])->middleware('can:desempeno.delete');
+    Route::post('performance-reviews/{review}/submit', [PerformanceReviewController::class, 'submit'])->middleware('can:desempeno.manage');
 
     // El permiso por recurso se valida dentro del controlador.
     Route::get('/exports/{resource}.{format}', ExportController::class)

@@ -7,6 +7,8 @@ use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends BaseCrudController
 {
@@ -25,6 +27,23 @@ class EmployeeController extends BaseCrudController
             ->findOrFail($id);
 
         return new EmployeeResource($model);
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $som = now()->startOfMonth();
+
+        $base = Employee::where('company_id', $cid);
+
+        return response()->json([
+            'total_active'      => (clone $base)->where('employment_status', 'active')->count(),
+            'hired_this_month'  => (clone $base)->whereDate('hire_date', '>=', $som)->count(),
+            'by_contract_type'  => (clone $base)->where('employment_status', 'active')
+                ->select('contract_type', DB::raw('count(*) as total'))
+                ->groupBy('contract_type')
+                ->pluck('total', 'contract_type'),
+        ]);
     }
 
     /** Selector ligero con búsqueda server-side — accesible a cualquier rol autenticado de la empresa. */
@@ -66,5 +85,35 @@ class EmployeeController extends BaseCrudController
             'id'    => $e->id,
             'label' => $e->first_name.' '.$e->last_name,
         ]));
+    }
+
+    public function uploadAvatar(Request $request, string $id): JsonResponse
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ]);
+
+        $employee = Employee::query()->where('company_id', $this->companyId($request))->findOrFail($id);
+
+        if ($employee->avatar) {
+            Storage::disk('public')->delete($employee->avatar);
+        }
+
+        $path = $request->file('avatar')->store("employee-avatars/{$employee->company_id}", 'public');
+        $employee->update(['avatar' => $path]);
+
+        return response()->json(['avatar_url' => Storage::disk('public')->url($path)]);
+    }
+
+    public function deleteAvatar(Request $request, string $id): JsonResponse
+    {
+        $employee = Employee::query()->where('company_id', $this->companyId($request))->findOrFail($id);
+
+        if ($employee->avatar) {
+            Storage::disk('public')->delete($employee->avatar);
+            $employee->update(['avatar' => null]);
+        }
+
+        return response()->json(['avatar_url' => null]);
     }
 }

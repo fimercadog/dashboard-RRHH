@@ -21,8 +21,7 @@ class CrmPendingProvider implements PendingProvider
         $items = [];
 
         if ($user->can('leads.view') && Schema::hasTable('leads')) {
-            $newLeads = Lead::where('company_id', $companyId)
-                ->where('status', 'new')->count();
+            $newLeads = Lead::where('status', 'new')->count();
 
             $items[] = [
                 'type'        => 'lead_new',
@@ -31,7 +30,7 @@ class CrmPendingProvider implements PendingProvider
                 'module'      => 'crm',
                 'route'       => '/app/leads',
                 'priority'    => 'high',
-                'date'        => Lead::where('company_id', $companyId)->where('status', 'new')->min('created_at'),
+                'date'        => Lead::where('status', 'new')->min('created_at'),
                 'count'       => $newLeads,
             ];
         }

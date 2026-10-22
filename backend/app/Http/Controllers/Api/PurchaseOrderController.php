@@ -6,8 +6,10 @@ use App\Http\Resources\PurchaseOrderResource;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Services\AuditService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 
 class PurchaseOrderController extends BaseCrudController
 {
@@ -66,5 +68,16 @@ class PurchaseOrderController extends BaseCrudController
         $audit->record('created', $order, $request);
 
         return (new PurchaseOrderResource($order))->response()->setStatusCode(201);
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = PurchaseOrder::where('company_id', $cid);
+        return response()->json([
+            'total'    => $q->count(),
+            'pending'  => $q->clone()->whereIn('status', ['draft', 'sent', 'partial'])->count(),
+            'received' => $q->clone()->where('status', 'received')->count(),
+        ]);
     }
 }

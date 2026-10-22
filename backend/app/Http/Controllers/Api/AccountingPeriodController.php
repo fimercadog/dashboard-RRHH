@@ -6,6 +6,7 @@ use App\Http\Resources\AccountingPeriodResource;
 use App\Models\AccountingPeriod;
 use App\Services\AccountingService;
 use App\Services\AuditService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AccountingPeriodController extends BaseCrudController
@@ -16,6 +17,17 @@ class AccountingPeriodController extends BaseCrudController
     protected array  $filterable = ['status'];
 
     public function __construct(private AccountingService $accounting) {}
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q   = AccountingPeriod::where('company_id', $cid);
+        return response()->json([
+            'total'  => $q->clone()->count(),
+            'open'   => $q->clone()->where('status', 'open')->count(),
+            'closed' => $q->clone()->where('status', 'closed')->count(),
+        ]);
+    }
 
     /** POST /accounting-periods — crea un período mediante AccountingService (valida solapamiento). */
     public function store(Request $request, AuditService $audit)

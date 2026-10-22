@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Resources\ActivityResource;
 use App\Models\Activity;
 use App\Services\AuditService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ActivityController extends BaseCrudController
@@ -30,5 +31,16 @@ class ActivityController extends BaseCrudController
         $audit->record('created', $activity, $request);
 
         return (new ActivityResource($activity))->response()->setStatusCode(201);
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = Activity::where('company_id', $cid);
+        return response()->json([
+            'total'   => $q->count(),
+            'pending' => $q->clone()->where('status', 'pending')->count(),
+            'done'    => $q->clone()->where('status', 'done')->count(),
+        ]);
     }
 }

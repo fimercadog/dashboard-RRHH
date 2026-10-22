@@ -44,6 +44,16 @@ class TransferController extends BaseCrudController
         return (new TransferResource($transfer->load($this->with)))->response()->setStatusCode(201);
     }
 
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = Transfer::where('company_id', $cid)->where('status', 'active');
+        return response()->json([
+            'total'      => $q->count(),
+            'this_month' => $q->clone()->whereMonth('date', now()->month)->whereYear('date', now()->year)->count(),
+        ]);
+    }
+
     public function cancel(int $id, Request $request, PaymentService $service, AuditService $audit): JsonResponse
     {
         $transfer = Transfer::where('company_id', $this->companyId($request))->findOrFail($id);

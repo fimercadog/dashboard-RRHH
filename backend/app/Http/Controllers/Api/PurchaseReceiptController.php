@@ -7,6 +7,7 @@ use App\Models\PurchaseReceipt;
 use App\Models\PurchaseReceiptItem;
 use App\Services\AuditService;
 use App\Services\PurchaseService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -49,6 +50,17 @@ class PurchaseReceiptController extends BaseCrudController
         $audit->record('created', $receipt, $request);
 
         return (new PurchaseReceiptResource($receipt))->response()->setStatusCode(201);
+    }
+
+    public function stats(): JsonResponse
+    {
+        $cid = $this->companyId(request());
+        $q = PurchaseReceipt::where('company_id', $cid);
+        return response()->json([
+            'total'  => $q->count(),
+            'draft'  => $q->clone()->where('status', 'draft')->count(),
+            'posted' => $q->clone()->where('status', 'posted')->count(),
+        ]);
     }
 
     /** POST /purchase-receipts/{id}/post — genera movimientos de stock */

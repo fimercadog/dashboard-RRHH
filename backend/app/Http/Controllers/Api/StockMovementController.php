@@ -13,6 +13,7 @@ use App\Models\Warehouse;
 use App\Services\AuditService;
 use App\Services\StockService;
 use App\Services\TableQueryService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -104,5 +105,16 @@ class StockMovementController extends Controller
             : new StockMovementResource($result->load(['product:id,sku,name', 'warehouse:id,name', 'user:id,name']));
 
         return $resource->response()->setStatusCode(201);
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $companyId = $this->companyId($request);
+        $q = StockMovement::where('company_id', $companyId);
+        return response()->json([
+            'total'      => $q->count(),
+            'this_month' => $q->clone()->whereMonth('created_at', now()->month)
+                              ->whereYear('created_at', now()->year)->count(),
+        ]);
     }
 }

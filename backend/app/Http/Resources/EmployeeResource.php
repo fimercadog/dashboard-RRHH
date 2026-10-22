@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\EmployeeWorkHistoryResource;
 use App\Http\Resources\EmployeeDocumentResource;
 
@@ -49,6 +50,7 @@ class EmployeeResource extends JsonResource
             'pension_fund' => $this->pension_fund,
             'compensation_fund' => $this->compensation_fund,
             'notes' => $this->notes,
+            'avatar_url' => $this->avatar ? Storage::disk('public')->url($this->avatar) : null,
             'work_history' => EmployeeWorkHistoryResource::collection($this->whenLoaded('workHistory')),
             'documents' => EmployeeDocumentResource::collection($this->whenLoaded('documents')),
             'created_at' => $this->created_at,

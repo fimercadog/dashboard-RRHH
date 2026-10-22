@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeadRequest;
 use App\Http\Resources\LeadResource;
 use App\Models\Lead;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -50,5 +51,16 @@ class LeadController extends Controller
         $lead->update($data);
 
         return new LeadResource($lead);
+    }
+
+    public function stats(): JsonResponse
+    {
+        $q = Lead::query();
+        return response()->json([
+            'total'     => $q->count(),
+            'new'       => $q->clone()->where('status', 'new')->count(),
+            'contacted' => $q->clone()->where('status', 'contacted')->count(),
+            'discarded' => $q->clone()->where('status', 'discarded')->count(),
+        ]);
     }
 }

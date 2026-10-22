@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductStockResource;
 use App\Models\ProductStock;
 use App\Services\TableQueryService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class StockController extends Controller
@@ -37,5 +38,15 @@ class StockController extends Controller
         return ProductStockResource::collection(
             $query->paginate(min((int) $request->input('per_page', 25), 200))
         );
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $companyId = $this->companyId($request);
+        $q = ProductStock::where('company_id', $companyId);
+        return response()->json([
+            'total_items' => $q->count(),
+            'out_of_stock' => $q->clone()->where('quantity', '<=', 0)->count(),
+        ]);
     }
 }

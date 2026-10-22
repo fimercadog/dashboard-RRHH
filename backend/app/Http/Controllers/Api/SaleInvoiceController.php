@@ -7,6 +7,7 @@ use App\Models\SaleInvoice;
 use App\Models\SaleInvoiceItem;
 use App\Services\AuditService;
 use App\Services\SaleService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -101,5 +102,16 @@ class SaleInvoiceController extends BaseCrudController
             $discountTotal += $disc;
         }
         return [$subtotal, $discountTotal];
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = SaleInvoice::where('company_id', $cid);
+        return response()->json([
+            'total'   => $q->count(),
+            'pending' => $q->clone()->whereIn('status', ['draft', 'posted', 'partially_paid'])->count(),
+            'paid'    => $q->clone()->where('status', 'paid')->count(),
+        ]);
     }
 }

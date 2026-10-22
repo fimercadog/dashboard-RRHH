@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Resources\SegmentResource;
 use App\Models\Segment;
 use App\Services\AuditService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SegmentController extends BaseCrudController
@@ -21,5 +22,13 @@ class SegmentController extends BaseCrudController
         $audit->record('updated', $segment, $request);
 
         return response()->json(['synced' => count($clientIds)]);
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        return response()->json([
+            'total' => Segment::where('company_id', $cid)->count(),
+        ]);
     }
 }

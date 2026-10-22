@@ -6,6 +6,7 @@ use App\Http\Resources\PurchaseInvoiceResource;
 use App\Models\PurchaseInvoice;
 use App\Services\AuditService;
 use App\Services\PurchaseService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PurchaseInvoiceController extends BaseCrudController
@@ -44,5 +45,16 @@ class PurchaseInvoiceController extends BaseCrudController
         $audit->record('posted', $invoice->fresh(), $request);
 
         return new PurchaseInvoiceResource($invoice->fresh()->load($this->with));
+    }
+
+    public function stats(Request $request): JsonResponse
+    {
+        $cid = $this->companyId($request);
+        $q = PurchaseInvoice::where('company_id', $cid);
+        return response()->json([
+            'total'   => $q->count(),
+            'pending' => $q->clone()->whereIn('status', ['draft', 'posted', 'partially_paid'])->count(),
+            'paid'    => $q->clone()->where('status', 'paid')->count(),
+        ]);
     }
 }
