@@ -17,6 +17,8 @@ import { api, API_BASE } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { CashAccount, Transfer } from "@/lib/types";
 import { useApiTable } from "@/lib/use-api-table";
+import { KpiCard } from "@/components/kpi-card";
+import { ArrowRightLeft, Calendar } from "lucide-react";
 
 const COP = (v: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
@@ -39,6 +41,8 @@ const EMPTY_FORM: FormState = {
   notes:     "",
 };
 
+type TransferStats = { total: number; this_month: number };
+
 export default function TransferenciasPage() {
   const table = useApiTable<Transfer>("/transfers");
   const [accounts, setAccounts] = React.useState<CashAccount[]>([]);
@@ -48,10 +52,15 @@ export default function TransferenciasPage() {
   const [formError, setFormError] = React.useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = React.useState<Transfer | null>(null);
   const [cancelling, setCancelling] = React.useState(false);
+  const [stats, setStats] = React.useState<TransferStats | null>(null);
+  const [statsStatus, setStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
 
   React.useEffect(() => {
     api.get<{ data: CashAccount[] }>("/cash-accounts?per_page=100")
       .then(r => setAccounts((r.data.data ?? []).filter(a => a.status === "active")));
+    api.get<TransferStats>("/transfers/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -110,8 +119,8 @@ export default function TransferenciasPage() {
 
   const columns: AppColumnDef<Transfer>[] = [
     dateColumn<Transfer>("date", "Fecha"),
-    { header: "Origen", cell: ({ row }) => (row.original as any).from_account?.name ?? "-" },
-    { header: "Destino", cell: ({ row }) => (row.original as any).to_account?.name ?? "-" },
+    { header: "Origen", cell: ({ row }) => row.original.from_account?.name ?? "-" },
+    { header: "Destino", cell: ({ row }) => row.original.to_account?.name ?? "-" },
     { header: "Monto", cell: ({ row }) => <span className="font-medium tabular-nums">{COP(row.original.amount)}</span> },
     { accessorKey: "reference", header: "Referencia" },
     { accessorKey: "notes", header: "Notas" },
@@ -139,6 +148,10 @@ export default function TransferenciasPage() {
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+        <KpiCard label="Total transferencias" value={stats?.total ?? null} icon={ArrowRightLeft} status={statsStatus} />
+        <KpiCard label="Este mes" value={stats?.this_month ?? null} icon={Calendar} status={statsStatus} />
+      </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Transferencias</h1>

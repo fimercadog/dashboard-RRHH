@@ -1,7 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { AlertCircle, Clock, Receipt } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
+import { api } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { AccountsReceivable } from "@/lib/types";
 
@@ -29,7 +33,28 @@ const columns: AppColumnDef<AccountsReceivable>[] = [
   },
 ];
 
+type CxCStats = { total: number; open: number; overdue?: number };
+
 export default function CxCPage() {
+  const [stats, setStats] = useState<CxCStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<CxCStats>("/accounts-receivable/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <KpiCard label="Total CxC" value={stats?.total ?? null} icon={Receipt} status={statsStatus} />
+      <KpiCard label="Pendientes cobro" value={stats?.open ?? null} icon={Clock} status={statsStatus} />
+      {stats?.overdue != null && (
+        <KpiCard label="Vencidas" value={stats.overdue} icon={AlertCircle} status={statsStatus} />
+      )}
+    </div>
+  );
+
   return (
     <ModuleTablePage<AccountsReceivable>
       title="Cuentas por cobrar"
@@ -39,6 +64,7 @@ export default function CxCPage() {
       columns={columns}
       fields={[]}
       actionLabel=""
+      statsSlot={statsSlot}
     />
   );
 }

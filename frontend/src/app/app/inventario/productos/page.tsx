@@ -1,12 +1,19 @@
 "use client";
 
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { Package, PackageCheck } from "lucide-react";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
+import { api } from "@/lib/api";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusLabel } from "@/lib/labels";
 import { AppColumnDef } from "@/lib/table-types";
 import { Product } from "@/lib/types";
+
+type ProductStats = { total: number; active: number };
 
 const TYPE_LABEL: Record<Product["type"], string> = {
   storable: "Almacenable", service: "Servicio", consumable: "Consumible",
@@ -20,7 +27,7 @@ const columns: AppColumnDef<Product>[] = [
     cell: ({ row }) => {
       const { image_url, name } = row.original;
       return image_url
-        ? <img src={image_url} alt={name} className="h-10 w-10 rounded object-cover border" />
+        ? <Image unoptimized src={image_url} alt={name} width={40} height={40} className="h-10 w-10 rounded object-cover border" />
         : <div className="h-10 w-10 rounded border bg-muted flex items-center justify-center text-xs text-muted-foreground">—</div>;
     },
   },
@@ -61,6 +68,22 @@ const fields: CrudField[] = [
 ];
 
 export default function ProductosPage() {
+  const [stats, setStats] = useState<ProductStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<ProductStats>("/products/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+      <KpiCard label="Total productos" value={stats?.total ?? null} icon={Package} status={statsStatus} />
+      <KpiCard label="Activos" value={stats?.active ?? null} icon={PackageCheck} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage<Product>
       title="Productos"
@@ -70,6 +93,7 @@ export default function ProductosPage() {
       columns={columns}
       fields={fields}
       actionLabel="Nuevo producto"
+      statsSlot={statsSlot}
     />
   );
 }

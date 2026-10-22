@@ -1,12 +1,18 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { Tag, TagsIcon } from "lucide-react";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
+import { api } from "@/lib/api";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusLabel } from "@/lib/labels";
 import { AppColumnDef } from "@/lib/table-types";
 import { Category } from "@/lib/types";
+
+type CategoryStats = { total: number; active: number };
 
 const columns: AppColumnDef<Category>[] = [
   { accessorKey: "name", header: "Nombre" },
@@ -24,6 +30,22 @@ const fields: CrudField[] = [
 ];
 
 export default function CategoriasPage() {
+  const [stats, setStats] = useState<CategoryStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<CategoryStats>("/categories/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+      <KpiCard label="Total categorias" value={stats?.total ?? null} icon={Tag} status={statsStatus} />
+      <KpiCard label="Activas" value={stats?.active ?? null} icon={TagsIcon} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage<Category>
       title="Categorias"
@@ -33,6 +55,7 @@ export default function CategoriasPage() {
       columns={columns}
       fields={fields}
       actionLabel="Nueva categoria"
+      statsSlot={statsSlot}
     />
   );
 }

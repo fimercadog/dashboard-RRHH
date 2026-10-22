@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { CheckCircle, Plus } from "lucide-react";
+import { CheckCircle, Plus, FileText, Clock } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { toast } from "sonner";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -324,9 +325,19 @@ const columns: AppColumnDef<PurchaseInvoice>[] = [
   },
 ];
 
+type PiStats = { total: number; pending: number; paid: number };
+
 export default function FacturasCompraPage() {
   const table = useApiTable<PurchaseInvoice>("/purchase-invoices");
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [piStats, setPiStats] = React.useState<PiStats | null>(null);
+  const [piStatsStatus, setPiStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<PiStats>("/purchase-invoices/stats")
+      .then((r) => { setPiStats(r.data); setPiStatsStatus("ready"); })
+      .catch(() => setPiStatsStatus("error"));
+  }, []);
 
   const tableColumns: AppColumnDef<PurchaseInvoice>[] = [
     ...columns,
@@ -351,6 +362,12 @@ export default function FacturasCompraPage() {
         <Button onClick={() => setModalOpen(true)}>
           <Plus className="h-4 w-4" /> Nueva factura
         </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <KpiCard label="Total facturas" value={piStats?.total ?? null} icon={FileText} status={piStatsStatus} />
+        <KpiCard label="Pendientes" value={piStats?.pending ?? null} icon={Clock} status={piStatsStatus} />
+        <KpiCard label="Pagadas" value={piStats?.paid ?? null} icon={CheckCircle} status={piStatsStatus} />
       </div>
 
       <DataTable

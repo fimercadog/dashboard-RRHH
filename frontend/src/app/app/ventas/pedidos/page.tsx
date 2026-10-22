@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { CheckCircle, Plus } from "lucide-react";
+import { CheckCircle, Plus, ShoppingBag, Clock } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { toast } from "sonner";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -80,7 +81,7 @@ function CreateSaleOrderModal({ open, onOpenChange, onSaved }: CreateSaleOrderMo
     setQuoteId(qId);
     if (qId) {
       const q = quotes.find((x) => x.id === qId);
-      if (q?.client) setClientId((q.client as any).id ?? "");
+      if (q?.client) setClientId(q.client.id ?? "");
     }
   }
 
@@ -288,8 +289,8 @@ function ConfirmOrderButton({ order, onDone }: { order: SaleOrder; onDone: () =>
 
 const baseColumns: AppColumnDef<SaleOrder>[] = [
   { accessorKey: "number", header: "Número" },
-  { header: "Cliente", cell: ({ row }) => { const c = row.original.client as any; return c?.company_name ?? (`${c?.first_name ?? ""} ${c?.last_name ?? ""}`.trim() || "-"); } },
-  { header: "Bodega", cell: ({ row }) => (row.original as any).warehouse?.name ?? "-" },
+  { header: "Cliente", cell: ({ row }) => { const c = row.original.client; return c?.company_name ?? (`${c?.first_name ?? ""} ${c?.last_name ?? ""}`.trim() || "-"); } },
+  { header: "Bodega", cell: ({ row }) => row.original.warehouse?.name ?? "-" },
   dateColumn<SaleOrder>("date", "Fecha"),
   { header: "Total", cell: ({ row }) => COP(row.original.total) },
   {
@@ -300,9 +301,19 @@ const baseColumns: AppColumnDef<SaleOrder>[] = [
   },
 ];
 
+type SoStats = { total: number; pending: number; confirmed: number };
+
 export default function PedidosPage() {
   const table = useApiTable<SaleOrder>("/sale-orders");
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [soStats, setSoStats] = React.useState<SoStats | null>(null);
+  const [soStatsStatus, setSoStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<SoStats>("/sale-orders/stats")
+      .then((r) => { setSoStats(r.data); setSoStatsStatus("ready"); })
+      .catch(() => setSoStatsStatus("error"));
+  }, []);
 
   const columns: AppColumnDef<SaleOrder>[] = [
     ...baseColumns,
@@ -327,6 +338,12 @@ export default function PedidosPage() {
         <Button onClick={() => setModalOpen(true)}>
           <Plus className="h-4 w-4" /> Nuevo pedido
         </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <KpiCard label="Total pedidos" value={soStats?.total ?? null} icon={ShoppingBag} status={soStatsStatus} />
+        <KpiCard label="Pendientes" value={soStats?.pending ?? null} icon={Clock} status={soStatsStatus} />
+        <KpiCard label="Confirmados" value={soStats?.confirmed ?? null} icon={CheckCircle} status={soStatsStatus} />
       </div>
 
       <DataTable

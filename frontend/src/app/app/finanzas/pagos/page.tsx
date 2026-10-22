@@ -17,6 +17,8 @@ import { api, API_BASE } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { CashAccount, Payment } from "@/lib/types";
 import { useApiTable } from "@/lib/use-api-table";
+import { KpiCard } from "@/components/kpi-card";
+import { CreditCard, Calendar } from "lucide-react";
 
 const COP = (v: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
@@ -49,10 +51,14 @@ const EMPTY_FORM: FormState = {
   reference: "",
 };
 
+type PaymentStats = { total: number; this_month: number };
+
 export default function PagosPage() {
   const table = useApiTable<Payment>("/payments");
   const [accounts, setAccounts] = React.useState<CashAccount[]>([]);
   const [open, setOpen] = React.useState(false);
+  const [stats, setStats] = React.useState<PaymentStats | null>(null);
+  const [statsStatus, setStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
   const [form, setForm] = React.useState<FormState>(EMPTY_FORM);
   const [submitting, setSubmitting] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
@@ -62,6 +68,9 @@ export default function PagosPage() {
   React.useEffect(() => {
     api.get<{ data: CashAccount[] }>("/cash-accounts?per_page=100")
       .then(r => setAccounts((r.data.data ?? []).filter(a => a.status === "active")));
+    api.get<PaymentStats>("/payments/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -120,7 +129,7 @@ export default function PagosPage() {
     { header: "Tipo", cell: ({ row }) => PAYABLE_LABELS[row.original.payable_type] ?? row.original.payable_type },
     { header: "Monto", cell: ({ row }) => <span className="font-medium tabular-nums">{COP(row.original.amount)}</span> },
     { header: "Método", cell: ({ row }) => METHOD_LABELS[row.original.method] ?? row.original.method },
-    { header: "Cuenta caja", cell: ({ row }) => (row.original as any).cash_account?.name ?? "-" },
+    { header: "Cuenta caja", cell: ({ row }) => row.original.cash_account?.name ?? "-" },
     { accessorKey: "reference", header: "Referencia" },
     {
       header: "Estado",
@@ -151,6 +160,10 @@ export default function PagosPage() {
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+        <KpiCard label="Total pagos activos" value={stats?.total ?? null} icon={CreditCard} status={statsStatus} />
+        <KpiCard label="Este mes" value={stats?.this_month ?? null} icon={Calendar} status={statsStatus} />
+      </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Pagos y cobros</h1>

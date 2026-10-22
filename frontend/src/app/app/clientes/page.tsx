@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { CheckCircle, Users } from "lucide-react";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { CLIENT_IDENTIFICATION_TYPE_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
+import { api } from "@/lib/api";
 import { statusLabel } from "@/lib/labels";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
@@ -30,7 +34,25 @@ const fields: CrudField[] = [
   { name: "status", label: "Estado", type: "select", required: true, options: STATUS_OPTIONS },
 ];
 
+type ClientStats = { total: number; active: number };
+
 export default function ClientesPage() {
+  const [stats, setStats] = useState<ClientStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<ClientStats>("/clients/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3">
+      <KpiCard label="Total clientes" value={stats?.total ?? null} icon={Users} status={statsStatus} />
+      <KpiCard label="Activos" value={stats?.active ?? null} icon={CheckCircle} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage
       title="Clientes"
@@ -40,6 +62,7 @@ export default function ClientesPage() {
       columns={columns}
       fields={fields}
       actionLabel="Nuevo cliente"
+      statsSlot={statsSlot}
     />
   );
 }

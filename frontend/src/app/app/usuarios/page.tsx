@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { CrudField } from "@/components/crud/crud-modal";
 import { ToggleStatusAction } from "@/components/crud/toggle-status-action";
 import { ModuleTablePage } from "@/components/module-table-page";
@@ -13,13 +14,15 @@ import { api, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { AppUser, Role } from "@/lib/types";
 import { updateStoredUser, getStoredUser } from "@/lib/auth";
+import { KpiCard } from "@/components/kpi-card";
+import { Users, UserCheck } from "lucide-react";
 
 function UserAvatar({ name, avatarUrl }: { name?: string; avatarUrl?: string | null }) {
   const initials = name
     ? name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase()
     : "?";
   if (avatarUrl) {
-    return <img src={avatarUrl} alt={name} className="h-7 w-7 rounded-full object-cover ring-1 ring-border" />;
+    return <Image unoptimized src={avatarUrl} alt={name ?? ""} width={28} height={28} className="h-7 w-7 rounded-full object-cover ring-1 ring-border" />;
   }
   return (
     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary">
@@ -40,12 +43,14 @@ function AvatarActionDialog({
   const [preview, setPreview] = React.useState<string | null>(user.avatar_url ?? null);
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [hasFile, setHasFile] = React.useState(false);
   const fileRef = React.useRef<HTMLInputElement>(null);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setPreview(URL.createObjectURL(file));
+    setHasFile(true);
     setError(null);
   };
 
@@ -98,7 +103,7 @@ function AvatarActionDialog({
         <div className="space-y-4">
           <div className="flex justify-center">
             {preview ? (
-              <img src={preview} alt="Preview" className="h-24 w-24 rounded-full object-cover ring-2 ring-border" />
+              <Image unoptimized src={preview} alt="Preview" width={96} height={96} className="h-24 w-24 rounded-full object-cover ring-2 ring-border" />
             ) : (
               <span className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-2xl font-semibold text-primary">
                 {user.name?.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase() ?? "?"}
@@ -120,7 +125,7 @@ function AvatarActionDialog({
                 {saving ? "..." : "Eliminar"}
               </Button>
             )}
-            <Button onClick={upload} disabled={saving || !fileRef.current?.files?.length}>
+            <Button onClick={upload} disabled={saving || !hasFile}>
               {saving ? "Subiendo..." : "Guardar"}
             </Button>
           </div>
@@ -155,15 +160,22 @@ const baseFields: CrudField[] = [
   { name: "avatar", label: "Foto de perfil", type: "file", accept: "image/jpeg,image/png,image/webp", colSpan: "full" },
 ];
 
+type UserStats = { total: number; active: number };
+
 export default function AppUsersPage() {
   const [roles, setRoles] = React.useState<Role[]>([]);
   const [avatarTarget, setAvatarTarget] = React.useState<AppUser | null>(null);
+  const [stats, setStats] = React.useState<UserStats | null>(null);
+  const [statsStatus, setStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
 
   React.useEffect(() => {
     api
       .get<PaginatedResponse<Role>>("/roles", { params: { per_page: 100 } })
       .then((response) => setRoles(response.data.data))
       .catch(() => {});
+    api.get<UserStats>("/users/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
   }, []);
 
   const fields = React.useMemo<CrudField[]>(() => {
@@ -177,6 +189,13 @@ export default function AppUsersPage() {
     return [...baseFields.slice(0, 4), roleField, ...baseFields.slice(4)];
   }, [roles]);
 
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+      <KpiCard label="Total usuarios" value={stats?.total ?? null} icon={Users} status={statsStatus} />
+      <KpiCard label="Usuarios activos" value={stats?.active ?? null} icon={UserCheck} status={statsStatus} />
+    </div>
+  );
+
   return (
     <>
       <ModuleTablePage
@@ -188,6 +207,7 @@ export default function AppUsersPage() {
         fields={fields}
         actionLabel="Nuevo usuario"
         modalDescription="Si dejas la contrasena en blanco se genera una temporal y se muestra al crear."
+        statsSlot={statsSlot}
         extraRowActions={(row, refresh) => (
           <>
             <Button variant="ghost" size="sm" onClick={() => setAvatarTarget(row)}>

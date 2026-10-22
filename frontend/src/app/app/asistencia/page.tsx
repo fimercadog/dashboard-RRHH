@@ -1,10 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { UserCheck, UserX, Clock, AlertCircle } from "lucide-react";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
+import { api } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
-import { Attendance } from "@/lib/types";
+import { Attendance, AttendanceStats } from "@/lib/types";
 import { statusLabel } from "@/lib/labels";
 
 const columns: AppColumnDef<Attendance>[] = [
@@ -41,5 +45,38 @@ const fields: CrudField[] = [
 ];
 
 export default function AttendancePage() {
-  return <ModuleTablePage title="Asistencia" description="Control diario con filtros por estado, empleado y fechas desde backend." resource="/attendances" exportResource="attendances" columns={columns} fields={fields} actionLabel="Registrar asistencia" />;
+  const [stats, setStats] = useState<AttendanceStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const from = today.slice(0, 8) + "01";
+    api.get<AttendanceStats>(`/attendance-stats?from=${from}&to=${today}`)
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const s = stats?.summary;
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <KpiCard label="Ausencias injustificadas" value={s?.absences.unjustified ?? null} icon={UserX} status={statsStatus} />
+      <KpiCard label="Ausencias justificadas" value={s?.absences.justified ?? null} icon={UserCheck} status={statsStatus} />
+      <KpiCard label="Tardanzas" value={s?.tardiness.count ?? null} icon={Clock} status={statsStatus} />
+      <KpiCard label="Min. retraso (mes)" value={s?.tardiness.total_minutes ?? null} icon={AlertCircle} status={statsStatus} />
+    </div>
+  );
+
+  return (
+    <ModuleTablePage
+      title="Asistencia"
+      description="Control diario con filtros por estado, empleado y fechas desde backend."
+      resource="/attendances"
+      exportResource="attendances"
+      columns={columns}
+      fields={fields}
+      actionLabel="Registrar asistencia"
+      statsSlot={statsSlot}
+    />
+  );
 }

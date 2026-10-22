@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { BookOpen, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge, badgeVariant, type BadgeVariant } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DataTable } from "@/components/data-table/data-table";
+import { KpiCard } from "@/components/kpi-card";
 import { api, API_BASE } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { ChartOfAccount } from "@/lib/types";
@@ -33,9 +35,19 @@ const BLANK: Partial<ChartOfAccount> = {
   parent_id: null, level: 3, allows_movements: true, status: "active", notes: "",
 };
 
+type ChartStats = { total: number; active: number };
+
 export default function PlanCuentasPage() {
   const table = useApiTable<ChartOfAccount>("/chart-of-accounts");
   const [open, setOpen] = React.useState(false);
+  const [stats, setStats] = React.useState<ChartStats | null>(null);
+  const [statsStatus, setStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<ChartStats>("/chart-of-accounts/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
   const [editing, setEditing] = React.useState<ChartOfAccount | null>(null);
   const [form, setForm] = React.useState(BLANK);
   const [saving, setSaving] = React.useState(false);
@@ -53,8 +65,8 @@ export default function PlanCuentasPage() {
         await api.post("/chart-of-accounts", form);
       }
       setOpen(false); table.refresh();
-    } catch (e: any) {
-      setFormError(e?.response?.data?.message || "Error al guardar.");
+    } catch (e: unknown) {
+      setFormError((e as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Error al guardar.");
     } finally {
       setSaving(false);
     }
@@ -126,6 +138,11 @@ export default function PlanCuentasPage() {
         <Button onClick={openNew}>+ Nueva cuenta</Button>
       </div>
 
+      <div className="grid grid-cols-2 gap-3">
+        <KpiCard label="Total cuentas" value={stats?.total ?? null} icon={BookOpen} status={statsStatus} />
+        <KpiCard label="Cuentas activas" value={stats?.active ?? null} icon={CheckCircle} status={statsStatus} />
+      </div>
+
       <DataTable
         columns={columns}
         data={table.data}
@@ -164,13 +181,13 @@ export default function PlanCuentasPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium">Tipo *</label>
-                <select className="w-full rounded-md border bg-background px-3 py-2 text-sm" value={form.type ?? "asset"} onChange={(e) => setForm({ ...form, type: e.target.value as any })}>
+                <select className="w-full rounded-md border bg-background px-3 py-2 text-sm" value={form.type ?? "asset"} onChange={(e) => setForm({ ...form, type: e.target.value as ChartOfAccount["type"] })}>
                   {ACCOUNT_TYPES.map((t) => <option key={t} value={t}>{TYPE_LABEL[t]}</option>)}
                 </select>
               </div>
               <div>
                 <label className="text-xs font-medium">Naturaleza *</label>
-                <select className="w-full rounded-md border bg-background px-3 py-2 text-sm" value={form.nature ?? "debit"} onChange={(e) => setForm({ ...form, nature: e.target.value as any })}>
+                <select className="w-full rounded-md border bg-background px-3 py-2 text-sm" value={form.nature ?? "debit"} onChange={(e) => setForm({ ...form, nature: e.target.value as ChartOfAccount["nature"] })}>
                   {NATURE_OPTIONS.map((n) => <option key={n.value} value={n.value}>{n.label}</option>)}
                 </select>
               </div>

@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { CheckCircle, Wallet } from "lucide-react";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
+import { api } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { CashAccount } from "@/lib/types";
 
@@ -65,7 +69,25 @@ const fields: CrudField[] = [
   },
 ];
 
+type CashAccountStats = { total: number; active: number };
+
 export default function CuentasPage() {
+  const [stats, setStats] = useState<CashAccountStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<CashAccountStats>("/cash-accounts/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3">
+      <KpiCard label="Total cuentas" value={stats?.total ?? null} icon={Wallet} status={statsStatus} />
+      <KpiCard label="Cuentas activas" value={stats?.active ?? null} icon={CheckCircle} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage<CashAccount>
       title="Cuentas de efectivo"
@@ -75,6 +97,7 @@ export default function CuentasPage() {
       columns={columns}
       fields={fields}
       actionLabel="Nueva cuenta"
+      statsSlot={statsSlot}
     />
   );
 }

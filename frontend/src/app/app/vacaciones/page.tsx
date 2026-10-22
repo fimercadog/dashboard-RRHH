@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { CalendarDays, CheckCircle, Clock, Sun } from "lucide-react";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
+import { api } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { RequestRow } from "@/lib/types";
 import { statusLabel } from "@/lib/labels";
@@ -36,6 +40,37 @@ const fields: CrudField[] = [
   { name: "reason", label: "Motivo", type: "textarea", colSpan: "full" },
 ];
 
+type VacationStats = { total: number; pending: number; approved: number; days_this_year: number };
+
 export default function VacationsPage() {
-  return <ModuleTablePage title="Vacaciones" description="Solicitudes con estado pendiente, aprobada, rechazada o cancelada." resource="/vacation-requests" exportResource="vacation-requests" columns={columns} fields={fields} actionLabel="Nueva solicitud" />;
+  const [stats, setStats] = useState<VacationStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<VacationStats>("/vacation-requests/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <KpiCard label="Total solicitudes" value={stats?.total ?? null} icon={CalendarDays} status={statsStatus} />
+      <KpiCard label="Pendientes" value={stats?.pending ?? null} icon={Clock} status={statsStatus} />
+      <KpiCard label="Aprobadas" value={stats?.approved ?? null} icon={CheckCircle} status={statsStatus} />
+      <KpiCard label="Dias este año" value={stats?.days_this_year ?? null} icon={Sun} status={statsStatus} unit="días" />
+    </div>
+  );
+
+  return (
+    <ModuleTablePage
+      title="Vacaciones"
+      description="Solicitudes con estado pendiente, aprobada, rechazada o cancelada."
+      resource="/vacation-requests"
+      exportResource="vacation-requests"
+      columns={columns}
+      fields={fields}
+      actionLabel="Nueva solicitud"
+      statsSlot={statsSlot}
+    />
+  );
 }

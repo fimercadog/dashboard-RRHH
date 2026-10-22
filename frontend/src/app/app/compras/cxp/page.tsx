@@ -1,7 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { AlertCircle, Clock, CreditCard } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
+import { api } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { AccountPayable } from "@/lib/types";
 
@@ -34,7 +38,28 @@ const columns: AppColumnDef<AccountPayable>[] = [
   },
 ];
 
+type CxPStats = { total: number; open: number; overdue?: number };
+
 export default function CxPPage() {
+  const [stats, setStats] = useState<CxPStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<CxPStats>("/accounts-payable/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <KpiCard label="Total CxP" value={stats?.total ?? null} icon={CreditCard} status={statsStatus} />
+      <KpiCard label="Pendientes pago" value={stats?.open ?? null} icon={Clock} status={statsStatus} />
+      {stats?.overdue != null && (
+        <KpiCard label="Vencidas" value={stats.overdue} icon={AlertCircle} status={statsStatus} />
+      )}
+    </div>
+  );
+
   return (
     <ModuleTablePage<AccountPayable>
       title="Cuentas por pagar"
@@ -43,6 +68,7 @@ export default function CxPPage() {
       exportResource="accounts-payable"
       columns={columns}
       fields={[]}
+      statsSlot={statsSlot}
     />
   );
 }

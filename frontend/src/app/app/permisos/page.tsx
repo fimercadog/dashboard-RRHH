@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { CheckCircle, ClipboardList, Clock } from "lucide-react";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
+import { api } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { RequestRow } from "@/lib/types";
 import { statusLabel } from "@/lib/labels";
@@ -51,6 +55,36 @@ const fields: CrudField[] = [
   { name: "reason", label: "Motivo", type: "textarea", colSpan: "full" },
 ];
 
+type PermissionStats = { total: number; pending: number; approved_this_month: number };
+
 export default function PermissionsPage() {
-  return <ModuleTablePage title="Permisos" description="Flujo inicial de permisos con aprobacion y trazabilidad backend." resource="/permission-requests" exportResource="permission-requests" columns={columns} fields={fields} actionLabel="Nuevo permiso" />;
+  const [stats, setStats] = useState<PermissionStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<PermissionStats>("/permission-requests/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <KpiCard label="Total permisos" value={stats?.total ?? null} icon={ClipboardList} status={statsStatus} />
+      <KpiCard label="Pendientes" value={stats?.pending ?? null} icon={Clock} status={statsStatus} />
+      <KpiCard label="Aprobados este mes" value={stats?.approved_this_month ?? null} icon={CheckCircle} status={statsStatus} />
+    </div>
+  );
+
+  return (
+    <ModuleTablePage
+      title="Permisos"
+      description="Flujo inicial de permisos con aprobacion y trazabilidad backend."
+      resource="/permission-requests"
+      exportResource="permission-requests"
+      columns={columns}
+      fields={fields}
+      actionLabel="Nuevo permiso"
+      statsSlot={statsSlot}
+    />
+  );
 }

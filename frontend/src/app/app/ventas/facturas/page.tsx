@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { CheckCircle, Plus } from "lucide-react";
+import { CheckCircle, Plus, Receipt, Clock } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { toast } from "sonner";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,10 +48,10 @@ type CreateSaleInvoiceModalProps = {
   onSaved: () => void;
 };
 
-function CreateSaleInvoiceModal({ open, onOpenChange, onSaved }: CreateSaleInvoiceModalProps) {
-  const today = new Date().toISOString().slice(0, 10);
-  const in30 = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+const today = () => new Date().toISOString().slice(0, 10);
+const in30 = () => new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
 
+function CreateSaleInvoiceModal({ open, onOpenChange, onSaved }: CreateSaleInvoiceModalProps) {
   const [clientId, setClientId] = React.useState<number | "">("");
   const [saleOrderId, setSaleOrderId] = React.useState<number | "">("");
   const [number, setNumber] = React.useState("");
@@ -84,12 +85,12 @@ function CreateSaleInvoiceModal({ open, onOpenChange, onSaved }: CreateSaleInvoi
     setSaleOrderId(soId);
     if (soId) {
       const so = saleOrders.find((x) => x.id === soId);
-      if (so?.client) setClientId((so.client as any).id ?? "");
+      if (so?.client) setClientId(so.client.id ?? "");
     }
   }
 
   function resetForm() {
-    setClientId(""); setSaleOrderId(""); setNumber(""); setDate(today); setDueDate(in30); setNotes(""); setItems([newSaleLine()]); setErrors({});
+    setClientId(""); setSaleOrderId(""); setNumber(""); setDate(today()); setDueDate(in30()); setNotes(""); setItems([newSaleLine()]); setErrors({});
   }
 
   function handleOpenChange(next: boolean) {
@@ -294,7 +295,7 @@ function PostSaleInvoiceButton({ invoice, onDone }: { invoice: SaleInvoice; onDo
 
 const baseColumns: AppColumnDef<SaleInvoice>[] = [
   { accessorKey: "number", header: "Número" },
-  { header: "Cliente", cell: ({ row }) => { const c = row.original.client as any; return c?.company_name ?? (`${c?.first_name ?? ""} ${c?.last_name ?? ""}`.trim() || "-"); } },
+  { header: "Cliente", cell: ({ row }) => { const c = row.original.client; return c?.company_name ?? (`${c?.first_name ?? ""} ${c?.last_name ?? ""}`.trim() || "-"); } },
   { header: "Tipo", cell: ({ row }) => TYPE_LABELS[row.original.type] ?? row.original.type },
   dateColumn<SaleInvoice>("date", "Fecha"),
   dateColumn<SaleInvoice>("due_date", "Vence"),
@@ -307,9 +308,19 @@ const baseColumns: AppColumnDef<SaleInvoice>[] = [
   },
 ];
 
+type SiStats = { total: number; pending: number; paid: number };
+
 export default function FacturasVentaPage() {
   const table = useApiTable<SaleInvoice>("/sale-invoices");
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [siStats, setSiStats] = React.useState<SiStats | null>(null);
+  const [siStatsStatus, setSiStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<SiStats>("/sale-invoices/stats")
+      .then((r) => { setSiStats(r.data); setSiStatsStatus("ready"); })
+      .catch(() => setSiStatsStatus("error"));
+  }, []);
 
   const columns: AppColumnDef<SaleInvoice>[] = [
     ...baseColumns,
@@ -334,6 +345,12 @@ export default function FacturasVentaPage() {
         <Button onClick={() => setModalOpen(true)}>
           <Plus className="h-4 w-4" /> Nueva factura
         </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <KpiCard label="Total facturas" value={siStats?.total ?? null} icon={Receipt} status={siStatsStatus} />
+        <KpiCard label="Pendientes" value={siStats?.pending ?? null} icon={Clock} status={siStatsStatus} />
+        <KpiCard label="Pagadas" value={siStats?.paid ?? null} icon={CheckCircle} status={siStatsStatus} />
       </div>
 
       <DataTable

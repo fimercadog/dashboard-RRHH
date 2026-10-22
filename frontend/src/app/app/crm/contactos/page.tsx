@@ -1,7 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { Users } from "lucide-react";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
+import { api } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { Contact } from "@/lib/types";
 
@@ -22,7 +26,24 @@ const fields: CrudField[] = [
   { name: "notes", label: "Notas", type: "textarea", colSpan: "full" },
 ];
 
+type ContactStats = { total: number };
+
 export default function ContactosPage() {
+  const [stats, setStats] = useState<ContactStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<ContactStats>("/contacts/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-1 gap-3">
+      <KpiCard label="Total contactos" value={stats?.total ?? null} icon={Users} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage<Contact>
       title="Contactos"
@@ -32,6 +53,7 @@ export default function ContactosPage() {
       columns={columns}
       fields={fields}
       actionLabel="Nuevo contacto"
+      statsSlot={statsSlot}
     />
   );
 }

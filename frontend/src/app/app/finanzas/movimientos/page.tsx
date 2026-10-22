@@ -1,9 +1,13 @@
 "use client";
 
+import * as React from "react";
 import { ModuleTablePage } from "@/components/module-table-page";
+import { KpiCard } from "@/components/kpi-card";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { AppColumnDef } from "@/lib/table-types";
 import { FinancialTransaction } from "@/lib/types";
+import { api } from "@/lib/api";
+import { TrendingUp, TrendingDown, BarChart, Calendar } from "lucide-react";
 
 const COP = (v: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
@@ -39,7 +43,27 @@ const columns: AppColumnDef<FinancialTransaction>[] = [
   { header: "Referencia", cell: ({ row }) => `${row.original.reference_type} #${row.original.reference_id}` },
 ];
 
+type FtStats = { total: number; income: number; expense: number; this_month: number };
+
 export default function MovimientosFinanzasPage() {
+  const [stats, setStats] = React.useState<FtStats | null>(null);
+  const [statsStatus, setStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<FtStats>("/financial-transactions/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <KpiCard label="Total movimientos" value={stats?.total ?? null} icon={BarChart} status={statsStatus} />
+      <KpiCard label="Ingresos" value={stats?.income ?? null} icon={TrendingUp} status={statsStatus} />
+      <KpiCard label="Egresos" value={stats?.expense ?? null} icon={TrendingDown} status={statsStatus} />
+      <KpiCard label="Este mes" value={stats?.this_month ?? null} icon={Calendar} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage<FinancialTransaction>
       title="Movimientos financieros"
@@ -48,6 +72,7 @@ export default function MovimientosFinanzasPage() {
       exportResource="financial-transactions"
       columns={columns}
       fields={[]}
+      statsSlot={statsSlot}
     />
   );
 }

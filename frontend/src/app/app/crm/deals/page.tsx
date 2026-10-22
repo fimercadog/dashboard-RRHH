@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { CheckCircle2, TrendingUp, XCircle } from "lucide-react";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
+import { api } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { Deal } from "@/lib/types";
 
@@ -47,7 +51,27 @@ const fields: CrudField[] = [
   { name: "notes", label: "Notas", type: "textarea", colSpan: "full" },
 ];
 
+type DealStats = { total: number; open: number; won: number; lost: number };
+
 export default function DealsPage() {
+  const [stats, setStats] = useState<DealStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<DealStats>("/deals/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <KpiCard label="Total" value={stats?.total ?? null} icon={TrendingUp} status={statsStatus} />
+      <KpiCard label="Abiertas" value={stats?.open ?? null} icon={TrendingUp} status={statsStatus} />
+      <KpiCard label="Ganadas" value={stats?.won ?? null} icon={CheckCircle2} status={statsStatus} />
+      <KpiCard label="Perdidas" value={stats?.lost ?? null} icon={XCircle} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage<Deal>
       title="Oportunidades"
@@ -57,6 +81,7 @@ export default function DealsPage() {
       columns={columns}
       fields={fields}
       actionLabel="Nueva oportunidad"
+      statsSlot={statsSlot}
     />
   );
 }

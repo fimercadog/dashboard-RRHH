@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { CheckCircle, Clock, ListTodo } from "lucide-react";
 import { CrudField } from "@/components/crud/crud-modal";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
+import { api } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { Activity } from "@/lib/types";
 
@@ -46,7 +50,26 @@ const fields: CrudField[] = [
   { name: "body", label: "Descripcion", type: "textarea", colSpan: "full" },
 ];
 
+type ActivityStats = { total: number; pending: number; done: number };
+
 export default function ActividadesPage() {
+  const [stats, setStats] = useState<ActivityStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<ActivityStats>("/activities/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-3 gap-3">
+      <KpiCard label="Total" value={stats?.total ?? null} icon={ListTodo} status={statsStatus} />
+      <KpiCard label="Pendientes" value={stats?.pending ?? null} icon={Clock} status={statsStatus} />
+      <KpiCard label="Completadas" value={stats?.done ?? null} icon={CheckCircle} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage<Activity>
       title="Actividades"
@@ -56,6 +79,7 @@ export default function ActividadesPage() {
       columns={columns}
       fields={fields}
       actionLabel="Nueva actividad"
+      statsSlot={statsSlot}
     />
   );
 }

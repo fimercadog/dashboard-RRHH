@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Plus } from "lucide-react";
+import { Plus, ShoppingCart, Clock, PackageCheck } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { toast } from "sonner";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -275,9 +276,19 @@ function CreateOCModal({ open, onOpenChange, onSaved }: CreateOCModalProps) {
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
+type OcStats = { total: number; pending: number; received: number };
+
 export default function OrdenesPage() {
   const table = useApiTable<PurchaseOrder>("/purchase-orders");
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [ocStats, setOcStats] = React.useState<OcStats | null>(null);
+  const [ocStatsStatus, setOcStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<OcStats>("/purchase-orders/stats")
+      .then((r) => { setOcStats(r.data); setOcStatsStatus("ready"); })
+      .catch(() => setOcStatsStatus("error"));
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -289,6 +300,12 @@ export default function OrdenesPage() {
         <Button onClick={() => setModalOpen(true)}>
           <Plus className="h-4 w-4" /> Nueva orden
         </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <KpiCard label="Total OC" value={ocStats?.total ?? null} icon={ShoppingCart} status={ocStatsStatus} />
+        <KpiCard label="Pendientes" value={ocStats?.pending ?? null} icon={Clock} status={ocStatsStatus} />
+        <KpiCard label="Recibidas" value={ocStats?.received ?? null} icon={PackageCheck} status={ocStatsStatus} />
       </div>
 
       <DataTable

@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { Archive, BookOpen, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DataTable } from "@/components/data-table/data-table";
+import { KpiCard } from "@/components/kpi-card";
 import { api, API_BASE } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { AccountingPeriod } from "@/lib/types";
@@ -13,9 +15,19 @@ import { useApiTable } from "@/lib/use-api-table";
 
 const BLANK = { name: "", start_date: "", end_date: "" };
 
+type AccountingStats = { total: number; open: number; closed: number };
+
 export default function PeriodosPage() {
   const table = useApiTable<AccountingPeriod>("/accounting-periods");
   const [open, setOpen] = React.useState(false);
+  const [stats, setStats] = React.useState<AccountingStats | null>(null);
+  const [statsStatus, setStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<AccountingStats>("/accounting-periods/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
   const [form, setForm] = React.useState(BLANK);
   const [saving, setSaving] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
@@ -26,8 +38,8 @@ export default function PeriodosPage() {
     try {
       await api.post("/accounting-periods", form);
       setOpen(false); setForm(BLANK); table.refresh();
-    } catch (e: any) {
-      setFormError(e?.response?.data?.message || "Error al crear el período.");
+    } catch (e: unknown) {
+      setFormError((e as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Error al crear el período.");
     } finally {
       setSaving(false);
     }
@@ -39,8 +51,8 @@ export default function PeriodosPage() {
     try {
       await api.post(`/accounting-periods/${id}/close`, {});
       table.refresh();
-    } catch (e: any) {
-      alert(e?.response?.data?.message || "Error al cerrar el período.");
+    } catch (e: unknown) {
+      alert((e as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Error al cerrar el período.");
     } finally {
       setClosing(null);
     }
@@ -50,7 +62,7 @@ export default function PeriodosPage() {
     { accessorKey: "name", header: "Nombre" },
     dateColumn<AccountingPeriod>("start_date", "Inicio"),
     dateColumn<AccountingPeriod>("end_date", "Fin"),
-    { header: "Asientos", cell: ({ row }) => (row.original as any).entries_count ?? "—" },
+    { header: "Asientos", cell: ({ row }) => row.original.entries_count ?? "—" },
     {
       header: "Estado",
       cell: ({ row }) => (
@@ -73,10 +85,10 @@ export default function PeriodosPage() {
             </div>
           );
         }
-        if (p.status === "closed" && (p as any).closed_at) {
+        if (p.status === "closed" && p.closed_at) {
           return (
             <span className="text-xs text-muted-foreground">
-              Cerrado {new Date((p as any).closed_at).toLocaleDateString()}
+              Cerrado {new Date(p.closed_at).toLocaleDateString()}
             </span>
           );
         }
@@ -93,6 +105,12 @@ export default function PeriodosPage() {
           <p className="text-sm text-muted-foreground">Gestión de períodos abiertos y cerrados</p>
         </div>
         <Button onClick={() => { setFormError(null); setForm(BLANK); setOpen(true); }}>+ Nuevo período</Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <KpiCard label="Total períodos" value={stats?.total ?? null} icon={Calendar} status={statsStatus} />
+        <KpiCard label="Abiertos" value={stats?.open ?? null} icon={BookOpen} status={statsStatus} />
+        <KpiCard label="Cerrados" value={stats?.closed ?? null} icon={Archive} status={statsStatus} />
       </div>
 
       <DataTable

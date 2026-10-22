@@ -1,9 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { ArrowLeftRight, CalendarDays } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
+import { api } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { StockMovement } from "@/lib/types";
+
+type MovimientoStats = { total: number; this_month: number };
 
 const TYPE_LABEL: Record<StockMovement["type"], string> = {
   entry: "Entrada", exit: "Salida",
@@ -26,6 +32,22 @@ const columns: AppColumnDef<StockMovement>[] = [
 ];
 
 export default function MovimientosPage() {
+  const [stats, setStats] = useState<MovimientoStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<MovimientoStats>("/stock-movements/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+      <KpiCard label="Total movimientos" value={stats?.total ?? null} icon={ArrowLeftRight} status={statsStatus} />
+      <KpiCard label="Este mes" value={stats?.this_month ?? null} icon={CalendarDays} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage<StockMovement>
       title="Movimientos de inventario"
@@ -34,6 +56,7 @@ export default function MovimientosPage() {
       columns={columns}
       fields={[]}
       exportResource="stock-movements"
+      statsSlot={statsSlot}
     />
   );
 }

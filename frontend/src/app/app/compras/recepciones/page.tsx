@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { CheckCircle, Plus } from "lucide-react";
+import { CheckCircle, ClipboardCheck, FileText, Plus, Truck } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { toast } from "sonner";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,9 +25,6 @@ import { api, API_BASE, PaginatedResponse } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { PurchaseOrder, PurchaseReceipt, Supplier, Warehouse } from "@/lib/types";
 import { useApiTable } from "@/lib/use-api-table";
-
-const COP = (v: number) =>
-  new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
 
 const STATUS_LABELS: Record<string, string> = { draft: "Borrador", posted: "Posteada", cancelled: "Cancelada" };
 
@@ -298,9 +296,19 @@ function PostReceiptButton({ receipt, onDone }: { receipt: PurchaseReceipt; onDo
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
+type ReceiptStats = { total: number; draft: number; posted: number };
+
 export default function RecepcionesPage() {
   const table = useApiTable<PurchaseReceipt>("/purchase-receipts");
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [stats, setStats] = React.useState<ReceiptStats | null>(null);
+  const [statsStatus, setStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<ReceiptStats>("/purchase-receipts/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
 
   const columns: AppColumnDef<PurchaseReceipt>[] = [
     { accessorKey: "number", header: "Número" },
@@ -327,6 +335,11 @@ export default function RecepcionesPage() {
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-3 gap-3">
+        <KpiCard label="Total recepciones" value={stats?.total ?? null} icon={Truck} status={statsStatus} />
+        <KpiCard label="Borradores" value={stats?.draft ?? null} icon={FileText} status={statsStatus} />
+        <KpiCard label="Posteadas" value={stats?.posted ?? null} icon={ClipboardCheck} status={statsStatus} />
+      </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Recepciones</h1>

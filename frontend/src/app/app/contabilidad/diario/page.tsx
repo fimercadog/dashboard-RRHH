@@ -9,10 +9,14 @@ import { api, API_BASE } from "@/lib/api";
 import { AppColumnDef, dateColumn } from "@/lib/table-types";
 import { JournalEntry, JournalEntryLine } from "@/lib/types";
 import { useApiTable } from "@/lib/use-api-table";
+import { KpiCard } from "@/components/kpi-card";
+import { BookOpen, Calendar, FileEdit } from "lucide-react";
 
 const STATUS_LABEL: Record<string, string> = {
   draft: "Borrador", posted: "Publicado", reversed: "Revertido",
 };
+
+type JournalStats = { total: number; this_month: number; draft: number };
 
 export default function DiarioPage() {
   const table = useApiTable<JournalEntry>("/journal-entries");
@@ -20,6 +24,14 @@ export default function DiarioPage() {
   const [lines, setLines] = React.useState<JournalEntryLine[]>([]);
   const [loadingDetail, setLoadingDetail] = React.useState(false);
   const [reversing, setReversing] = React.useState(false);
+  const [stats, setStats] = React.useState<JournalStats | null>(null);
+  const [statsStatus, setStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<JournalStats>("/journal-entries/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
 
   const openDetail = async (e: JournalEntry) => {
     setDetail(e); setLines([]); setLoadingDetail(true);
@@ -40,8 +52,8 @@ export default function DiarioPage() {
     try {
       await api.post(`/journal-entries/${detail.id}/reverse`, {});
       setDetail(null); table.refresh();
-    } catch (e: any) {
-      alert(e?.response?.data?.message || "Error al revertir.");
+    } catch (e: unknown) {
+      alert((e as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Error al revertir.");
     } finally {
       setReversing(false);
     }
@@ -82,6 +94,11 @@ export default function DiarioPage() {
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-3 gap-3">
+        <KpiCard label="Total asientos" value={stats?.total ?? null} icon={BookOpen} status={statsStatus} />
+        <KpiCard label="Este mes" value={stats?.this_month ?? null} icon={Calendar} status={statsStatus} />
+        <KpiCard label="En borrador" value={stats?.draft ?? null} icon={FileEdit} status={statsStatus} />
+      </div>
       <div>
         <h1 className="text-2xl font-semibold">Libro Diario</h1>
         <p className="text-sm text-muted-foreground">Registro de asientos contables (solo lectura + reversión)</p>

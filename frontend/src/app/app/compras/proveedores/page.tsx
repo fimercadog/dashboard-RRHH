@@ -1,12 +1,18 @@
 "use client";
 
+import * as React from "react";
+import { Building2, CheckCircle } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { CrudField } from "@/components/crud/crud-modal";
 import { ModuleTablePage } from "@/components/module-table-page";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusLabel } from "@/lib/labels";
+import { api } from "@/lib/api";
 import { AppColumnDef } from "@/lib/table-types";
 import { Supplier } from "@/lib/types";
+
+type SupplierStats = { total: number; active: number };
 
 const columns: AppColumnDef<Supplier>[] = [
   { accessorKey: "name", header: "Nombre" },
@@ -28,6 +34,22 @@ const fields: CrudField[] = [
 ];
 
 export default function ProveedoresPage() {
+  const [sStats, setSStats] = React.useState<SupplierStats | null>(null);
+  const [sStatsStatus, setSStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<SupplierStats>("/suppliers/stats")
+      .then((r) => { setSStats(r.data); setSStatsStatus("ready"); })
+      .catch(() => setSStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3">
+      <KpiCard label="Total proveedores" value={sStats?.total ?? null} icon={Building2} status={sStatsStatus} />
+      <KpiCard label="Activos" value={sStats?.active ?? null} icon={CheckCircle} status={sStatsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage<Supplier>
       title="Proveedores"
@@ -37,6 +59,7 @@ export default function ProveedoresPage() {
       columns={columns}
       fields={fields}
       actionLabel="Nuevo proveedor"
+      statsSlot={statsSlot}
     />
   );
 }

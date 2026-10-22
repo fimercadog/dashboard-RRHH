@@ -1,8 +1,12 @@
 ﻿"use client";
 
+import { useEffect, useState } from "react";
+import { Briefcase, Users, UserCheck } from "lucide-react";
 import { ModuleTablePage } from "@/components/module-table-page";
+import { KpiCard } from "@/components/kpi-card";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
+import { api } from "@/lib/api";
 import { statusLabel } from "@/lib/labels";
 import { AppColumnDef } from "@/lib/table-types";
 
@@ -31,11 +35,31 @@ const fields: CrudField[] = [
     options: [{ label: "Abierta", value: "open" }, { label: "Cerrada", value: "closed" }] },
 ];
 
+type RecruitmentStats = { open_vacancies: number; active_applications: number; hired_this_month: number };
+
 export default function VacantesPage() {
+  const [stats, setStats] = useState<RecruitmentStats | null>(null);
+  const [statsStatus, setStatsStatus] = useState<"loading" | "error" | "ready">("loading");
+
+  useEffect(() => {
+    api.get<RecruitmentStats>("/recruitment/stats")
+      .then((r) => { setStats(r.data); setStatsStatus("ready"); })
+      .catch(() => setStatsStatus("error"));
+  }, []);
+
+  const statsSlot = (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <KpiCard label="Vacantes abiertas" value={stats?.open_vacancies ?? null} icon={Briefcase} status={statsStatus} />
+      <KpiCard label="Postulaciones activas" value={stats?.active_applications ?? null} icon={Users} status={statsStatus} />
+      <KpiCard label="Contratados este mes" value={stats?.hired_this_month ?? null} icon={UserCheck} status={statsStatus} />
+    </div>
+  );
+
   return (
     <ModuleTablePage title="Vacantes"
       description="Gestion de cargos disponibles para seleccion de personal."
       resource="/job-vacancies" exportResource="job-vacancies" columns={columns} fields={fields}
-      actionLabel="Nueva vacante" modalDescription="Registra los datos de la posicion a cubrir." />
+      actionLabel="Nueva vacante" modalDescription="Registra los datos de la posicion a cubrir."
+      statsSlot={statsSlot} />
   );
 }

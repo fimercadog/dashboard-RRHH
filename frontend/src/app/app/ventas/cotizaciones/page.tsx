@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Plus } from "lucide-react";
+import { Plus, FileSearch, Clock, ThumbsUp } from "lucide-react";
+import { KpiCard } from "@/components/kpi-card";
 import { toast } from "sonner";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,10 +44,10 @@ type CreateQuoteModalProps = {
   onSaved: () => void;
 };
 
-function CreateQuoteModal({ open, onOpenChange, onSaved }: CreateQuoteModalProps) {
-  const today = new Date().toISOString().slice(0, 10);
-  const in30 = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+const today = () => new Date().toISOString().slice(0, 10);
+const in30 = () => new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
 
+function CreateQuoteModal({ open, onOpenChange, onSaved }: CreateQuoteModalProps) {
   const [clientId, setClientId] = React.useState<number | "">("");
   const [date, setDate] = React.useState(today);
   const [validUntil, setValidUntil] = React.useState(in30);
@@ -73,7 +74,7 @@ function CreateQuoteModal({ open, onOpenChange, onSaved }: CreateQuoteModalProps
   }, [open]);
 
   function resetForm() {
-    setClientId(""); setDate(today); setValidUntil(in30); setNotes(""); setItems([newSaleLine()]); setErrors({});
+    setClientId(""); setDate(today()); setValidUntil(in30()); setNotes(""); setItems([newSaleLine()]); setErrors({});
   }
 
   function handleOpenChange(next: boolean) {
@@ -217,7 +218,7 @@ function CreateQuoteModal({ open, onOpenChange, onSaved }: CreateQuoteModalProps
 
 const columns: AppColumnDef<Quote>[] = [
   { accessorKey: "number", header: "Número" },
-  { header: "Cliente", cell: ({ row }) => { const c = row.original.client as any; return c?.company_name ?? (`${c?.first_name ?? ""} ${c?.last_name ?? ""}`.trim() || "-"); } },
+  { header: "Cliente", cell: ({ row }) => { const c = row.original.client; return c?.company_name ?? (`${c?.first_name ?? ""} ${c?.last_name ?? ""}`.trim() || "-"); } },
   dateColumn<Quote>("date", "Fecha"),
   dateColumn<Quote>("valid_until", "Válida hasta"),
   { header: "Total", cell: ({ row }) => COP(row.original.total) },
@@ -229,9 +230,19 @@ const columns: AppColumnDef<Quote>[] = [
   },
 ];
 
+type QuoteStats = { total: number; pending: number; accepted: number };
+
 export default function CotizacionesPage() {
   const table = useApiTable<Quote>("/quotes");
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [qStats, setQStats] = React.useState<QuoteStats | null>(null);
+  const [qStatsStatus, setQStatsStatus] = React.useState<"loading" | "error" | "ready">("loading");
+
+  React.useEffect(() => {
+    api.get<QuoteStats>("/quotes/stats")
+      .then((r) => { setQStats(r.data); setQStatsStatus("ready"); })
+      .catch(() => setQStatsStatus("error"));
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -243,6 +254,12 @@ export default function CotizacionesPage() {
         <Button onClick={() => setModalOpen(true)}>
           <Plus className="h-4 w-4" /> Nueva cotización
         </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <KpiCard label="Total cotizaciones" value={qStats?.total ?? null} icon={FileSearch} status={qStatsStatus} />
+        <KpiCard label="Pendientes" value={qStats?.pending ?? null} icon={Clock} status={qStatsStatus} />
+        <KpiCard label="Aceptadas" value={qStats?.accepted ?? null} icon={ThumbsUp} status={qStatsStatus} />
       </div>
 
       <DataTable
