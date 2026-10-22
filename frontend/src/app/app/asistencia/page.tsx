@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { UserCheck, UserX, Clock, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { UserCheck, UserX, Clock, AlertCircle, BarChart2 } from "lucide-react";
 import { Badge, badgeVariant } from "@/components/ui/badge";
 import { CrudField } from "@/components/crud/crud-modal";
 import { KpiCard } from "@/components/kpi-card";
@@ -59,11 +60,22 @@ export default function AttendancePage() {
   const s = stats?.summary;
 
   const statsSlot = (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <KpiCard label="Ausencias injustificadas" value={s?.absences.unjustified ?? null} icon={UserX} status={statsStatus} />
-      <KpiCard label="Ausencias justificadas" value={s?.absences.justified ?? null} icon={UserCheck} status={statsStatus} />
-      <KpiCard label="Tardanzas" value={s?.tardiness.count ?? null} icon={Clock} status={statsStatus} />
-      <KpiCard label="Min. retraso (mes)" value={s?.tardiness.total_minutes ?? null} icon={AlertCircle} status={statsStatus} />
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <KpiCard label="Ausencias injustificadas" value={s?.absences.unjustified ?? null} icon={UserX} status={statsStatus} />
+        <KpiCard label="Ausencias justificadas" value={s?.absences.justified ?? null} icon={UserCheck} status={statsStatus} />
+        <KpiCard label="Tardanzas" value={s?.tardiness.count ?? null} icon={Clock} status={statsStatus} />
+        <KpiCard label="Min. retraso (mes)" value={s?.tardiness.total_minutes ?? null} icon={AlertCircle} status={statsStatus} />
+      </div>
+      <div>
+        <Link
+          href="/app/asistencia/estadisticas"
+          className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+        >
+          <BarChart2 className="h-4 w-4" />
+          Ver indicadores
+        </Link>
+      </div>
     </div>
   );
 

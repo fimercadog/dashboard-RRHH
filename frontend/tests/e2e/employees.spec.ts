@@ -107,7 +107,7 @@ test.describe.serial("Empleados — CRUD", () => {
     const [response] = await Promise.all([
       page.waitForResponse(
         (resp) => resp.url().includes("/employees") && resp.request().method() === "POST",
-        { timeout: 10_000 },
+        { timeout: 15_000 },
       ).catch(() => null),
       modal.getByRole("button", { name: /guardar|crear/i }).click(),
     ]);

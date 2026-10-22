@@ -111,7 +111,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::put('/company', [CompanyController::class, 'update'])->middleware('can:settings.manage');
 
     Route::get('/employees/selector', [EmployeeController::class, 'selector']);
-    Route::get('/employees/stats', [EmployeeController::class, 'stats'])->middleware('can:employees.view');
+    Route::get('/employees/stats', [EmployeeController::class, 'stats'])->middleware('can:employees.manage');
     Route::apiResource('employees', EmployeeController::class)->except(['destroy'])->middleware('can:employees.manage');
     Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->middleware('can:employees.delete');
     Route::post('employees/{employee}/avatar', [EmployeeController::class, 'uploadAvatar'])->middleware('can:employees.manage');
