@@ -47,8 +47,9 @@ class UserController extends BaseCrudController
 
     public function store(Request $request, AuditService $audit)
     {
+        $cid = $this->companyId($request);
         $temporaryPassword = null;
-        $payload = $request->except(['password', 'role']);
+        $payload = $request->except(['password', 'role', 'avatar_path']);
 
         if ($request->filled('password')) {
             $payload['password'] = $request->input('password');
@@ -57,7 +58,15 @@ class UserController extends BaseCrudController
             $payload['password'] = $temporaryPassword;
         }
 
-        $payload['company_id'] = $this->companyId($request);
+        $payload['company_id'] = $cid;
+
+        // H-UC1: employee_id debe pertenecer a la misma empresa del token
+        if (isset($payload['employee_id'])) {
+            \App\Models\Employee::where('id', $payload['employee_id'])
+                ->where('company_id', $cid)
+                ->firstOrFail();
+        }
+
         $user = User::create($payload);
 
         if ($request->hasFile('avatar')) {
@@ -88,9 +97,16 @@ class UserController extends BaseCrudController
         $user = User::query()->where('company_id', $this->companyId($request))->findOrFail($id);
         $oldValues = $user->getOriginal();
 
-        $payload = $request->except(['password', 'role', 'company_id']);
+        $payload = $request->except(['password', 'role', 'company_id', 'avatar_path']);
         if ($request->filled('password')) {
             $payload['password'] = $request->input('password');
+        }
+
+        // H-UC1: employee_id debe pertenecer a la misma empresa del token
+        if (isset($payload['employee_id'])) {
+            \App\Models\Employee::where('id', $payload['employee_id'])
+                ->where('company_id', $user->company_id)
+                ->firstOrFail();
         }
 
         $user->update($payload);

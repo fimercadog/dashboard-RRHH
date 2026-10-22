@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Company;
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
@@ -87,5 +88,66 @@ class UserControllerTest extends TestCase
             'id'         => $target->id,
             'company_id' => $companyA->id,
         ]);
+    }
+
+    // ─── H-UC1: IDOR employee_id (CENTINELA hallazgo) ────────────────────────
+
+    #[Test]
+    public function store_rejects_employee_id_from_other_company(): void
+    {
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+        Permission::firstOrCreate(['name' => 'users.manage', 'guard_name' => 'web']);
+
+        $actor    = User::factory()->create(['company_id' => $companyA->id]);
+        $actor->givePermissionTo('users.manage');
+        $empB     = Employee::factory()->create(['company_id' => $companyB->id]);
+
+        $this->actingAs($actor, 'sanctum')->postJson('/api/users', [
+            'name'        => 'Hacker',
+            'email'       => 'hacker@example.com',
+            'employee_id' => $empB->id,
+        ])->assertStatus(404);
+
+        $this->assertDatabaseMissing('users', ['email' => 'hacker@example.com']);
+    }
+
+    #[Test]
+    public function update_rejects_employee_id_from_other_company(): void
+    {
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+        Permission::firstOrCreate(['name' => 'users.manage', 'guard_name' => 'web']);
+
+        $actor  = User::factory()->create(['company_id' => $companyA->id]);
+        $actor->givePermissionTo('users.manage');
+        $target = User::factory()->create(['company_id' => $companyA->id]);
+        $empB   = Employee::factory()->create(['company_id' => $companyB->id]);
+
+        $this->actingAs($actor, 'sanctum')->putJson("/api/users/{$target->id}", [
+            'employee_id' => $empB->id,
+        ])->assertStatus(404);
+
+        // employee_id del target debe seguir siendo null (sin cambio)
+        $this->assertDatabaseHas('users', ['id' => $target->id, 'employee_id' => null]);
+    }
+
+    #[Test]
+    public function store_rejects_avatar_path_in_payload(): void
+    {
+        $companyA = Company::factory()->create();
+        Permission::firstOrCreate(['name' => 'users.manage', 'guard_name' => 'web']);
+
+        $actor = User::factory()->create(['company_id' => $companyA->id]);
+        $actor->givePermissionTo('users.manage');
+
+        $response = $this->actingAs($actor, 'sanctum')->postJson('/api/users', [
+            'name'        => 'Test',
+            'email'       => 'test-avpath@example.com',
+            'avatar_path' => 'avatars/other-company/secret.jpg',
+        ])->assertStatus(201);
+
+        // avatar_path enviado como texto debe ser ignorado
+        $this->assertDatabaseHas('users', ['email' => 'test-avpath@example.com', 'avatar_path' => null]);
     }
 }
