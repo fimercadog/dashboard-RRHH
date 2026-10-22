@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "perf:smoke": "k6 run --env BASE_URL=http://127.0.0.1:8001 ../tests/performance/scenarios/smoke.js",
+    "perf:load": "k6 run --env BASE_URL=http://127.0.0.1:8001 ../tests/performance/scenarios/load-low.js",
+    "perf:medium": "k6 run --env BASE_URL=http://127.0.0.1:8001 ../tests/performance/scenarios/load-medium.js",
+    "perf:high": "k6 run --env BASE_URL=http://127.0.0.1:8001 ../tests/performance/scenarios/load-high.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

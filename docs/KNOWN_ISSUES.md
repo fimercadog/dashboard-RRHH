@@ -1,6 +1,6 @@
 # DFC Talento Humano — Problemas conocidos y deuda técnica
 
-> Última actualización: 2026-10-22
+> Última actualización: 2026-10-22 (agregado KI-003 — backup/DR)
 
 ---
 
@@ -138,6 +138,35 @@ Corregir requiere refactorizar los efectos para usar patrones como `useCallback`
 ### Criterio de cierre
 
 (1) Refactorizar todos los efectos afectados con revisión de NANCY. (2) `npm run lint` pasa con 0 errores. (3) Regresión en E2E: 12/12.
+
+---
+
+## KI-003 — Cron de backup no activado (requiere hPanel manual)
+
+| Campo | Detalle |
+|---|---|
+| **Detectado** | 2026-10-22 — misión de protección de datos |
+| **Severidad** | HIGH (hasta que se active el cron) |
+| **Estado** | **PENDIENTE** — script instalado, cron pendiente de configurar en hPanel |
+
+### Descripción
+
+El script de backup diario `~/bin/backup_dfc.sh` está instalado y verificado en el servidor. Sin embargo, Hostinger shared hosting no permite crear cron jobs via SSH — el comando `crontab` está aliaseado a solo-lectura. El cron debe activarse manualmente desde **hPanel → Avanzado → Trabajos Cron**.
+
+### Acción requerida
+
+Fidel debe activar el cron en hPanel (ver `docs/DISASTER_RECOVERY.md` para instrucciones paso a paso). Una vez activado, los backups correrán diariamente a las 02:00 UTC con retención de 30 días.
+
+### Lo que ya está listo
+
+- Script: `~/bin/backup_dfc.sh` (instalado y ejecutado exitosamente)
+- Backup de prueba: `~/backups/dfc_u910322706_rrhh_20261022_201333.sql.gz` (14K, 30 tablas verificadas)
+- Log: `~/logs/backup.log`
+- Documentación completa: `docs/DISASTER_RECOVERY.md`
+
+### Criterio de cierre
+
+Fidel configura el cron en hPanel y `~/logs/backup.log` muestra al menos un backup automático exitoso (al día siguiente de activarlo).
 
 ---
 
