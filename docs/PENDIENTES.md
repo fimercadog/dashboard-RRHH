@@ -1,6 +1,6 @@
 # Pendientes activos — DFC Talento Humano
 
-> Última actualización: 2026-10-22 (sesión autónoma — H2 roles per-company cerrado + suite 441/441)
+> Última actualización: 2026-10-22 (sesión autónoma — H-UC1/UC2 + E2E 12/12 + push)
 
 ---
 
@@ -14,7 +14,7 @@
 - [x] `f5b3281` fix(security): IDOR crítico UserController + migración PHPUnit #[Test] — 2026-10-22
 - [x] `64573eb` chore(ci+docs): GitHub Actions CI + KNOWN_ISSUES — 2026-10-22
 - [x] `6edc521` fix(security): H2 — roles per-company (migración + RoleController + UserController + seeders + tests) — 2026-10-22
-- [ ] **Push pendiente** — autorización de Fidel requerida (7 commits desde último push)
+- [x] **Push realizado** — 9 commits + 2 nuevos (H-UC1/UC2 + E2E fix) subidos 2026-10-22
 
 ---
 
@@ -26,7 +26,9 @@
 | ✅ CERRADO | **IDOR crítico UserController::store()** — `??=` reemplazado por `=` forzando company_id del token | Hecho 2026-10-22 — test de regresión añadido |
 | ✅ CERRADO | **`dashboard/page.tsx`** — KpiCard local documentado: difiere de shared (useCountUp, tone, Delta.pct); no se migra sin refactor del shared | Documentado 2026-10-22 |
 | ✅ CERRADO | **Empresa cliente IDOR/multitenancy audit** — CENTINELA ejecutó auditoría completa | Ver hallazgos abajo |
-| ✅ CERRADO | **RoleController — roles per-company** — migración + controller + UserController + seeders + 5 tests nuevos. 441/441 pasan | Hecho 2026-10-22 |
+| ✅ CERRADO | **RoleController — roles per-company** — migración + controller + UserController + seeders + 7 tests nuevos. 447/447 pasan | Hecho 2026-10-22 |
+| ✅ CERRADO | **H-UC1/UC2** — IDOR employee_id + avatar_path mass-assignment. 3 tests regresión. 447/447 pasan | Hecho 2026-10-22 |
+| ✅ CERRADO | **E2E Playwright** — 12/12 pasan (login, logout, tabla, CRUD completo, permisos, exports) | Hecho 2026-10-22 |
 | 🟡 DEUDA | **`asistencia/estadisticas/page.tsx`** — KpiCard local mínimo (por diseño SPEC-019) | Pendiente aprobación SPEC-019 |
 | 🟡 R4 | **SPEC-CONT-002.md** — draft de protocolo existe; falta validar rollback/recuperación paso a paso | Después de R1+R2 |
 | 🔵 INFRA | **CI/CD** — cero automatización en push/PR | Decisión de infraestructura |
@@ -47,7 +49,7 @@
 |-----------|-------|--------|
 | 🔴 CRÍTICO | **R1** — Verificar backup real en Hostinger tras primer deploy: confirmar que `.sql` se genera en `~/backups/` y que el archivo no está vacío | Bloqueado — requiere deploy |
 | 🔴 CRÍTICO | **R2** — Probar restauración en BD separada (`u910322706_dfc_restore`): restaurar, verificar tablas y registros. Nunca restaurar sobre producción | Bloqueado — requiere acción manual |
-| 🔵 ENTORNO | **E2E Playwright** — conectar extensión Chrome en `chrome://extensions` para desbloquear flujos E2E | Bloqueado — extensión no conectada |
+| ✅ CERRADO | **E2E Playwright** — 12/12 pasan con Chromium bundled (no necesita extensión Chrome) | Hecho 2026-10-22 |
 | ⚫ DECISIÓN | **SPEC-018 VP-002..VP-006** — cálculos de nómina bloqueados hasta validación profesional externa | En espera |
 | ⚫ DECISIÓN | **SPEC-019 (Asistencia)** — implementación en pausa hasta aprobación | En espera |
 | 🟡 LISTO | **`git push`** — 7 commits locales listos (`69722a2`..`6edc521`), árbol limpio | Esperando autorización |
@@ -142,9 +144,9 @@
 
 | Suite | Estado | Resultado |
 |-------|--------|-----------|
-| SQLite (phpunit.xml) | ✅ PASS | 436/436 pass, 1090 assertions (2 tests nuevos UserControllerTest) — 2026-10-22 |
-| MySQL (phpunit.mysql.xml) | ✅ PASS | 426/426 pass, 1057 assertions, exit 0 — 2026-10-22 |
-| E2E Playwright | BLOQUEADO ENTORNO | Pendiente configuración Chrome extension |
+| SQLite (phpunit.xml) | ✅ PASS | 447/447 pass (H-UC1/UC2 + H2) — 2026-10-22 |
+| MySQL (phpunit.mysql.xml) | ✅ PASS | 426/426 pass — 2026-10-22 (pre H-UC1/UC2; reejecutar si hay cambio) |
+| E2E Playwright | ✅ PASS | 12/12 pasan — 2026-10-22 |
 
 ---
 
