@@ -92,4 +92,78 @@ class RoleControllerTest extends TestCase
             ->putJson("/api/users/{$target->id}", ['role' => 'RoleB'])
             ->assertNotFound();
     }
+
+    // ─── Tests nuevos: restricciones de BD + compatibilidad Spatie ───────────
+
+    #[Test]
+    public function two_companies_can_have_roles_with_same_name(): void
+    {
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+        $actorA   = $this->makeAdmin($companyA);
+        $actorB   = $this->makeAdmin($companyB);
+
+        // Ambas empresas crean un rol llamado 'Supervisor' — no debe fallar
+        $this->actingAs($actorA, 'sanctum')
+            ->postJson('/api/roles', ['name' => 'Supervisor'])
+            ->assertStatus(201);
+
+        $this->actingAs($actorB, 'sanctum')
+            ->postJson('/api/roles', ['name' => 'Supervisor'])
+            ->assertStatus(201);
+
+        // Existe un rol 'Supervisor' por cada empresa
+        $this->assertDatabaseHas('roles', ['name' => 'Supervisor', 'company_id' => $companyA->id]);
+        $this->assertDatabaseHas('roles', ['name' => 'Supervisor', 'company_id' => $companyB->id]);
+
+        // El unique(company_id, name, guard_name) impide duplicados dentro de la misma empresa
+        $this->actingAs($actorA, 'sanctum')
+            ->postJson('/api/roles', ['name' => 'Supervisor'])
+            ->assertStatus(500); // viola la restricción UNIQUE de la BD
+    }
+
+    #[Test]
+    public function stats_returns_only_own_company_counts(): void
+    {
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+
+        \DB::table('roles')->insert([
+            ['name' => 'Admin',    'guard_name' => 'web', 'company_id' => $companyA->id, 'status' => 'active',   'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Viewer',   'guard_name' => 'web', 'company_id' => $companyA->id, 'status' => 'inactive', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Gerente',  'guard_name' => 'web', 'company_id' => $companyB->id, 'status' => 'active',   'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $actor = $this->makeAdmin($companyA);
+        $response = $this->actingAs($actor, 'sanctum')->getJson('/api/roles/stats');
+        $response->assertOk();
+
+        // empresa A tiene 2 roles total, 1 activo — no debe contar el de empresa B
+        $this->assertSame(2, $response->json('total'));
+        $this->assertSame(1, $response->json('active'));
+    }
+
+    #[Test]
+    public function role_permissions_are_scoped_per_company_via_spatie(): void
+    {
+        $companyA = Company::factory()->create();
+        $actor    = $this->makeAdmin($companyA);
+
+        // Crear rol para empresa A y asignarle un permiso de Spatie
+        $perm = Permission::firstOrCreate(['name' => 'empleados.ver', 'guard_name' => 'web']);
+
+        $response = $this->actingAs($actor, 'sanctum')
+            ->postJson('/api/roles', ['name' => 'RRHH'])
+            ->assertStatus(201);
+
+        $roleId = $response->json('data.id');
+        $role   = Role::findOrFail($roleId);
+
+        // syncPermissions vía Spatie — no debe arrojar excepción
+        $role->syncPermissions([$perm->name]);
+
+        // El rol está en la empresa correcta y tiene el permiso
+        $this->assertSame($companyA->id, $role->company_id);
+        $this->assertTrue($role->hasPermissionTo('empleados.ver'));
+    }
 }
