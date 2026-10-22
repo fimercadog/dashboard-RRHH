@@ -1,7 +1,7 @@
 # Pendientes activos — DFC Talento Humano
 
-> Última actualización: 2026-10-22 (reorganización por categorías — sesión autónoma)
-> Estado git: árbol limpio, origin/master sincronizado, HEAD `3539ed7`
+> Última actualización: 2026-10-22 (MISIÓN FINAL INTEGRAL completada)
+> Estado git: árbol limpio, origin/master sincronizado, HEAD `950c0cc`
 
 ---
 
@@ -11,7 +11,7 @@ Trabajo que PEPE puede ejecutar sin intervención externa.
 
 | Prioridad | Tarea | Estado |
 |-----------|-------|--------|
-| 🟡 DEUDA | **KI-004 — Lint ESLint** — 26 errores preexistentes `react-hooks/set-state-in-effect` | Documentado — no bloquea build. Refactoring en fase dedicada. |
+| ✅ CERRADO | **KI-004 — Lint ESLint** — 26 errores `react-hooks/set-state-in-effect` | Resuelto 2026-10-22 — 0 errores. Commit `05491b3`. |
 | 🟡 DEUDA | **SPEC-CONT-002** — Protocolo de continuidad: validar rollback/recuperación paso a paso | Draft existe. Después de R1+R2 verificados. |
 | 🔵 INFRA | **CI/CD** — cero automatización en push/PR | Decisión de infraestructura pendiente de Fidel. |
 | ⚫ FUTURO | **KipiCard compartido** — `asistencia/estadisticas` usa KpiCard local (por diseño SPEC-019). Migrar al compartido cuando SPEC-019 sea aprobada. | Bloqueado por decisión SPEC-019. |
@@ -138,12 +138,12 @@ Ver documento detallado: [docs/VP-MATRIZ-CONTADOR.md](VP-MATRIZ-CONTADOR.md) *(s
 
 | Suite | Resultado | Entorno |
 |-------|-----------|---------|
-| SQLite (`php artisan test`) | ✅ 447/447 | SQLite en memoria |
+| SQLite (`php artisan test`) | ✅ 451/451 | SQLite en memoria |
 | MySQL (`phpunit.mysql.xml`) | ✅ 439/439 | MariaDB local |
 | E2E Playwright | ✅ 12/12 | Chromium bundled |
 | TypeScript (`tsc --noEmit`) | ✅ 0 errores | — |
 | Build producción (`npm run build`) | ✅ limpio | — |
-| Lint ESLint | ⚠ 26 errores (KI-004, preexistentes) | — |
+| Lint ESLint | ✅ 0 errores | — |
 
 ---
 

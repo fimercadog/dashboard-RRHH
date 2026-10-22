@@ -110,7 +110,7 @@ El permiso `leads.*` NUNCA debe asignarse a usuarios de empresas cliente. Reserv
 | **Archivos** | `src/lib/use-api-table.ts:25`, `src/components/crud/crud-modal.tsx:102,107,194`, y ~12 páginas CRUD |
 | **Detectado** | 2026-10-22 — suite de verificación completa |
 | **Severidad** | LOW (deuda técnica — no bloquea build ni producción) |
-| **Estado** | **DOCUMENTADO** — todos preexistentes, ninguno introducido por sesión 2026-10-22 |
+| **Estado** | **RESUELTO** — 2026-10-22. Commit `05491b3`. 0 errores tras refactorizar 22 archivos. |
 
 ### Descripción
 
