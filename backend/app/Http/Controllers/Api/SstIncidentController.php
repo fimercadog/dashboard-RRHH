@@ -14,6 +14,7 @@ class SstIncidentController extends BaseCrudController
     protected string $model    = SstIncident::class;
     protected string $resource = SstIncidentResource::class;
     protected array  $with     = ['employee'];
+    protected array  $immutableOnUpdate = ['employee_id'];
     protected array  $searchable  = ['description', 'location'];
     protected array  $filterable  = [
         'type'     => 'type',

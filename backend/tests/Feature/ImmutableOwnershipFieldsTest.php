@@ -8,6 +8,8 @@ use App\Models\JobApplication;
 use App\Models\JobCandidate;
 use App\Models\JobInterview;
 use App\Models\JobVacancy;
+use App\Models\PerformanceReview;
+use App\Models\SstIncident;
 use App\Models\User;
 use App\Models\VacationRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,12 +34,12 @@ class ImmutableOwnershipFieldsTest extends TestCase
         parent::setUp();
         $this->company = Company::factory()->create();
 
-        foreach (['requests.approve', 'recruitment.view'] as $perm) {
+        foreach (['requests.approve', 'recruitment.view', 'sst.manage', 'desempeno.manage'] as $perm) {
             Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'web']);
         }
 
         $this->user = User::factory()->create(['company_id' => $this->company->id]);
-        $this->user->givePermissionTo(['requests.approve', 'recruitment.view']);
+        $this->user->givePermissionTo(['requests.approve', 'recruitment.view', 'sst.manage', 'desempeno.manage']);
         Sanctum::actingAs($this->user, ['*']);
     }
 
@@ -163,6 +165,64 @@ class ImmutableOwnershipFieldsTest extends TestCase
         $this->assertDatabaseHas('job_interviews', [
             'id'                 => $interview->id,
             'job_application_id' => $origApp->id,
+        ]);
+    }
+
+    // ── SstIncident ───────────────────────────────────────────────────────────
+
+    public function test_sst_incident_employee_id_is_immutable_on_update(): void
+    {
+        $empA = $this->emp();
+        $empB = $this->emp();
+
+        $incident = SstIncident::factory()->create([
+            'company_id'  => $this->company->id,
+            'employee_id' => $empA->id,
+        ]);
+
+        $this->putJson("/api/sst/incidents/{$incident->id}", [
+            'employee_id'   => $empB->id,
+            'incident_date' => $incident->incident_date,
+            'type'          => $incident->type,
+            'severity'      => $incident->severity,
+            'description'   => $incident->description,
+        ])->assertOk();
+
+        $this->assertDatabaseHas('sst_incidents', [
+            'id'          => $incident->id,
+            'employee_id' => $empA->id,
+        ]);
+        $this->assertDatabaseMissing('sst_incidents', [
+            'id'          => $incident->id,
+            'employee_id' => $empB->id,
+        ]);
+    }
+
+    // ── PerformanceReview ─────────────────────────────────────────────────────
+
+    public function test_performance_review_employee_id_is_immutable_on_update(): void
+    {
+        $empA = $this->emp();
+        $empB = $this->emp();
+
+        $review = PerformanceReview::factory()->create([
+            'company_id'  => $this->company->id,
+            'employee_id' => $empA->id,
+        ]);
+
+        $this->putJson("/api/performance-reviews/{$review->id}", [
+            'employee_id'  => $empB->id,
+            'period_start' => $review->period_start,
+            'period_end'   => $review->period_end,
+        ])->assertOk();
+
+        $this->assertDatabaseHas('performance_reviews', [
+            'id'          => $review->id,
+            'employee_id' => $empA->id,
+        ]);
+        $this->assertDatabaseMissing('performance_reviews', [
+            'id'          => $review->id,
+            'employee_id' => $empB->id,
         ]);
     }
 }

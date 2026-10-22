@@ -14,6 +14,7 @@ class PerformanceReviewController extends BaseCrudController
     protected string $model    = PerformanceReview::class;
     protected string $resource = PerformanceReviewResource::class;
     protected array  $with     = ['employee'];
+    protected array  $immutableOnUpdate = ['employee_id'];
     protected array  $searchable  = ['strengths', 'improvements'];
     protected array  $filterable  = [
         'status'      => 'status',

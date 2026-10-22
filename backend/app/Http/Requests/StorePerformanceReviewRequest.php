@@ -8,7 +8,7 @@ class StorePerformanceReviewRequest extends ApiFormRequest
     {
         return [
             'employee_id'          => ['required', $this->ownedExists('employees')],
-            'reviewer_id'          => ['nullable', 'integer', 'exists:users,id'],
+            'reviewer_id'          => ['nullable', 'integer', $this->ownedExists('users')],
             'period_start'         => ['required', 'date'],
             'period_end'           => ['required', 'date', 'after_or_equal:period_start'],
             'overall_rating'       => ['nullable', 'integer', 'min:1', 'max:5'],

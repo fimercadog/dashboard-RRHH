@@ -16,7 +16,7 @@ class StoreSstIncidentRequest extends ApiFormRequest
             'action_taken'  => ['nullable', 'string', 'max:2000'],
             'days_lost'     => ['nullable', 'integer', 'min:0'],
             'status'        => ['nullable', 'in:reported,investigating,resolved,closed'],
-            'reported_by'   => ['nullable', 'integer', 'exists:users,id'],
+            'reported_by'   => ['nullable', 'integer', $this->ownedExists('users')],
         ];
     }
 

@@ -202,4 +202,36 @@ class SstPerformanceTest extends TestCase
 
         $this->postJson("/api/performance-reviews/{$review->id}/submit")->assertNotFound();
     }
+
+    public function test_sst_incident_reported_by_must_belong_to_same_company(): void
+    {
+        $this->actAsManager();
+
+        $otherCompany = Company::factory()->create();
+        $foreignUser  = User::factory()->create(['company_id' => $otherCompany->id]);
+
+        $this->postJson('/api/sst/incidents', [
+            'employee_id'   => $this->employee->id,
+            'incident_date' => now()->toDateString(),
+            'type'          => 'incident',
+            'severity'      => 'low',
+            'description'   => 'Test.',
+            'reported_by'   => $foreignUser->id,
+        ])->assertUnprocessable()->assertJsonValidationErrors(['reported_by']);
+    }
+
+    public function test_performance_review_reviewer_id_must_belong_to_same_company(): void
+    {
+        $this->actAsManager();
+
+        $otherCompany = Company::factory()->create();
+        $foreignUser  = User::factory()->create(['company_id' => $otherCompany->id]);
+
+        $this->postJson('/api/performance-reviews', [
+            'employee_id'  => $this->employee->id,
+            'period_start' => '2026-01-01',
+            'period_end'   => '2026-03-31',
+            'reviewer_id'  => $foreignUser->id,
+        ])->assertUnprocessable()->assertJsonValidationErrors(['reviewer_id']);
+    }
 }
