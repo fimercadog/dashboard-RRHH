@@ -30,5 +30,10 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
       testMatch: /permissions\.spec\.ts/,
     },
+    {
+      name: "public-web",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: /public-web\.spec\.ts/,
+    },
   ],
 });
