@@ -135,10 +135,14 @@ test.describe.serial("Empleados — CRUD", () => {
     // Esperar que la búsqueda de backend retorne resultados
     await expect(page.getByRole("cell", { name: code, exact: true })).toBeVisible({ timeout: 10_000 });
 
-    await page.getByRole("button", { name: /editar/i }).first().click();
+    // Usar exact:true para evitar que coincida con "Editar foto" (avatar button)
+    await page.getByRole("button", { name: "Editar", exact: true }).first().click();
 
+    // El modal de edición tiene título que incluye "Editar empleado"
     const modal = page.getByRole("dialog");
     await expect(modal).toBeVisible({ timeout: 5_000 });
+    // Descartar si abrió el avatar dialog por error
+    await expect(modal.getByRole("button", { name: /guardar|actualizar/i })).toBeVisible({ timeout: 10_000 });
 
     const firstNameInput = modal.getByLabel(/nombres/i);
     await firstNameInput.clear();
