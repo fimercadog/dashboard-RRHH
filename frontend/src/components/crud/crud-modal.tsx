@@ -351,14 +351,12 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
   const [errors, setErrors] = React.useState<ApiErrors>({});
   const formId = React.useId();
 
-  const fieldRefs = React.useRef<Record<string, React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>>>({});
+  const fieldRefMap = React.useMemo<Record<string, React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>>>(() => {
+    const map: Record<string, React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>> = {};
+    fields.forEach((f) => { map[f.name] = React.createRef<HTMLInputElement | HTMLTextAreaElement>(); });
+    return map;
+  }, [fields]);
   const searchDropdownOpen = React.useRef(false);
-  function getFieldRef(name: string): React.RefObject<HTMLInputElement | HTMLTextAreaElement | null> {
-    if (!fieldRefs.current[name]) {
-      fieldRefs.current[name] = React.createRef<HTMLInputElement | HTMLTextAreaElement>();
-    }
-    return fieldRefs.current[name];
-  }
 
   // Cierra limpiando errores (sin efecto: el cierre siempre pasa por aqui).
   const handleOpenChange = React.useCallback(
@@ -544,7 +542,7 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
                     ))}
                   </select>
                 ) : field.type === "textarea" ? (
-                  <VoiceInputWrapper fieldRef={getFieldRef(field.name)} voice={field.voice}>
+                  <VoiceInputWrapper fieldRef={fieldRefMap[field.name]} voice={field.voice}>
                     <textarea
                       name={field.name}
                       required={field.required}
@@ -558,7 +556,7 @@ export function CrudModal({ open, onOpenChange, mode, title, description, resour
                     />
                   </VoiceInputWrapper>
                 ) : (
-                  <VoiceInputWrapper fieldRef={getFieldRef(field.name)} voice={field.voice}>
+                  <VoiceInputWrapper fieldRef={fieldRefMap[field.name]} voice={field.voice}>
                     <Input
                       name={field.name}
                       type={field.type ?? "text"}

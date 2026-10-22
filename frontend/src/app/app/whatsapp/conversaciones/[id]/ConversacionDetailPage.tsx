@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ArrowLeft, AlertTriangle, User, Send, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -40,7 +40,6 @@ function formatTime(dateStr: string): string {
 
 export default function ConversacionDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
 
   const [conv, setConv] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);

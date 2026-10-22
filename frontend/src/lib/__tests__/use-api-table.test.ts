@@ -9,6 +9,7 @@
  * El test está escrito para que compile y sea ejecutable una vez configurado Jest.
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck — deshabilitado hasta que se instale Jest y su configuración de tipos
 
 import { renderHook, act } from "@testing-library/react";

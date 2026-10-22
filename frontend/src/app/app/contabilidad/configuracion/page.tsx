@@ -65,8 +65,8 @@ export default function ConfiguracionContabilidadPage() {
         await api.post("/accounting-configs", payload);
       }
       setOpen(false); load();
-    } catch (e: any) {
-      setFormError(e?.response?.data?.message || "Error al guardar.");
+    } catch (e: unknown) {
+      setFormError((e as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Error al guardar.");
     } finally {
       setSaving(false);
     }

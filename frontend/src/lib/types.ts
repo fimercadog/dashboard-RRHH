@@ -27,6 +27,7 @@ export type Employee = {
   pension_fund?: string;
   compensation_fund?: string;
   notes?: string;
+  avatar_url?: string | null;
   department?: { id: number; name: string };
   position?: { id: number; name: string };
   manager?: { id: number; first_name: string; last_name: string; full_name?: string };
@@ -378,7 +379,7 @@ export type Quote = {
   tax: number;
   total: number;
   notes?: string;
-  client?: { id: number; name: string };
+  client?: Client;
   deal?: { id: number; title: string };
   items?: QuoteItem[];
   created_at?: string;
@@ -405,7 +406,7 @@ export type SaleOrder = {
   tax: number;
   total: number;
   notes?: string;
-  client?: { id: number; name: string };
+  client?: Client;
   warehouse?: { id: number; name: string };
   quote?: { id: number; number: string };
   items?: SaleOrderItem[];
@@ -435,7 +436,7 @@ export type SaleInvoice = {
   tax: number;
   total: number;
   notes?: string;
-  client?: { id: number; name: string };
+  client?: Client;
   sale_order?: { id: number; number: string };
   items?: SaleInvoiceItem[];
   account_receivable?: AccountsReceivable;
@@ -570,5 +571,91 @@ export type AccountingAccountConfig = {
   account_code?: string;
   account_name?: string;
   created_at?: string;
+};
+
+export type PayrollPeriod = {
+  id: number;
+  company_id: number;
+  name: string;
+  period_type: "monthly" | "biweekly" | "weekly";
+  start_date: string;
+  end_date: string;
+  payment_date: string;
+  status: "draft" | "running" | "approved" | "closed";
+  is_complementary: boolean;
+  original_period_id?: number | null;
+  authorized_reversal?: boolean;
+  reversal_reason?: string | null;
+  closed_by?: number | null;
+  closed_at?: string | null;
+  notes?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type PayrollRunItem = {
+  id: number;
+  employee_id: number;
+  employee?: { id: number; full_name: string };
+  total_devengado: number;
+  total_deducciones: number;
+  total_neto: number;
+  total_aportes_empresa: number;
+  status: string;
+};
+
+export type PayrollRun = {
+  id: number;
+  company_id: number;
+  payroll_period_id: number;
+  run_number: number;
+  status: "pending" | "processing" | "completed" | "approved" | "error";
+  total_employees: number;
+  total_devengado: number;
+  total_deducciones: number;
+  total_neto: number;
+  total_aportes_empresa: number;
+  error_log?: string | null;
+  executed_by?: number | null;
+  executed_at?: string | null;
+  created_at?: string;
+  items?: PayrollRunItem[];
+};
+
+export type SstIncident = {
+  id: number;
+  company_id: number;
+  employee_id: number | null;
+  employee?: { id: number; first_name: string; last_name: string };
+  incident_date: string;
+  type: 'near_miss' | 'incident' | 'accident' | 'occupational_disease';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  location: string | null;
+  description: string;
+  action_taken: string | null;
+  days_lost: number;
+  status: 'reported' | 'investigating' | 'resolved' | 'closed';
+  resolved_at: string | null;
+  created_at: string;
+};
+
+export type PerformanceReview = {
+  id: number;
+  company_id: number;
+  employee_id: number;
+  employee?: { id: number; first_name: string; last_name: string };
+  reviewer_id: number | null;
+  period_start: string;
+  period_end: string;
+  overall_rating: number | null;
+  goals_rating: number | null;
+  competencies_rating: number | null;
+  strengths: string | null;
+  improvements: string | null;
+  goals_next_period: string | null;
+  status: 'draft' | 'submitted' | 'acknowledged';
+  submitted_at: string | null;
+  acknowledged_at: string | null;
+  created_at: string;
 };
 

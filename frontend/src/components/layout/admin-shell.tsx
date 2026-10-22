@@ -8,7 +8,6 @@ import {
   BadgeCheck,
   BarChart3,
   Bot,
-  BriefcaseBusiness,
   Building2,
   CalendarDays,
   ClipboardList,
@@ -18,7 +17,6 @@ import {
   Inbox,
   Layers,
   LayoutDashboard,
-  Bell,
   Lock,
   LogOut,
   Megaphone,
@@ -47,8 +45,6 @@ import {
   BookText,
   SlidersHorizontal,
   UserSearch,
-  CalendarClock,
-  ClipboardCheck,
   Link2,
   MessageCircle,
   MessageSquare,
@@ -59,6 +55,7 @@ import {
 import { LogoMark } from "@/components/brand/logo";
 import { BetaNotice } from "@/components/layout/beta-notice";
 import { PendingButton } from "@/components/layout/pending-button";
+import Image from "next/image";
 import { SupportDialog } from "@/components/layout/support-dialog";
 import { ContingencyBanner } from "@/components/layout/contingency-banner";
 import { useContingency } from "@/lib/contingency/context";
@@ -124,9 +121,9 @@ const navGroups: NavGroup[] = [
       { href: "/app/permisos",      label: "Permisos",                 icon: BadgeCheck,  permissions: ["requests.approve"] },
       { href: "/app/incapacidades", label: "Incapacidades",            icon: Stethoscope, permissions: ["requests.approve"] },
       { href: "/app/turnos",        label: "Turnos",                   icon: Activity,    permissions: ["attendance.manage"] },
-      { href: "/app/nomina",        label: "Nómina y liquidaciones",   icon: Banknote,    permissions: ["payroll.manage"], comingSoon: true },
-      { href: "/app/sst",           label: "SST",                      icon: Shield,      permissions: [],                 comingSoon: true },
-      { href: "/app/desempeno",     label: "Desempeño",                icon: TrendingUp,  permissions: [],                 comingSoon: true },
+      { href: "/app/nomina",        label: "Nómina y liquidaciones",   icon: Banknote,    permissions: ["payroll.manage"] },
+      { href: "/app/sst",           label: "SST",                      icon: Shield,      permissions: ["sst.view"] },
+      { href: "/app/desempeno",     label: "Desempeño",                icon: TrendingUp,  permissions: ["desempeno.view"] },
       { href: "/app/documentos",    label: "Central documental",       icon: FileText,    permissions: ["documents.manage"] },
     ],
   },
@@ -434,9 +431,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="border-b border-border px-5 py-4">
       <div className="flex items-center gap-2">
         {user?.avatar_url ? (
-          <img
+          <Image
+            unoptimized
             src={user.avatar_url}
             alt={user.name}
+            width={32}
+            height={32}
             className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-border"
           />
         ) : (

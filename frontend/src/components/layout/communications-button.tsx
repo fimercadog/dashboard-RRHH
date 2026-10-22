@@ -59,20 +59,6 @@ export function CommunicationsButton() {
   });
   const ref = React.useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, []);
-
-  React.useEffect(() => {
-    if (!open) return;
-    void loadCampaigns();
-    void loadSources();
-  }, [open]);
-
   async function loadCampaigns() {
     setLoadingCampaigns(true);
     try {
@@ -93,6 +79,20 @@ export function CommunicationsButton() {
       // non-critical
     }
   }
+
+  React.useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    void loadCampaigns();
+    void loadSources();
+  }, [open]);
 
   async function previewAudience(campaignId?: number) {
     if (!campaignId) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,9 +29,14 @@ export default function AiConfigPage() {
   const [testResult, setTestResult] = useState<{ status: string; message?: string; latency?: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => { loadSettings(); }, []);
+  const loadModels = useCallback(async () => {
+    try {
+      const res = await api.get("/settings/ai/models");
+      setModels(res.data ?? []);
+    } catch { /* silencioso — lista estática */ }
+  }, []);
 
-  async function loadSettings() {
+  const loadSettings = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get("/settings/ai");
@@ -44,14 +49,9 @@ export default function AiConfigPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [loadModels]);
 
-  async function loadModels() {
-    try {
-      const res = await api.get("/settings/ai/models");
-      setModels(res.data ?? []);
-    } catch { /* silencioso — lista estática */ }
-  }
+  useEffect(() => { loadSettings(); }, [loadSettings]);
 
   async function handleSave() {
     setSaving(true);
