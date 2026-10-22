@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -39,6 +40,30 @@ class UserControllerTest extends TestCase
             'email'      => 'injected@example.com',
             'company_id' => $companyB->id,
         ]);
+    }
+
+    #[Test]
+    public function cannot_assign_role_from_other_company(): void
+    {
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+
+        Permission::firstOrCreate(['name' => 'users.manage', 'guard_name' => 'web']);
+
+        $actor = User::factory()->create(['company_id' => $companyA->id]);
+        $actor->givePermissionTo('users.manage');
+
+        // Role that belongs to company B — company A users cannot assign it.
+        Role::create(['name' => 'ManagerB', 'guard_name' => 'web', 'company_id' => $companyB->id]);
+
+        $target = User::factory()->create(['company_id' => $companyA->id]);
+
+        $this->actingAs($actor, 'sanctum')
+            ->putJson("/api/users/{$target->id}", [
+                'name' => 'Updated',
+                'role' => 'ManagerB',
+            ])
+            ->assertStatus(404);
     }
 
     #[Test]

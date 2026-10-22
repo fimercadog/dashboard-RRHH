@@ -18,6 +18,7 @@ use App\Models\VacationRequest;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class DemoSeeder extends Seeder
@@ -37,6 +38,27 @@ class DemoSeeder extends Seeder
             ]
         );
 
+        // ── 1b. Roles de la empresa demo (cada empresa tiene sus propios roles) ──
+        $allPermissions = Permission::pluck('name')->all();
+        $adminPermissions = array_values(array_filter(
+            $allPermissions,
+            fn ($p) => ! in_array($p, ['whatsapp.manage', 'ai.manage', 'integrations.view'])
+        ));
+
+        $demoRoles = [
+            'Super Admin'             => $allPermissions,
+            'Administrador de empresa'=> $adminPermissions,
+            'Recursos Humanos'        => ['dashboard.view', 'employees.manage', 'attendance.manage', 'requests.approve', 'documents.manage', 'reports.view', 'leads.view'],
+            'Supervisor'              => ['dashboard.view', 'attendance.manage', 'requests.approve', 'reports.view'],
+            'Empleado'                => ['dashboard.view'],
+        ];
+
+        foreach ($demoRoles as $roleName => $rolePermissions) {
+            Role::firstOrCreate(
+                ['name' => $roleName, 'guard_name' => 'web', 'company_id' => $demoCompany->id]
+            )->syncPermissions(array_filter($rolePermissions, fn ($p) => in_array($p, $allPermissions)));
+        }
+
         // ── 2. Usuarios demo ──────────────────────────────────────────────────
         $password = config('app.demo_password', 'DFC-Demo-2026!');
 
@@ -53,7 +75,7 @@ class DemoSeeder extends Seeder
                 'status'      => 'active',
             ]
         );
-        $demoAdmin->syncRoles([Role::where('name', 'Administrador de empresa')->first()]);
+        $demoAdmin->syncRoles([Role::where('name', 'Administrador de empresa')->where('company_id', $demoCompany->id)->first()]);
 
         // Usuarios con rol dependiente de empleado (se vinculan tras crear empleados)
         $pendingUsers = [
@@ -139,7 +161,7 @@ class DemoSeeder extends Seeder
                     'status'      => 'active',
                 ]
             );
-            $user->syncRoles([Role::where('name', $userData['role'])->first()]);
+            $user->syncRoles([Role::where('name', $userData['role'])->where('company_id', $demoCompany->id)->first()]);
         }
 
         // Asistencias: seed para 365 dias habiles (idempotente: elimina solo 'seed')

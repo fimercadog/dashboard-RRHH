@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class UserController extends BaseCrudController
 {
@@ -65,7 +66,10 @@ class UserController extends BaseCrudController
         }
 
         if ($request->filled('role')) {
-            $user->syncRoles([$request->input('role')]);
+            $role = Role::where('name', $request->input('role'))
+                ->where('company_id', $this->companyId($request))
+                ->firstOrFail();
+            $user->syncRoles([$role->name]);
         }
 
         $user->load($this->with);
@@ -92,7 +96,10 @@ class UserController extends BaseCrudController
         $user->update($payload);
 
         if ($request->filled('role')) {
-            $user->syncRoles([$request->input('role')]);
+            $role = Role::where('name', $request->input('role'))
+                ->where('company_id', $this->companyId($request))
+                ->firstOrFail();
+            $user->syncRoles([$role->name]);
         }
 
         $user->load($this->with);

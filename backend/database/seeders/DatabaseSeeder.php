@@ -74,7 +74,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($roles as $roleName => $rolePermissions) {
-            Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web'])->syncPermissions($rolePermissions);
+            Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web', 'company_id' => $company->id])->syncPermissions($rolePermissions);
         }
 
         $departments = collect([
