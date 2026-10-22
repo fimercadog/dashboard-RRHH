@@ -5,13 +5,14 @@ import { FeatureGrid } from "@/components/marketing/feature-grid";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { ProblemSolution } from "@/components/marketing/problem-solution";
 
+import { Reveal } from "@/components/marketing/reveal";
+import { SectionHeading } from "@/components/marketing/section-heading";
+
 export const metadata: Metadata = {
   title: "Producto",
   description: "Explora todas las funcionalidades de FidelOS: empleados, asistencia, vacaciones, documentos, turnos, reclutamiento, reportes e IA.",
   openGraph: { title: "Producto — FidelOS", description: "Software de RRHH todo-en-uno para empresas modernas." },
 };
-import { Reveal } from "@/components/marketing/reveal";
-import { SectionHeading } from "@/components/marketing/section-heading";
 
 export default function ProductOverviewPage() {
   return (
@@ -32,7 +33,7 @@ export default function ProductOverviewPage() {
         <FeatureGrid />
         <ProblemSolution />
         <section className="px-4 py-20 sm:px-6 lg:px-8">
-          <Reveal><SectionHeading eyebrow="Seguridad y automatizacion" title="Preparado para crecer con tu empresa" description="Base visual lista para conectarse a Laravel API, multiempresa, roles, permisos, auditoria e integraciones como WhatsApp." /></Reveal>
+          <Reveal><SectionHeading eyebrow="Seguridad y automatizacion" title="Preparado para crecer con tu empresa" description="Toda la gestion de Recursos Humanos de tu empresa en una sola plataforma. Desde el expediente del colaborador hasta los reportes de ausentismo, conectado y listo para tu equipo." /></Reveal>
         </section>
         <CTASection />
       </main>

@@ -70,7 +70,7 @@ export function ContactForm({ demo = false }: { demo?: boolean }) {
       </div>
       <textarea
         name="message"
-        className="mt-4 min-h-32 w-full rounded-md border border-border bg-card px-3 py-3 text-sm outline-none placeholder:text-muted-foreground"
+        className="mt-4 min-h-32 w-full rounded-md border border-border bg-card px-3 py-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30"
         placeholder="Mensaje"
         aria-label="Mensaje"
       />

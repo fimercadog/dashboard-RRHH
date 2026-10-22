@@ -31,7 +31,7 @@ export function MarketingHeader() {
   const links = [
     ["Reclutamiento", "/reclutamiento"],
     ["Precios", "/precios"],
-    ["Recursos", "/blog"],
+    ["Blog", "/blog"],
     ["Nosotros", "/nosotros"],
     ["Contacto", "/contacto"],
   ];
@@ -61,8 +61,7 @@ export function MarketingHeader() {
           ))}
         </nav>
         <div className="hidden items-center gap-3 xl:flex">
-          <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm font-medium text-navy transition-colors hover:bg-muted" href="/login" target="_blank" rel="noopener noreferrer">Iniciar sesion</Link>
-          <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-white transition-transform duration-200 hover:scale-105 hover:opacity-90 active:scale-95" href="/demo">Solicitar demo</Link>
+          <Link className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm font-medium text-navy transition-colors hover:bg-muted" href="/login" target="_blank" rel="noopener noreferrer">Iniciar sesión</Link>
         </div>
         <div className="flex shrink-0 items-center gap-2 xl:hidden">
           <Link
@@ -71,7 +70,7 @@ export function MarketingHeader() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Iniciar sesion
+            Iniciar sesión
           </Link>
           <Button
             type="button"
@@ -92,9 +91,6 @@ export function MarketingHeader() {
               {label}
             </Link>
           ))}
-          <div className="mt-3">
-            <Link className="block whitespace-nowrap rounded-xl bg-primary px-3 py-3 text-center text-sm font-medium text-white" href="/demo">Solicitar demo</Link>
-          </div>
         </div>
       ) : null}
     </header>

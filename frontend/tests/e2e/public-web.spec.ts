@@ -169,3 +169,51 @@ test.describe("Links internos — destinos correctos", () => {
     await expect(page).toHaveURL(/\/contacto/);
   });
 });
+
+test.describe("Blog editorial", () => {
+  test("blog listing muestra articulo destacado y grid", async ({ page }) => {
+    await page.goto("/blog/");
+    await expect(page.locator("h1")).toBeVisible();
+    const cards = page.locator("a[href*='/blog/']");
+    await expect(cards.first()).toBeVisible();
+  });
+
+  test("articulo de blog abre y tiene contenido real", async ({ page }) => {
+    await page.goto("/blog/como-digitalizar-rrhh-sin-caos/");
+    await expect(page.locator("h1")).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("contenido inicial ficticio");
+  });
+
+  test("todos los slugs de blog cargan sin error", async ({ page }) => {
+    const slugs = [
+      "como-digitalizar-rrhh-sin-caos",
+      "asistencia-y-ausentismo",
+      "vacaciones-sin-excel",
+      "pipeline-de-reclutamiento",
+      "documentos-laborales",
+      "ia-en-recursos-humanos",
+    ];
+    for (const slug of slugs) {
+      await page.goto(`/blog/${slug}/`);
+      await expect(page.locator("h1")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("Application error");
+    }
+  });
+
+  test("pagina 404 para ruta inexistente", async ({ page }) => {
+    await page.goto("/esta-pagina-no-existe/");
+    await expect(page.locator("body")).toContainText("404");
+    await expect(page.locator("a[href='/']").first()).toBeVisible();
+  });
+
+  test("pagina 404 para articulo de blog inexistente", async ({ page }) => {
+    await page.goto("/blog/articulo-que-no-existe/");
+    await expect(page.locator("body")).toContainText("404");
+  });
+
+  test("boton WhatsApp tiene href correcto", async ({ page }) => {
+    await page.goto("/");
+    const waLink = page.locator("a[href*='wa.me/573058148918']");
+    await expect(waLink).toBeVisible();
+  });
+});
