@@ -1,3 +1,106 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+---
+
+## Comandos de desarrollo
+
+### Backend (Laravel 12, `backend/`)
+
+```bash
+# Arrancar API en local
+php artisan serve --host=127.0.0.1 --port=8001
+
+# Regenerar BD desde cero con datos de prueba
+php artisan migrate:fresh --seed
+
+# Ejecutar tests (SQLite en memoria — por defecto)
+php artisan test
+# o directamente:
+vendor/bin/phpunit
+
+# Test individual
+vendor/bin/phpunit --filter NombreDelTest
+
+# Tests contra MySQL (requiere BD `dfc_test` y credenciales en phpunit.mysql.xml)
+vendor/bin/phpunit -c phpunit.mysql.xml
+
+# En producción (APP_ENV=production) todos los comandos de escritura necesitan --force
+php artisan migrate --force
+```
+
+### Frontend (Next.js 16, `frontend/`)
+
+```bash
+npm run dev      # desarrollo
+npm run build    # producción
+npm run lint     # ESLint
+```
+
+### Playwright E2E
+
+```bash
+# Desde frontend/
+npx playwright test
+npx playwright test --ui   # modo UI interactivo
+```
+
+---
+
+## Arquitectura
+
+**Monorepo:** `backend/` (Laravel API) + `frontend/` (Next.js) + `docs/`.
+
+### Backend
+
+- **Multiempresa**: cada modelo tiene `company_id`. `BaseCrudController` (`app/Http/Controllers/Api/BaseCrudController.php`) aplica el filtro automáticamente en todos los métodos CRUD — nunca omitirlo en controllers custom.
+- **Trait `ResolvesCompany`** (`app/Http/Controllers/Api/Concerns/`): extrae `company_id` del token Sanctum. IDOR imposible si se usa correctamente.
+- **`BaseCrudController`**: base de casi todos los módulos CRUD. Añade validación vía `FormRequest` (clase `Store{Modelo}Request` si existe), auditoría automática (`AuditService`) y versionado de caché por empresa (`company_version_{cid}`).
+- **`TableQueryService`**: búsqueda, filtros y ordenación configurables declarativamente por controller.
+- **Tests**: SQLite en memoria (`phpunit.xml`) para desarrollo diario. `phpunit.mysql.xml` para el gate de release — nunca commitear ese archivo (contiene credenciales locales).
+- **Autenticación**: Laravel Sanctum, token en `Authorization: Bearer`.
+- **Permisos**: Spatie `laravel-permission`. Los permisos destructivos (`delete`, `approve`) son explícitos y distintos de `manage`.
+
+### Frontend
+
+- **App Router** de Next.js: sitio público (`/`) y panel privado (`/app`).
+- **`ModuleTablePage`** (`src/components/module-table-page.tsx`): componente genérico que une `useApiTable` + `DataTable` + `CrudModal`. La mayoría de páginas CRUD son una sola instancia de este componente.
+- **`useApiTable`** (`src/lib/use-api-table.ts`): hook que maneja paginación, búsqueda y refresco contra la API.
+- **`CrudModal`** (`src/components/crud/crud-modal.tsx`): modal de alta/edición genérico basado en `CrudField[]`.
+- **`KpiCard`** (`src/components/kpi-card.tsx`): tarjeta de métrica compartida — usarla siempre; no crear KpiCard locales salvo excepción justificada en SPEC.
+- **`API_BASE`** (`src/lib/api.ts`): en local cae a `/api` (rewrite de `next.config.ts` hacia `127.0.0.1:8001`); en producción se hornea desde `NEXT_PUBLIC_API_URL`.
+- **Modo contingencia** (`src/lib/contingency/`): encola altas localmente cuando el backend no está disponible. El contexto es `useContingency()`; `ModuleTablePage` lo consume automáticamente.
+- **Tablas**: TanStack Table v8. Tipos de columna en `src/lib/table-types.ts`.
+- **Gráficas del dashboard**: Recharts.
+
+### Invariantes de seguridad
+
+- Toda consulta filtra por `company_id` del token — nunca confiar en IDs de URL sin validar contra la empresa.
+- `BaseCrudController` lo hace automáticamente; controllers custom deben replicar el patrón.
+- Webhooks externos deben verificar firma HMAC.
+- `manage` ≠ `delete`; `approve` ≠ `delete` — permisos destructivos siempre explícitos.
+
+### Deploy (producción)
+
+Backend en Hostinger (hPanel + SSH, MySQL). Ver `docs/deploy-hostinger.md`.  
+El guard de backup (`mysqldump` antes de `migrate --force`) está en el script de deploy — no saltearlo.  
+Frontend como sitio Node.js aparte con `NEXT_PUBLIC_API_URL` apuntando al backend.
+
+---
+
+## Documentación viva
+
+Antes de cualquier tarea no trivial leer (por orden de prioridad):
+
+1. `docs/PROJECT_STATE.md` — estado actual de cada módulo
+2. `docs/CORE_CONTRACT.md` — qué no se toca y por qué
+3. `docs/DECISIONS.md` — decisiones arquitectónicas firmes
+4. `docs/KNOWN_ISSUES.md` — deudas y problemas conocidos
+5. `docs/PENDIENTES.md` — trabajo en curso y bloqueados
+
+---
+
 # FidelOS — Modelo Operativo del Departamento de Desarrollo
 
 ## REGLA FUNDAMENTAL

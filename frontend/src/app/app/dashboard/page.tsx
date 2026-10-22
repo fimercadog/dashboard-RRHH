@@ -122,6 +122,9 @@ function AnimatedValue({ value, suffix = "" }: { value: number; suffix?: string 
   );
 }
 
+// ponytail: KpiCard local — diferencias de layout con el compartido:
+// animatedValue (useCountUp), tone/emphasis con glow, IconBadge, Delta.pct vs Delta.value+period.
+// Migrar requeriría cambiar la interfaz del componente compartido o perder el diseño del dashboard.
 function KpiCard({
   label,
   value,

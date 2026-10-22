@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Spatie\Permission\Models\Permission;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AttendanceStatsTest extends TestCase
@@ -55,13 +56,13 @@ class AttendanceStatsTest extends TestCase
         ], $params));
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_returns_401(): void
     {
         $this->getJson('/api/attendance-stats?from=2025-01-01&to=2025-01-31')->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function without_manage_permission_returns_403(): void
     {
         $user = User::factory()->create(['company_id' => $this->company->id]);
@@ -71,21 +72,21 @@ class AttendanceStatsTest extends TestCase
         $this->getJson($this->url())->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function missing_from_returns_422(): void
     {
         $this->actingAsManager();
         $this->getJson('/api/attendance-stats?to=2025-01-31')->assertStatus(422)->assertJsonValidationErrors(['from']);
     }
 
-    /** @test */
+    #[Test]
     public function missing_to_returns_422(): void
     {
         $this->actingAsManager();
         $this->getJson('/api/attendance-stats?from=2025-01-01')->assertStatus(422)->assertJsonValidationErrors(['to']);
     }
 
-    /** @test */
+    #[Test]
     public function from_after_to_returns_422(): void
     {
         $this->actingAsManager();
@@ -94,7 +95,7 @@ class AttendanceStatsTest extends TestCase
             ->assertJsonValidationErrors(['to']);
     }
 
-    /** @test */
+    #[Test]
     public function no_records_returns_zeros(): void
     {
         $this->actingAsManager();
@@ -109,7 +110,7 @@ class AttendanceStatsTest extends TestCase
             ->assertJsonPath('by_department', []);
     }
 
-    /** @test */
+    #[Test]
     public function correctly_classifies_justified_absences(): void
     {
         $this->actingAsManager();
@@ -130,7 +131,7 @@ class AttendanceStatsTest extends TestCase
             ->assertJsonPath('summary.absences.unjustified', 0);
     }
 
-    /** @test */
+    #[Test]
     public function correctly_counts_unjustified_absences(): void
     {
         $this->actingAsManager();
@@ -149,7 +150,7 @@ class AttendanceStatsTest extends TestCase
             ->assertJsonPath('summary.absences.justified', 0);
     }
 
-    /** @test */
+    #[Test]
     public function correctly_sums_tardiness(): void
     {
         $this->actingAsManager();
@@ -175,7 +176,7 @@ class AttendanceStatsTest extends TestCase
             ->assertJsonPath('summary.tardiness.total_minutes', 35);
     }
 
-    /** @test */
+    #[Test]
     public function by_employee_includes_only_employees_with_records(): void
     {
         $this->actingAsManager();
@@ -197,7 +198,7 @@ class AttendanceStatsTest extends TestCase
         $this->assertEquals($this->employee->id, $response->json('by_employee.0.employee_id'));
     }
 
-    /** @test */
+    #[Test]
     public function filter_by_employee_id(): void
     {
         $this->actingAsManager();
@@ -220,7 +221,7 @@ class AttendanceStatsTest extends TestCase
         $this->assertEquals($this->employee->id, $response->json('by_employee.0.employee_id'));
     }
 
-    /** @test */
+    #[Test]
     public function filter_by_department_id(): void
     {
         $this->actingAsManager();
@@ -237,7 +238,7 @@ class AttendanceStatsTest extends TestCase
         $this->assertEquals($this->employee->id, $response->json('by_employee.0.employee_id'));
     }
 
-    /** @test */
+    #[Test]
     public function cross_company_data_not_exposed(): void
     {
         $this->actingAsManager();
@@ -254,7 +255,7 @@ class AttendanceStatsTest extends TestCase
         $this->assertCount(0, $response->json('by_employee'));
     }
 
-    /** @test */
+    #[Test]
     public function cross_company_employee_id_filter_returns_empty_not_cross_data(): void
     {
         $this->actingAsManager();
@@ -276,14 +277,14 @@ class AttendanceStatsTest extends TestCase
         $this->assertEquals(0, $response->json('summary.tardiness.count'));
     }
 
-    /** @test */
+    #[Test]
     public function range_of_366_days_is_accepted(): void
     {
         $this->actingAsManager();
         $this->getJson('/api/attendance-stats?from=2025-01-01&to=2026-01-01')->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function range_of_367_days_returns_422(): void
     {
         $this->actingAsManager();
@@ -292,7 +293,7 @@ class AttendanceStatsTest extends TestCase
             ->assertJsonValidationErrors(['to']);
     }
 
-    /** @test */
+    #[Test]
     public function cross_company_department_filter_returns_empty_not_cross_data(): void
     {
         $this->actingAsManager();

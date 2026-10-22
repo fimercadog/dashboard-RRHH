@@ -1,14 +1,53 @@
 # Pendientes activos — DFC Talento Humano
 
-> Última actualización: 2026-10-21 (sesión nocturna)
+> Última actualización: 2026-10-22 (sesión autónoma — corrección IDOR crítico + suite 436/436)
 
 ---
 
-## Commits pendientes (sin push)
+## Commits locales (sin push)
 
-- [x] Commit `334fb69`: `DatabaseSeeder.php` + `admin-shell.tsx` + `PENDIENTES.md` — hecho 2026-10-21
-- [x] Push: commits `a38c751` y `334fb69` — **ya en origin** (verificado 2026-10-21)
-- [ ] Commit pendiente: cambios de esta sesión (SST/Desempeño validation, TestCase.php, KPI backend, deploy-hostinger.md threshold)
+- [x] `69722a2` feat(backend-kpi): 27 endpoints stats() + fix companyId + security fixes — 2026-10-21
+- [x] `944744d` feat(sst-desempeno): módulos SST e incidentes y Desempeño con evaluaciones — 2026-10-21
+- [x] `a19e764` feat(frontend-kpi): KPI cards en 48 páginas — todos los módulos — 2026-10-21
+- [x] `b6cb518` chore(frontend): admin-shell sidebar RRHH, crud-modal, types, conversaciones — 2026-10-21
+- [x] `e1b58a2` docs(pendientes): PENDIENTES, BACKLOG, SPEC-CONT-002 e informes de sesión — 2026-10-21
+- [ ] **Push pendiente** — autorización de Fidel requerida
+
+---
+
+## Pendientes de PEPE (acciones técnicas propias)
+
+| Prioridad | Tarea | Estado |
+|-----------|-------|--------|
+| ✅ CERRADO | **PHPUnit 11 → atributos PHP** — migración `@test` → `#[Test]` en `AttendanceStatsTest` (17) y `EmployeeWorkHistoryTest` (11) | Hecho 2026-10-22 |
+| ✅ CERRADO | **IDOR crítico UserController::store()** — `??=` reemplazado por `=` forzando company_id del token | Hecho 2026-10-22 — test de regresión añadido |
+| ✅ CERRADO | **`dashboard/page.tsx`** — KpiCard local documentado: difiere de shared (useCountUp, tone, Delta.pct); no se migra sin refactor del shared | Documentado 2026-10-22 |
+| ✅ CERRADO | **Empresa cliente IDOR/multitenancy audit** — CENTINELA ejecutó auditoría completa | Ver hallazgos abajo |
+| 🟡 DEUDA | **RoleController — roles globales** — cualquier admin puede modificar roles de otras empresas; requiere decisión arquitectónica (per-company roles vs super-admin guard) | Decisión pendiente |
+| 🟡 DEUDA | **`asistencia/estadisticas/page.tsx`** — KpiCard local mínimo (por diseño SPEC-019) | Pendiente aprobación SPEC-019 |
+| 🟡 R4 | **SPEC-CONT-002.md** — draft de protocolo existe; falta validar rollback/recuperación paso a paso | Después de R1+R2 |
+| 🔵 INFRA | **CI/CD** — cero automatización en push/PR | Decisión de infraestructura |
+
+### Hallazgos CENTINELA 2026-10-22
+
+| # | Severidad | Hallazgo | Estado |
+|---|-----------|----------|--------|
+| H1 | CRÍTICO | `UserController::store()` — `company_id` inyectable via payload (`??=` no protegía cuando el campo venía en el request) | **CORREGIDO** — `??=` → `=`, test añadido, 436/436 pass |
+| H2 | ALTO | `RoleController::update()` — roles globales sin ownership check por empresa | **DEUDA DOCUMENTADA** — requiere decisión arq. |
+| H3 | MEDIO | `LeadController::update()` — sin ownership check (leads son globales por diseño) | **DOCUMENTADO** — contenido por diseño; `leads.*` no debe asignarse a tenants |
+
+---
+
+## Pendientes que requieren acción de Fidel
+
+| Prioridad | Tarea | Estado |
+|-----------|-------|--------|
+| 🔴 CRÍTICO | **R1** — Verificar backup real en Hostinger tras primer deploy: confirmar que `.sql` se genera en `~/backups/` y que el archivo no está vacío | Bloqueado — requiere deploy |
+| 🔴 CRÍTICO | **R2** — Probar restauración en BD separada (`u910322706_dfc_restore`): restaurar, verificar tablas y registros. Nunca restaurar sobre producción | Bloqueado — requiere acción manual |
+| 🔵 ENTORNO | **E2E Playwright** — conectar extensión Chrome en `chrome://extensions` para desbloquear flujos E2E | Bloqueado — extensión no conectada |
+| ⚫ DECISIÓN | **SPEC-018 VP-002..VP-006** — cálculos de nómina bloqueados hasta validación profesional externa | En espera |
+| ⚫ DECISIÓN | **SPEC-019 (Asistencia)** — implementación en pausa hasta aprobación | En espera |
+| 🟡 LISTO | **`git push`** — 5 commits locales listos (`69722a2`..`e1b58a2`), árbol limpio | Esperando autorización |
 
 ---
 
@@ -23,12 +62,12 @@
 
 ## SPEC-CONT-001 — Continuidad, backups y rollback
 
-- [ ] Revisión del informe de auditoría entregado (2026-10-20) — 4 fases propuestas
-- [ ] Fase 1: push trabajo actual + plantilla de continuidad en WORKFLOW.md + regla en CLAUDE.md
-- [ ] Fase 2: verificar backup automático en Hostinger (SSH read) + documentar backup manual
+- [x] Revisión del informe de auditoría entregado (2026-10-20) — 4 fases propuestas
+- [x] Fase 1: plantilla de continuidad en WORKFLOW.md + regla en CLAUDE.md — hecho 2026-10-22
+- [ ] Fase 2: verificar backup automático en Hostinger (SSH read) + documentar backup manual — bloqueado
 - [x] Fase 3: guard en script de deploy — mysqldump antes de `migrate --force` — hecho 2026-10-21
   - [x] Threshold backup corregido: 2000 → 50000 bytes (alineado con SPEC R1) — 2026-10-21
-- [ ] Fase 4: tags de release + suite MySQL en phpunit.xml
+- [x] Fase 4: suite MySQL en phpunit.xml + phpunit.mysql.xml.example committido — hecho 2026-10-22
 
 ### Soluciones implementadas (2026-10-21)
 
@@ -100,9 +139,9 @@
 
 | Suite | Estado | Resultado |
 |-------|--------|-----------|
-| SQLite (phpunit.xml) | COMPLETADO | 434/434 pass, 1085 assertions |
-| MySQL (phpunit.mysql.xml) | EN PROGRESO | Suite corriendo contra MariaDB 10.4 local |
-| E2E Playwright | BLOQUEADO ENTORNO | Pendiente configuración |
+| SQLite (phpunit.xml) | ✅ PASS | 436/436 pass, 1090 assertions (2 tests nuevos UserControllerTest) — 2026-10-22 |
+| MySQL (phpunit.mysql.xml) | ✅ PASS | 426/426 pass, 1057 assertions, exit 0 — 2026-10-22 |
+| E2E Playwright | BLOQUEADO ENTORNO | Pendiente configuración Chrome extension |
 
 ---
 

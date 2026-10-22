@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Spatie\Permission\Models\Permission;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class EmployeeWorkHistoryTest extends TestCase
@@ -52,13 +53,13 @@ class EmployeeWorkHistoryTest extends TestCase
         return "/api/employees/{$this->employee->id}/work-history";
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_returns_401(): void
     {
         $this->getJson($this->baseUrl())->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function without_manage_permission_returns_403(): void
     {
         $user = User::factory()->create(['company_id' => $this->company->id]);
@@ -68,7 +69,7 @@ class EmployeeWorkHistoryTest extends TestCase
         $this->getJson($this->baseUrl())->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function can_list_empty_history(): void
     {
         $this->actingAsManager();
@@ -78,7 +79,7 @@ class EmployeeWorkHistoryTest extends TestCase
             ->assertJsonPath('data', []);
     }
 
-    /** @test */
+    #[Test]
     public function can_create_work_history_entry(): void
     {
         $this->actingAsManager();
@@ -102,7 +103,7 @@ class EmployeeWorkHistoryTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function rejects_invalid_event_type(): void
     {
         $this->actingAsManager();
@@ -114,7 +115,7 @@ class EmployeeWorkHistoryTest extends TestCase
         ])->assertStatus(422)->assertJsonValidationErrors(['event_type']);
     }
 
-    /** @test */
+    #[Test]
     public function can_update_entry(): void
     {
         $this->actingAsManager();
@@ -132,7 +133,7 @@ class EmployeeWorkHistoryTest extends TestCase
             ->assertJsonPath('data.title', 'Actualizado');
     }
 
-    /** @test */
+    #[Test]
     public function can_delete_entry(): void
     {
         $this->actingAsManager();
@@ -149,7 +150,7 @@ class EmployeeWorkHistoryTest extends TestCase
         $this->assertDatabaseMissing('employee_work_history', ['id' => $entry->id]);
     }
 
-    /** @test */
+    #[Test]
     public function cross_company_employee_returns_404(): void
     {
         $this->actingAsManager();
@@ -166,7 +167,7 @@ class EmployeeWorkHistoryTest extends TestCase
         $this->getJson("/api/employees/{$foreign->id}/work-history")->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function cross_company_entry_returns_404_on_delete(): void
     {
         $this->actingAsManager();
@@ -191,7 +192,7 @@ class EmployeeWorkHistoryTest extends TestCase
         $this->deleteJson("{$this->baseUrl()}/{$entry->id}")->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function employee_show_includes_work_history(): void
     {
         $this->actingAsManager();
@@ -210,7 +211,7 @@ class EmployeeWorkHistoryTest extends TestCase
             ->assertJsonPath('data.work_history.0.event_type', 'promotion');
     }
 
-    /** @test */
+    #[Test]
     public function social_security_fields_persist_on_create_and_update(): void
     {
         $this->actingAsManager();
